@@ -1,0 +1,421 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: MNU
+
+; Microsoft Dynamics AX Menu : SPMenu unloaded
+; --------------------------------------------------------------------------------
+  MNUVERSION 4
+  
+  MENU #SPMenu
+    PROPERTIES
+      Name                #SPMenu
+      Label               #Shows main menu
+      SetCompany          #Yes
+    ENDPROPERTIES
+    
+    MENUITEM
+      PROPERTIES
+        Name                #Shows
+        MenuItemName        #SPShow
+      ENDPROPERTIES
+      
+    ENDMENUITEM
+  ENDMENU
+  
+
+***Element: FTM
+
+; Microsoft Dynamics AX MENUITEM : SPShow unloaded
+; --------------------------------------------------------------------------------
+  VERSION 1
+  
+  MENUITEM #SPShow
+    Type: 1
+    PROPERTIES
+      Name                #SPShow
+      Label               #Shows
+      Object              #SPShow
+    ENDPROPERTIES
+    
+  ENDMENUITEM
+  
+
+***Element: DBE
+
+; Microsoft Dynamics AX Enumtype : SPType unloaded
+; --------------------------------------------------------------------------------
+  ENUMTYPEVERSION 1
+  
+  ENUMTYPE #SPType
+    Id 50013
+    PROPERTIES
+      Name                #SPType
+      UseEnumValue        #Yes
+    ENDPROPERTIES
+    
+    TYPEELEMENTS
+      #None
+      PROPERTIES
+        Name                #None
+        EnumValue           #0
+      ENDPROPERTIES
+      
+      #Type1
+      PROPERTIES
+        Name                #Type1
+        Label               #Element1
+        EnumValue           #1
+      ENDPROPERTIES
+      
+      #Type2
+      PROPERTIES
+        Name                #Type2
+        Label               #Element2
+        EnumValue           #2
+      ENDPROPERTIES
+      
+      #Type3
+      PROPERTIES
+        Name                #Type3
+        Label               #Element3
+        EnumValue           #3
+      ENDPROPERTIES
+      
+    ENDTYPEELEMENTS
+  ENDENUMTYPE
+  
+
+***Element: UTS
+
+; Microsoft Dynamics AX String: SPName udlæst
+; --------------------------------------------------------------------------------
+  USERTYPEVERSION 6
+  
+  USERTYPE #SPName
+  Id 50008
+  STRING
+    PROPERTIES
+      Name                #SPName
+	  Label               #Test label				  
+    ENDPROPERTIES
+    
+    TYPEELEMENTS
+    ENDTYPEELEMENTS
+    
+    TYPEREFERENCES
+    ENDTYPEREFERENCES
+    
+  ENDUSERTYPE
+  
+
+***Element: FRM
+
+; Microsoft Dynamics AX Forms unloaded
+; --------------------------------------------------------------------------------
+FRMVERSION 5
+
+FORM #SPShow
+  PROPERTIES
+    Name                #SPShow
+  ENDPROPERTIES
+  
+  METHODS
+    Version: 3
+    SOURCE #classDeclaration
+      #public class FormRun extends ObjectRun
+      #{
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #SPShow
+          Table               #SPShow
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  JOINS
+  ENDJOINS
+  
+  DESIGN
+    PROPERTIES
+      Caption             #Shows
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL GRID
+        PROPERTIES
+          Name                #Grid
+          Width               #Column width
+          Height              #Column height
+          DataSource          #SPShow
+        ENDPROPERTIES
+        
+          CONTAINER
+            CONTROL COMBOBOX
+              PROPERTIES
+                Name                #SPShow_SPType
+                DataSource          #SPShow
+                DataField           #SPType
+              ENDPROPERTIES
+              
+            ENDCONTROL 
+            
+            CONTROL STRINGEDIT
+              PROPERTIES
+                Name                #SPShow_SPName
+                DataSource          #SPShow
+                DataField           #SPName
+              ENDPROPERTIES
+              
+            ENDCONTROL 
+            
+          ENDCONTAINER
+          
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ButtonGroup
+        ENDPROPERTIES
+        
+        CONTAINER
+          CONTROL BUTTON
+            PROPERTIES
+              Name                #MyButton
+              Text                #Klik her
+            ENDPROPERTIES
+            
+            METHODS
+              Version: 3
+              SOURCE #clicked
+                #void clicked()
+                #{
+                #    SPBusinessLogic bl = new SPBusinessLogic();
+                #    ;
+                #
+                #    bl.fillShows();
+                #    SPShow_ds.executeQuery();
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDCONTROL 
+          
+        ENDCONTAINER
+        
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+ENDFORM
+
+
+***Element: CLS
+
+; Microsoft Dynamics AX Class: SPBusinessLogic udlæst
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #SPBusinessLogic
+    Id 50037
+    PROPERTIES
+      Name                #SPBusinessLogic
+      Extends             #
+      RunOn               #Called from
+    ENDPROPERTIES
+    
+    METHODS
+      Version: 3
+      SOURCE #fillShows
+        #void fillShows()
+        #{
+        #    str newName;
+        #    int i;
+        #    ;
+        #
+        #    info("Existing chosen show: " + show.SPName);
+        #
+        #    ttsbegin;
+        #
+        #    for(i = 0; i < 2; i++)
+        #    {
+        #        newName = strfmt("Hej %1", int2str(i));
+        #        show = SPShow::find(newName);
+        #
+        #        if(!show)
+        #        {
+        #            show.initValue();
+        #            show.SPType = SPType::Type1;
+        #            show.SPName = newName;
+        #            show.insert();
+        #        }
+        #    }
+        #
+        #    ttscommit;
+        #}
+      ENDSOURCE
+      SOURCE #new
+        #void new()
+        #{
+        #
+        #    show = SPShow::find("Hej 1");
+        #}
+      ENDSOURCE
+      SOURCE #classDeclaration
+        #class SPBusinessLogic
+        #{
+        #    SPShow show;
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : SPShow unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #SPShow
+    Id 50036
+    PROPERTIES
+      Name                #SPShow
+      Label               #Shows
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #SPName
+        Id 50001
+        STRING
+        PROPERTIES
+          Name                #SPName
+          Table               #SPShow
+          ExtendedDataType    
+            ARRAY 
+              #SPName
+              #
+            ENDARRAY
+        ENDPROPERTIES
+        
+      FIELD #SPType
+        Id 50002
+        ENUM
+        PROPERTIES
+          Name                #SPType
+          Table               #SPShow
+          EnumType            #SPType
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+    ENDGROUPS
+    
+    INDICES
+    ENDINDICES
+    REFERENCES
+    ENDREFERENCES
+    
+    DELETEACTIONS
+    ENDDELETEACTIONS
+    
+    METHODS
+      Version: 3
+      SOURCE #setName
+        #void setName(str _name)
+        #{
+        #    this.SPName = _name;
+        #}
+      ENDSOURCE
+      SOURCE #find
+        #public static SPShow find(SPName _name, boolean _forupdate =  false)
+        #{
+        #    SPSHow show;
+        #    ;
+        #
+        #    select firstonly show where show.SPName == _name;
+        #    return show;
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: PRN
+
+; Microsoft Dynamics AX Project : SimpleProject unloaded
+; --------------------------------------------------------------------------------
+  PROJECTVERSION 2
+  
+  PROJECT #SimpleProject
+   PRIVATE
+  PROPERTIES
+    Name                #SimpleProject
+  ENDPROPERTIES
+  
+    PROJECTCLASS ProjectNode
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 16
+      UTILOBJECTID 0
+      NODETYPE 205
+      NAME #SPMenu
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 1
+      UTILOBJECTID 0
+      NODETYPE 296
+      NAME #SPShow
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 40
+      UTILOBJECTID 50013
+      NODETYPE 209
+      NAME #SPType
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 41
+      UTILOBJECTID 50008
+      NODETYPE 234
+      NAME #SPName
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 11
+      UTILOBJECTID 0
+      NODETYPE 201
+      NAME #SPShow
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 45
+      UTILOBJECTID 50037
+      NODETYPE 329
+      NAME #SPBusinessLogic
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 44
+      UTILOBJECTID 50036
+      NODETYPE 204
+      NAME #SPShow
+    ENDNODE
+  ENDPROJECT
+  
+
+***Element: END

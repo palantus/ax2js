@@ -1,0 +1,46 @@
+<html>
+<head>
+  <title>API</title>
+  <style>
+    html, body{background-color: #F8F8F2;height: 100%; margin: 0px;}
+    a{color: blue; font-size: 120%}
+    #header{padding-left: 20px;}
+    #header a{font-size: 100%}
+    #content{flex-flow: row; display: flex; margin-left: 50px;}
+    #left{flex: 1 0 50%;}
+    #right{flex: 1 0 50%;}
+    #apitester{width: 100%; height: 100%; border: 0px solid gray;}
+  </style>
+</head>
+<body>
+  <div id="header">
+    <h1><a href="/" style="color: black; text-decoration: none;">AX2JS API</a></h1>
+  </div>
+<hr/>
+<div id="content">
+<div id="left">
+<h3>Tree</h3>
+<p>Get all elements: <a target="apitester" href="/api/tree">/api/tree</a></p>
+<p>Get all elements of a specific type: <a target="apitester" href="/api/tree/class">/api/tree/class</a></p>
+<p>Get all methods of a class: <a target="apitester" href="/api/tree/class/SPBusinessLogic">/api/tree/class/SPBusinessLogic</a></p>
+<br/>
+<h3>Element</h3>
+<p>Get element by id: <a target="apitester" href="/api/element/3">/api/element/3</a></p>
+<p>Get element source code (classes and tables) by id: <a target="apitester" href="/api/element/4/source">/api/element/4/source</a></p>
+<p>Get single method element source code (classes and tables) by id: <a target="apitester" href="/api/element/4/source/fillShows">/api/element/4/source/fillShows</a></p>
+<p>Get element source X++ (classes and tables) by id: <a target="apitester" href="/api/element/4/source/xpp">/api/element/4/source/xpp</a></p>
+<p>Get element source AST (classes and tables) by id: <a target="apitester" href="/api/element/4/source/ast">/api/element/4/source/ast</a></p>
+<p>Compile element: <a target="apitester" href="/api/element/4/compile">/api/element/4/compile</a></p>
+<p>Get properties of element: <a target="apitester" href="/api/element/2/props">/api/element/2/props</a></p>
+<p>Get list and source code of all dependencies of an element (including for the element itself): <a target="apitester" href="/api/element/4/depsource">/api/element/4/depsource</a></p>
+
+<br/>
+<p>All element ids can be replaced by "type/name" like: <a target="apitester" href="/api/element/class/SPBusinessLogic">/api/element/class/SPBusinessLogic</a>. It is not case sensitive.</p>
+</div>
+<div id="right">
+  <h3>Result:</h3>
+  <iframe name="apitester" id="apitester"></iframe>
+</div>
+</div>
+</body>
+</html>

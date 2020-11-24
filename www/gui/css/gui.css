@@ -1,0 +1,39 @@
+html, body{
+  height: 100%;
+  margin: 0px;
+  /*
+  background-color: #272822;
+  color: #F8F8F2;
+  */
+  background-color: #F8F8F2;
+}
+
+#bodycontent{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+#header{
+  flex: 0 0 60px;
+  border-bottom: 1px solid black;
+  padding-left: 20px;
+}
+
+#content{
+  display: flex;
+  flex-flow: row;
+  flex: 1 1 auto;
+}
+
+#menucontainer{
+    flex: 0 0 250px;
+}
+
+#contentcontainer{
+    flex: 1 1 auto;
+}
+
+#logcontainer{
+    flex: 0 0 210px;
+}

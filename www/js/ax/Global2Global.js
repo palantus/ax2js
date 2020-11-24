@@ -1,0 +1,1 @@
+var dateMax = Global.dateMax;

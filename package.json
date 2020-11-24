@@ -1,0 +1,23 @@
+{
+  "name": "AXWebEdition",
+  "version": "1.0.0",
+  "scripts": {
+    "install-windows-service": "winser -i",
+    "uninstall-windows-service": "winser -r",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "connect": "*",
+    "entitystorage": "^1.0.25",
+    "express": "^4.14.0",
+    "jison": "*",
+    "js-beautify": "^1.7.5"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ]
+  }
+}
