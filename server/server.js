@@ -49,24 +49,31 @@ var router = async function(req, res){
 }
 
 
+let load = async () => {
 
-var express = require('express')
-   , http = require('http')
-   , path = require('path');
-var app = express();
+  var express = require('express')
+    , http = require('http')
+    , path = require('path');
+  var app = express();
+  let Entity = require("entitystorage")
+  let {uiPath, uiAPI} = await Entity.init("./data");
 
-app.set('port', process.env.PORT || 3000);
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-app.use(/\/api\/.+/, router);
-app.use(express.static(path.join(__dirname, '..', 'www')));
+  app.set('port', process.env.PORT || 3000);
+  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json())
+  app.use("/db", express.static(uiPath))
+  app.use("/db/api/:query", uiAPI)
+  app.use(/\/api\/.+/, router);
+  app.use(express.static(path.join(__dirname, '..', 'www')));
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-})
+  http.createServer(app).listen(app.get('port'), function(){
+    console.log('Express server listening on port ' + app.get('port'));
+  })
 
 
+}
 
+load();
 
 
 

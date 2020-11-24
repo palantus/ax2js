@@ -1,1 +1,0 @@
-node --harmony_default_parameters test
