@@ -1,5 +1,5 @@
 {
-  "name": "AXWebEdition",
+  "name": "ax2js",
   "version": "1.0.0",
   "scripts": {
     "install-windows-service": "winser -i",
