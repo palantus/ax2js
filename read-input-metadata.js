@@ -1,7 +1,7 @@
 const { readdirSync, readFileSync} = require('fs')
 const parser = require('fast-xml-parser');
-let Element = require("./element.js");
-const Tags = require('entitystorage/types/tags');
+let Entity = require("entitystorage")
+let Element = require("./server/element.js");
 
 class D365{
   async readFolder(path){
@@ -44,4 +44,10 @@ class D365{
   }
 }
 
-module.exports = D365
+
+let run = async () => {
+  await Entity.init("./data");
+  Entity.search("tag:element").delete();
+  new D365().readFolder("input/models/PetStore")
+}
+run();

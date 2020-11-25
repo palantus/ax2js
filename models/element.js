@@ -12,11 +12,11 @@ class Element extends Entity{
     }
 
     static lookup(id){
-        return Element.find.call(Element, "type:element id:" + id)
+        return Element.find("id:" + id)
     }
 
     static lookupType(type, name){
-        return Element.find(`type:element prop:type=${type} prop:name=${name}`)
+        return Element.find(`tag:element prop:type=${type} prop:name=${name}`)
     }
 
     toObj(skipContent){

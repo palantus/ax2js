@@ -2,7 +2,7 @@
 
 var fs  = require("fs");
 var beautify = require('js-beautify').js_beautify;
-var overrides = require('../input/overrides.js');
+var overrides = require('../../input/overrides.js');
 var debug = true;
 
 class ast2js{

@@ -1,7 +1,7 @@
 'use strict';
 
 var XPPCompiler = require("./compilers/xpp2js.js")
-let Element = require("./element.js")
+let Element = require("../models/element.js")
 
 class MetadataHandler{
 

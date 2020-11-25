@@ -3,7 +3,7 @@
 var fs  = require("fs");
 var jison = require("jison");
 var beautify = require('js-beautify').js_beautify;
-var overrides = require('../input/overrides.js');
+var overrides = require('../../input/overrides.js');
 var debug = false;
 
 var XPP2JSParser = require("../parsers/xpp2ast.js").parser;
