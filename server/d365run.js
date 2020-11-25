@@ -3,6 +3,7 @@ let Entity = require("entitystorage")
 
 let run = async () => {
   await Entity.init("./data");
-  new d365Reader().readFolder("server/input/metadata/LessorIntegration/LessorIntegration")
+  Entity.search("tag:element").delete();
+  new d365Reader().readFolder("server/input/metadata/PetStore")
 }
 run();

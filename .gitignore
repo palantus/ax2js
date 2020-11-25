@@ -7,4 +7,5 @@ server/jison_test/node_modules
 server/logs
 server/old
 server/test
-server/input/metadata
+server/input/metadata/*
+!server/input/metadata/PetStore
