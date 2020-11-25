@@ -1,5 +1,4 @@
 var bodyParser = require('body-parser')
-var API = require('./server/api.js')
 
 
 

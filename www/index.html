@@ -1,25 +1,45 @@
+<!doctype html>
 <html>
-<head>
-  <title>API</title>
-  <style>
-    html, body{background-color: #F8F8F2;height: 100%; margin: 0px;}
-    a{color: blue; font-size: 120%}
-    #header{padding-left: 20px;}
-    #header a{font-size: 100%}
-    #content{padding-left: 50px;}
-    #apitester{width: 100%; height: 100%; border: 1px solid gray;}
-  </style>
-</head>
-<body>
-  <div id="header">
-    <h1><a class="header" href="/" style="color: black; text-decoration: none;">AX2JS</a></h1>
-  </div>
-<hr/>
 
-<div id="content">
-  <a href="/gui">GUI</a><br/><br/>
-  <a href="/dev">Developer</a><br/><br/>
-  <a href="/api">API</a><br/><br/>
-</div>
+<head>
+    <meta charset="utf-8" />
+    <title>AX2JS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=10,IE=9,IE=8,IE=edge" />
+    <meta name='viewport' content='width=device-width,initial-scale=1.0'>
+    <link rel='manifest' href='manifest.json'>
+    <link rel='icon' type='image/png' href='/img/favicon.ico'>
+
+    <link rel='stylesheet' href='css/core.css'>
+    <link rel='stylesheet' href='css/global.css'>
+
+    <script type="module" src="gui/system/core.mjs"></script>
+    <script type="module" src="pages/mainmenu.mjs"></script>
+    <script type="module" src="components/branding.mjs"></script>
+    <script type="module" src="components/topbar.mjs"></script>
+</head>
+
+<body>
+
+    <div id="grid-container">
+
+        <div class="branding">
+            <branding-component/>
+        </div>
+        <div class="top">
+            <topbar-component />
+        </div>
+        <div class="nav">
+            <main-menu />
+        </div>
+        <div id="main">
+        </div>
+        <!--
+        <div class="footer">
+            <Breadcrumbs />
+        </div>
+        -->
+    </div>
+
 </body>
+
 </html>

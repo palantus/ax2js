@@ -1,0 +1,89 @@
+#container{
+  
+  line-height: 1.5;
+}
+
+div.menu{
+        
+    color: white;
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    transition: background 0.2s linear;
+    user-select: none;
+    position: relative;
+    cursor: pointer;
+}
+
+div.menu{
+    border-bottom: 1px solid #dddddd;
+}
+div.menu:first-child{
+    border-top: 1px solid #dddddd;
+}
+
+div.item[style*="display: block"] + div.menu{
+    border-top: 1px solid #dddddd;
+}
+
+div.menu:hover,div.item:hover{
+    background-color: var(--dark-hover-back);
+    cursor: pointer;
+}
+
+div.menu.selected{
+    background-color: var(--accent-color-transparent) !important;
+}
+
+div.item{
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.menuarrow{
+    display: inline-block;
+    margin-left: 10px; 
+    color: #aaa; 
+    content: ' ▾'; 
+    transition: all 0.2s linear;
+    transform:rotate(-90deg); 
+    position:absolute; right:15px;
+}
+div.menu.open .menuarrow{
+    transform:rotate(0deg);
+}
+
+span.itemtitle {
+    padding: 0 0 0 0.5em;
+    background: 0 0.1em no-repeat;
+    background-size: 1em 1em;
+}
+
+/* Items */
+div.item{
+        
+    color: white;
+    padding: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    
+    /*transition: background 0.2s linear;*/
+    user-select: none;
+    position: relative;
+    cursor: pointer;
+}
+
+div.item:hover{
+    background-color: var(--dark-hover-back);
+    cursor: pointer;
+}
+
+div.item.selected{
+    background: var(--accent-back);
+}
+
+div.item span {
+    padding: 0 0 0 0;
+    background: 0 0.1em no-repeat;
+    background-size: 1em 1em;
+}

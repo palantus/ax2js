@@ -1,0 +1,85 @@
+h1, h2, h3, h4, h5, h6 {
+	margin: 0 0 0.5em 0;
+	font-weight: 400;
+	line-height: 1.2;
+}
+
+h1 {
+	font-size: 2em;
+}
+
+a {
+	color: inherit;
+}
+
+code {
+	font-family: menlo, inconsolata, monospace;
+	font-size: calc(1em - 2px);
+	color: #555;
+	background-color: #f0f0f0;
+	padding: 0.2em 0.4em;
+	border-radius: 2px;
+}
+
+body{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+}
+/*
+<label class="checkbox">
+  <input type="checkbox"/>
+  <span></span>
+  I like cake
+</label>
+*/
+
+label.checkbox input[type="checkbox"] {display:none;}
+label.checkbox span {
+  display:inline-block;
+  border:2px solid #AAA;
+  border-radius:5px;
+  width: 15px;
+  height: 15px;
+  vertical-align:middle;
+  margin:2px;
+  position: relative;
+  transition:width 0.1s, height 0.1s, margin 0.1s;
+}
+label.checkbox :checked + span {
+  /*background:#6F6;*/
+  background:#FFF;
+  width: 15px;
+  height: 15px;
+  margin: 2px;
+}
+label.checkbox :checked + span:after {
+  content: '\2714';
+  font-size: 16px;
+  position: absolute;
+  top: -5px;
+  left: 2px;
+  color: #99a1a7;
+}
+
+dialog-component label{
+  width: 120px;
+  display: inline-block;
+}
+
+dialog-component label:not(.checkbox):after {
+  content: ":"; 
+}
+
+input[type="text"],input[type="number"],input[type="password"],input:not([type]){
+  border-radius: 5px;
+  border: 1px solid gray;
+  padding: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+}
+input[type="text"]:not([readonly]):focus,input:not([type]):not([readonly]):focus,input[type="password"]:not([readonly]):focus{
+  box-shadow: 0px 0px 5px #550000;
+  outline: none;
+}
+button:focus{
+  outline: none;
+}
