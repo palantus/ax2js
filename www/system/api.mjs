@@ -3,45 +3,12 @@ import {on, fire} from "./events.mjs"
 
 class API{
 
-    constructor(){
-        this.setToken()
-        on("changed-project", "api", () => {
-          this.failedLoginState = false;
-          this.setToken()
-        })
-    }
-
-    setToken(){
-      let urlToken = state().query.token
-      let tokenKey = `${state().project}_apitoken`
-      if(urlToken){
-          this.token = urlToken;
-          localStorage.setItem(tokenKey, this.token)
-      } else {
-          this.token = localStorage.getItem(tokenKey)
-      }
-
-      if(this.token){
-        this.failedLoginState = false;
-        this.tokenPayload = parseJwt(this.token)
-      } else {
-        if(state().query.success == "false"){
-          alert("Could not sign in to project " + state().project)
-          this.failedLoginState = true;
-        } else {
-          this.login();
-        }
-      }
-    }
-
     async get(path, options){
-        if(this.failedLoginState === true) return;
 
         options = options || {}
-        let res = await fetch(`https://${state().project}/${path}`, {
+        let res = await fetch(`/api/${path}`, {
             headers: { 
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + this.token
+                "Content-Type": "application/json"
             }})
         if(res.status < 300 || options.returnIfError === true){
             return await res.json();

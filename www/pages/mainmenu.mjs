@@ -1,6 +1,7 @@
 const elementName = 'main-menu'
 import {goto, state} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
+import api from "/system/api.mjs"
 
 /*
 let menu = {
@@ -122,20 +123,20 @@ class Page extends HTMLElement {
   }
 
   addMenu(parent, content){
-    for(let title in content){
+    for(let menu of content){
       let item = document.createElement("div")
       let titleElement = document.createElement("span")
       item.appendChild(titleElement)
 
-      if(typeof content[title] == "string"){
+      if(menu.type == "menuitem" || menu.type == "fixeditem"){
         item.className = "item"
         titleElement.attributes.class = "itemtitle"
-        titleElement.innerText = " - " + title
+        titleElement.innerText = " - " + menu.label
 
-        item.setAttribute("data-path", content[title])
+        item.setAttribute("data-path", menu.page || "/ax/mi/" + menu.name)
       } else {
         item.className = "menu"
-        titleElement.innerText = title
+        titleElement.innerText = menu.label
         
         let arrow = document.createElement("span")
         arrow.className = "menuarrow"
@@ -145,8 +146,8 @@ class Page extends HTMLElement {
 
       parent.appendChild(item)
 
-      if(typeof content[title] === "object"){
-        this.addMenu(parent, content[title]);
+      if(menu.type == "submenu" || menu.type == "fixedsubmenu"){
+        this.addMenu(parent, menu.items);
       }
     }
 

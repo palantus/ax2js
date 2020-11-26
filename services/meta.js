@@ -1,9 +1,9 @@
 
-let Element = require("../../models/element")
+let Element = require("../models/element")
 
 class Service{
   genMenu(){
-    let menu = {}
+    let menu = []
     let ext = Element.search("tag:element prop:type=menuextension")
     let menus = Element.search("tag:element prop:type=menu")
 
@@ -14,24 +14,41 @@ class Service{
       menusInMainMenu.push(x.metadata.Elements.AxMenuExtensionElement.MenuElement.MenuName)
     }
 
+    let parseMenu = curMenu => {
+      if(curMenu.Elements){
+        return {
+          type: "submenu", 
+          name: curMenu.Name, 
+          label: curMenu.Label, 
+          items: Array.isArray(curMenu.Elements.AxMenuElement) ? curMenu.Elements.AxMenuElement.map(m => parseMenu(m)) : [parseMenu(curMenu.Elements.AxMenuElement)]
+        }
+      } else {
+        return {
+          type: "menuitem", 
+          name: curMenu.Name, 
+          label: Element.lookupType("menuitemdisplay", curMenu.Name)?.metadata.Label
+        }
+      }
+    }
+
     for(let name of menusInMainMenu){
       let curMenu = menus.find(m => m.name == name)
       if(!curMenu)
         continue;
       
-      let parseMenu = e => {
-        if(e.Elements){
-          let ret = {}
-          //for(let ie of e.Elements)
-            //ret[ie.AxMenuElement.Label]
-
-          //TODO: finish
-        } else {
-
-        }
-      }
-      //menu[curMenu.metadata.Label] = 
+      menu.push(parseMenu(curMenu.metadata))
     }
+
+    menu.push({
+      type: "fixedsubmenu",
+      label: "System",
+      items: [
+        {type: "fixeditem", label: "Users", page: "/setup/users"},
+        {type: "fixeditem", label: "Setup", page: "/system"},
+        {type: "fixeditem", label: "Tools", page: "/systemtools"}
+      ]
+    })
+
     return menu;
   }
 }
