@@ -23,10 +23,12 @@ class Service{
           items: Array.isArray(curMenu.Elements.AxMenuElement) ? curMenu.Elements.AxMenuElement.map(m => parseMenu(m)) : [parseMenu(curMenu.Elements.AxMenuElement)]
         }
       } else {
+        let mi = Element.lookupType("menuitemdisplay", curMenu.Name)
         return {
           type: "menuitem", 
           name: curMenu.Name, 
-          label: Element.lookupType("menuitemdisplay", curMenu.Name)?.metadata.Label
+          label: mi?.metadata.Label,
+          object: mi?.metadata.Object
         }
       }
     }

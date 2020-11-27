@@ -3,38 +3,6 @@ import {goto, state} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 import api from "/system/api.mjs"
 
-/*
-let menu = {
-  "Me": {
-    "Dashboard": "/",
-    "Chat": "/chat"
-  },
-  "Issues": {
-    "Backlog": "/backlog",
-    "Current sprint": "/issues/sprint",
-    "Search": "/issues"
-  },
-  "Management": {
-    "Releases": "/releases",
-    "Sprints": "/sprints"
-  },
-  "Infrastructure": {
-    "Azure VMs": "/azure-vms",
-    "Instances": "/instances",
-    "Servers" : "/servers",
-    "Actions" : "/actions"
-  },
-  "Statistics": {
-    "Monthly": "/stat/monthly"
-  },
-  "System": {
-    "Users": "/setup/users",
-    "Setup": "/system",
-    "Tools": "/systemtools"
-  }
-}
-*/
-
 const template = document.createElement('template');
 template.innerHTML = `
     <link rel='stylesheet' href='/css/mainmenu.css'>
@@ -96,7 +64,7 @@ class Page extends HTMLElement {
   updateSelected(){
     this.shadowRoot.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
     this.shadowRoot.querySelectorAll(".menu").forEach(e => e.classList.remove("open"))
-    this.shadowRoot.querySelectorAll(".item").forEach(e => e.style.display = "none")
+    //this.shadowRoot.querySelectorAll(".item").forEach(e => e.style.display = "none")
     this.shadowRoot.querySelectorAll(`.item[data-path="${state().path}"]`).forEach(e => {
       e.classList.add("selected")
 
@@ -133,7 +101,7 @@ class Page extends HTMLElement {
         titleElement.attributes.class = "itemtitle"
         titleElement.innerText = " - " + menu.label
 
-        item.setAttribute("data-path", menu.page || "/ax/mi/" + menu.name)
+        item.setAttribute("data-path", menu.page || "/ax/form/" + menu.object)
       } else {
         item.className = "menu"
         titleElement.innerText = menu.label
@@ -147,7 +115,15 @@ class Page extends HTMLElement {
       parent.appendChild(item)
 
       if(menu.type == "submenu" || menu.type == "fixedsubmenu"){
-        this.addMenu(parent, menu.items);
+        let subParent = document.createElement("div")
+        subParent.classList.add("submenu")
+        /*
+        let subParentTitle = document.createElement("h2")
+        subParentTitle.innerText = menu.label
+        subParent.append(subParentTitle)
+        */
+        item.append(subParent)
+        this.addMenu(subParent, menu.items);
       }
     }
 

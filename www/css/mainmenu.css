@@ -49,7 +49,7 @@ div.item{
     transform:rotate(-90deg); 
     position:absolute; right:15px;
 }
-div.menu.open .menuarrow{
+div.menu.open > .menuarrow{
     transform:rotate(0deg);
 }
 
@@ -86,4 +86,19 @@ div.item span {
     padding: 0 0 0 0;
     background: 0 0.1em no-repeat;
     background-size: 1em 1em;
+}
+
+div.submenu{
+  position: absolute;
+  left: 200px;
+  background-color: rgba(0, 0, 0, 0.60);
+  display: none;
+  top: 0px;
+  width: 200px;
+  z-index: 5;
+  backdrop-filter: blur(5px);
+}
+
+div.menu.open > div.submenu{
+  display: block;
 }
