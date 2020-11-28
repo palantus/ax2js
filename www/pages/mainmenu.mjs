@@ -101,7 +101,7 @@ class Page extends HTMLElement {
         titleElement.attributes.class = "itemtitle"
         titleElement.innerText = " - " + menu.label
 
-        item.setAttribute("data-path", menu.page || "/ax/form/" + menu.object)
+        item.setAttribute("data-path", menu.page || "/ax/mi/" + menu.name)
       } else {
         item.className = "menu"
         titleElement.innerText = menu.label

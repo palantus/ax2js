@@ -3,6 +3,8 @@ const elementName = 'ax-page'
 import {state} from "/system/core.mjs"
 import api from "/system/api.mjs"
 import "/components/field-edit.mjs"
+import MenuFunction from "../e/class/MenuFunction.mjs";
+import {load} from "/e/class/Metadata.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -74,30 +76,28 @@ class Element extends HTMLElement {
     //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');
     
     let ps = state().path.split("/");
-    let formIdx = ps.indexOf("form")
+    let miIdx = ps.indexOf("mi")
     let classIdx = ps.indexOf("class")
     let tabIdx = ps.indexOf("table")
-    if(formIdx >= 0)
-      this.loadForm(ps[formIdx+1])
+    if(miIdx >= 0)
+      this.loadMenuItem(ps[miIdx+1])
     else if(classIdx >= 0)
       this.loadClass(ps[classIdx+1])
     else if(tabIdx >= 0)
       this.loadTable(ps[tabIdx+1])
   }
 
-  async loadBasic(){
-    this.data = {
-      elements: await api.get("meta")
-    }
-  }
+  async loadMenuItem(itemName){
+    await load();
 
-  async loadForm(formName){
-    await this.loadBasic();
+    /*
+    let miInfo = this.data.elements.find(i => i.type == "menuitemdisplay" && i.name == itemName)
+    let miData = await api.get("meta/" + miInfo.id)
+    console.log(miData)
+    //this.shadowRoot.getElementById("caption").innerText = formData.metadata.Design.Caption || formName
+    */
 
-    let formInfo = this.data.elements.find(i => i.type == "form" && i.name == formName)
-    let formData = await api.get("meta/" + formInfo.id)
-    
-    this.shadowRoot.getElementById("caption").innerText = formData.metadata.Design.Caption || formName
+    new MenuFunction(itemName).run();
   }
 
   loadClass(className){
