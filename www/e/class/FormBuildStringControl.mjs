@@ -1,5 +1,7 @@
-export default class FormBuildStringControl{
+import FormStringControl from "./FormStringControl.mjs";
+
+export default class FormBuildStringControl extends FormStringControl{
   constructor(name){
-    this.name = name;
+    super(name)
   }
 }

@@ -1,9 +1,6 @@
-import FormBuildDesign from "./FormBuildDesign.mjs";
-
-export default class Form{
-  addDesign(name){
-    this.design = new FormBuildDesign(name)
-    return this.design
+export default class FormStringControl{
+  constructor(name){
+    this.name = name;
   }
 }
 
@@ -63,4 +60,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("Form", Element);
+window.customElements.define("FormStringControl", Element);

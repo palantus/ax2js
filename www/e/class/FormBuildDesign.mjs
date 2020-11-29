@@ -1,18 +1,10 @@
 import FormControlType from "../enum/FormControlType.mjs";
-import FormComboBoxControl from "./FormComboBoxControl.mjs"
+import FormBuildComboBoxControl from "./FormBuildComboBoxControl.mjs"
 import FormBuildStringControl from "./FormBuildStringControl.mjs";
+import FormDesign from "./FormDesign.mjs";
 
-export default class FormBuildDesign{
+export default class FormBuildDesign extends FormDesign{
   constructor(name){
-    this.name = name;
-  }
-
-  addControl(type, name){
-    switch(type){
-      case FormControlType.Enum:
-        return new FormComboBoxControl(name)
-      case FormControlType.String:
-        return new FormBuildStringControl(name)
-    }
+    super(name)
   }
 }

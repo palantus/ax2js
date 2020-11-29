@@ -1,12 +1,17 @@
-import FormBuildDesign from "./FormBuildDesign.mjs";
+export default class FormDesign{
+  constructor(name){
+    this.name = name;
+  }
 
-export default class Form{
-  addDesign(name){
-    this.design = new FormBuildDesign(name)
-    return this.design
+  addControl(type, name){
+    switch(type){
+      case FormControlType.Enum:
+        return new FormBuildComboBoxControl(name)
+      case FormControlType.String:
+        return new FormBuildStringControl(name)
+    }
   }
 }
-
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
@@ -63,4 +68,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("Form", Element);
+window.customElements.define("FormDesign", Element);
