@@ -1,50 +1,49 @@
+import FormControlType from "../enum/FormControlType.mjs"
+import FormBuildComboBoxControl from "./FormBuildComboBoxControl.mjs"
+import FormBuildStringControl from "./FormBuildStringControl.mjs"
+
 export default class FormDesign{
   constructor(name){
     this.name = name;
+
+    this.element = document.createElement("ax-formdesign")
+  }
+
+  init(){
+    this.element.shadowRoot.getElementById("title").innerText = this.form().metadata.metadata.Design.Caption
+  }
+
+  form(form){
+    if(form)
+      this._form = form;
+    return this._form;
   }
 
   addControl(type, name){
+    let newControl;
     switch(type){
-      case FormControlType.Enum:
-        return new FormBuildComboBoxControl(name)
+      case FormControlType.ComboBox:
+        newControl = new FormBuildComboBoxControl(name)
+        break;
       case FormControlType.String:
-        return new FormBuildStringControl(name)
+        newControl = new FormBuildStringControl(name)
+        break;
     }
+
+    if(!newControl)
+      throw "Unknown control type in FormDesign"
+    
+    newControl.design(this)
+    this.element.append(newControl.element);
+    return newControl;
   }
 }
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    label:not(.checkbox):after {
-      content: ":"; 
-    }
-
-    .value{
-        display: inline-block;
-        min-height:15px;
-        min-width: 30px;
-    }
-
-    .field{
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-
-    .value.right{
-        /*text-align: right;
-        position: absolute;
-        right: 0px;*/
-    }
-    label{
-      width: 100px;
-      display: inline-block;
-      vertical-align: top;
-    }
   </style>
-  <div class="field">
-      <label for="val"></label>
-      <span name="val" class="value right"><slot/></span>
-  </div>
+  <h2 id="title"></h2>
+  <slot/>
 `;
 
 class Element extends HTMLElement {
@@ -53,12 +52,6 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.shadowRoot.querySelector('label').innerText = this.getAttribute("label")
-    this.style.display = "block"
-
-    if(this.hasAttribute("right"))
-      this.shadowRoot.querySelectorAll('span').forEach(e => e.classList.add("right"))
-
   }
 
   connectedCallback() {
@@ -68,4 +61,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("FormDesign", Element);
+window.customElements.define("ax-formdesign", Element);

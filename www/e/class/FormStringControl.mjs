@@ -1,5 +1,8 @@
-export default class FormStringControl{
+import FormControl from "./FormControl.mjs";
+
+export default class FormStringControl extends FormControl{
   constructor(name){
+    super(name);
     this.name = name;
   }
 }
@@ -60,4 +63,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("FormStringControl", Element);
+window.customElements.define("ax-formstringcontrol", Element);

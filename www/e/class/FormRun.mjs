@@ -1,27 +1,36 @@
-class FormRun{
+import {pageElement} from "/system/core.mjs"
+import "./Form.mjs"
+import Form from "./Form.mjs";
+import FormControlType from "../enum/FormControlType.mjs"
+import {enumNum} from "./Global.mjs"
+
+export default class FormRun{
   constructor(args){
     this.args = args
   }
 
-  init(){
+  async init(){
+    let form = new Form(this.args.name());
+    let formBuildDesign = await form.addDesign('design');
+    let comboBox = await formBuildDesign.addControl(FormControlType.ComboBox,'Enum');
+    comboBox.enumType(enumNum("NKDept"));
 
-   this.form = new Form();
-   let formBuildDesign = form.addDesign('design');
-   let comboBox = formBuildDesign.addControl(FormControlType.ComboBox,'Enum');
-   comboBox.enumType(enumNum(NKDept));
+    this._form = form;
   }
 
-  get form(){
-    return this.form
+  form(){
+    return this._form
   }
 
-  run(){
-    alert("Run: " + this.args.name())
+  async run(){
+    await this.init()
+    //alert("Run: " + this.args.name())
+
+    pageElement().innerHTML = '';
+    pageElement().append(this.form().element);
   }
 
-  wait(){
-    console.log("stub")
+  async wait(){
+    console.log("wait stub")
   }
 }
-
-export default FormRun

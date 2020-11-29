@@ -60,8 +60,7 @@ template.innerHTML = `
     <div id="container">
 
     
-	  <h2 id="caption">
-    </h2>
+	  <slot/>
   </div>
 
 `;

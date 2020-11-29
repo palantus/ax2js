@@ -139,4 +139,5 @@ export function state(){return axm.state}
 export function projects(){return axm.projects}
 export function changeProject(project){return axm.changeProject(project)}
 export function isMobile(){return axm.isMobile()}
+export function pageElement(){return axm.pages[axm.state.path]}
 export {axm}

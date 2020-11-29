@@ -1,8 +1,23 @@
 import FormBuildDesign from "./FormBuildDesign.mjs";
+import {getElementByType} from "./Metadata.mjs";
 
 export default class Form{
-  addDesign(name){
+  constructor(name){
+    this.name = name;
+    this.metadata = getElementByType("form", name)
+    this.element = document.createElement("ax-form")
+  }
+
+  async addDesign(name){
+    //this.element.shadowRoot.getElementById("title").innerText = (await this.metadata).metadata.Design.Caption
+
+    this.metadata = await this.metadata;
+
     this.design = new FormBuildDesign(name)
+    this.design.form(this)
+    await this.design.init();
+
+    this.element.append(this.design.element)
     return this.design
   }
 }
@@ -10,36 +25,9 @@ export default class Form{
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    label:not(.checkbox):after {
-      content: ":"; 
-    }
-
-    .value{
-        display: inline-block;
-        min-height:15px;
-        min-width: 30px;
-    }
-
-    .field{
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-
-    .value.right{
-        /*text-align: right;
-        position: absolute;
-        right: 0px;*/
-    }
-    label{
-      width: 100px;
-      display: inline-block;
-      vertical-align: top;
-    }
   </style>
-  <div class="field">
-      <label for="val"></label>
-      <span name="val" class="value right"><slot/></span>
-  </div>
+  
+  <slot/>
 `;
 
 class Element extends HTMLElement {
@@ -48,12 +36,12 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.shadowRoot.querySelector('label').innerText = this.getAttribute("label")
+    /*this.shadowRoot.querySelector('label').innerText = this.getAttribute("label")
     this.style.display = "block"
 
     if(this.hasAttribute("right"))
       this.shadowRoot.querySelectorAll('span').forEach(e => e.classList.add("right"))
-
+    */
   }
 
   connectedCallback() {
@@ -63,4 +51,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("Form", Element);
+window.customElements.define("ax-form", Element);
