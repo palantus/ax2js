@@ -1,41 +1,13 @@
 import FormControlType from "../enum/FormControlType.mjs"
 import FormBuildComboBoxControl from "./FormBuildComboBoxControl.mjs"
 import FormBuildStringControl from "./FormBuildStringControl.mjs"
+import FormGroup from "./FormGroup.mjs"
 
-export default class FormDesign{
-  constructor(name){
-    this.name = name;
-
-    this.element = document.createElement("ax-formdesign")
-  }
+export default class FormDesign extends FormGroup{
 
   init(){
+    this.element = document.createElement("ax-formdesign")
     this.element.shadowRoot.getElementById("title").innerText = this.form().metadata.metadata.Design.Caption
-  }
-
-  form(form){
-    if(form)
-      this._form = form;
-    return this._form;
-  }
-
-  addControl(type, name){
-    let newControl;
-    switch(type){
-      case FormControlType.ComboBox:
-        newControl = new FormBuildComboBoxControl(name)
-        break;
-      case FormControlType.String:
-        newControl = new FormBuildStringControl(name)
-        break;
-    }
-
-    if(!newControl)
-      throw "Unknown control type in FormDesign"
-    
-    newControl.design(this)
-    this.element.append(newControl.element);
-    return newControl;
   }
 }
 const template = document.createElement('template');

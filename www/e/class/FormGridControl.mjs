@@ -7,44 +7,24 @@ export default class FormStringControl extends FormControl{
   }
 
   async init(){
-    this.element = document.createElement("ax-formstringcontrol");
-    this.element.setAttribute("label", this.name);
+    this.element = document.createElement("ax-formgridcontrol");
   }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    label:not(.checkbox):after {
-      content: ":"; 
-    }
-
-    .value{
-        display: inline-block;
-        min-height:15px;
-        min-width: 30px;
-    }
-
-    .field{
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-
-    .value.right{
-        /*text-align: right;
-        position: absolute;
-        right: 0px;*/
-    }
-    label{
-      width: 100px;
-      display: inline-block;
-      vertical-align: top;
+    table{
+      width: 100%;
     }
   </style>
-  <div class="field">
-      <label for="val"></label>
-      <span name="val" class="value right"><input type="text"></input></span>
-  </div>
+  <table>
+    <thead>
+      <tr>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
 `;
 
 class Element extends HTMLElement {
@@ -68,4 +48,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formstringcontrol", Element);
+window.customElements.define("ax-formgridcontrol", Element);

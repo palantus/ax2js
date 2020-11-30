@@ -1,4 +1,12 @@
 export default class FormControl{
+  constructor(name){
+    this.name = name;
+  }
+
+  async init(){
+    
+  }
+
   design(design){
     if(design){
       this._design = design;

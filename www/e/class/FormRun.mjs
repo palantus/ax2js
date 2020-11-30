@@ -15,6 +15,10 @@ export default class FormRun{
     let comboBox = await formBuildDesign.addControl(FormControlType.ComboBox,'Enum');
     comboBox.enumType(enumNum("NKDept"));
 
+    let group = await formBuildDesign.addControl(FormControlType.Group, "myGroup")
+    await group.addControl(FormControlType.ComboBox, "combo2")
+    await group.addControl(FormControlType.String, "string1")
+
     this._form = form;
   }
 
