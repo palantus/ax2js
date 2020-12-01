@@ -4,6 +4,8 @@ import {state, projects} from "../system/core.mjs"
 import {on, off, fire} from "../system/events.mjs"
 import { changeProject } from "../system/core.mjs";
 import "/components/notification.mjs";
+import LD2Reader from "../system/ld2reader.mjs"
+import {setReader} from "../system/data.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -32,11 +34,12 @@ template.innerHTML = `
     img.noti:hover{
         filter: invert(80%);
     }
-    select{
+    #fileinput{
       position: fixed;
       right: 83px;
-      top: 7px;
-      width: 75px;
+      top: 5px;
+      color: white;
+      /*width: 75px;*/
     }
     
     #log{
@@ -95,7 +98,7 @@ template.innerHTML = `
 
   <div id="container">
     <span id="log" class="hidden"></span>
-    <select id="project" title="Project">
+    <input type="file" id="fileinput" />
     </select>
     <img class="noti" id="noti-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
     <img class="profile" src="/img/profile.png" alt="Profile" title="Profile"/>
@@ -116,30 +119,55 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     
     this.clearCurLogItem = this.clearCurLogItem.bind(this); //Make sure "this" in that method refers to this
-    
-    let sel = this.shadowRoot.getElementById("project")
-    projects().forEach(p => {
-      let opt = document.createElement("option")
-      opt.setAttribute("value", p.domain)
-      opt.innerText = p.name
-      sel.appendChild(opt)
-    })
+    this.readSingleFile = this.readSingleFile.bind(this); //Make sure "this" in that method refers to this
 
     this.shadowRoot.getElementById("noti-toggle").addEventListener("click", () => {
       this.shadowRoot.getElementById("notifications").classList.toggle("shown")
     })
+
+    this.shadowRoot.getElementById('fileinput').addEventListener('change', this.readSingleFile, false);
+  }
+
+  readSingleFile(evt) {
+    //Retrieve the first (and only!) File from the FileList object
+    var f = evt.target.files[0];
+  
+    if (f) {
+      let ext = f.name.substring(f.name.lastIndexOf('.'))
+  
+      let r = new FileReader();
+      r.onload = (e) => this.onFile(e, f.name, ext);
+  
+      switch(ext.toLowerCase()){
+        case ".ld2":
+            r.readAsArrayBuffer(f);
+            break;
+        default:
+          alert(`Unknown file extension ${ext}`)
+          return;
+      }
+    } else {
+      alert("Failed to load file");
+    }
+  }
+
+  async onFile(e, filename, ext){
+    let buffer = e.target.result;
+    let reader;
+    switch(ext.toLowerCase()){
+      case ".ld2":
+          reader = new LD2Reader(buffer);
+          break;
+      default:
+        alert(`Unknown file extension ${ext}`)
+        return;
+    }
+  
+    await reader.read();
+    setReader(reader)
   }
 
   connectedCallback() {
-
-    this.shadowRoot.getElementById("project").addEventListener("change", () => {
-      changeProject(this.shadowRoot.getElementById("project").value)
-    })
-
-    this.shadowRoot.getElementById("project").value = state().project
-    on("changed-project", "topbar", () => {
-      this.shadowRoot.getElementById("project").value = state().project
-    })
     on("log", "topbar", (message) => {
       clearTimeout(this.logTimeout)
       this.shadowRoot.getElementById("log").classList.remove("hidden")
@@ -156,7 +184,6 @@ class Element extends HTMLElement {
   }
 
   disconnectedCallback() {
-    off("changed-project", "topbar")
     off("log", "topbar")
   }
 }
