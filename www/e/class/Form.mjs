@@ -1,11 +1,13 @@
 import FormBuildDesign from "./FormBuildDesign.mjs";
 import {getElementByType} from "./Metadata.mjs";
+import FormDataSource from "./FormDataSource.mjs"
 
 export default class Form{
   constructor(name){
     this.name = name;
     this.metadata = getElementByType("form", name)
     this.element = document.createElement("ax-form")
+    this.dataSources = []
   }
 
   async addDesign(name){
@@ -19,6 +21,17 @@ export default class Form{
 
     this.element.append(this.design.element)
     return this.design
+  }
+
+  async addDataSource(name){
+    let fds = new FormDataSource();
+    fds.name(name)
+    this.dataSources.push(fds)
+    return fds;
+  }
+
+  dataSource(idxOrName){
+    throw "Form.datasource stub"
   }
 }
 

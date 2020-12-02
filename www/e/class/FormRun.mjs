@@ -31,6 +31,10 @@ export default class FormRun{
     return this._form
   }
 
+  dataSource(idxOrName){
+    return this._form.dataSource(idxOrName)
+  }
+
   async run(){
     await this.init()
     //alert("Run: " + this.args.name())
@@ -41,5 +45,13 @@ export default class FormRun{
 
   async wait(){
     console.log("wait stub")
+  }
+
+  detach(){
+
+  }
+
+  close(){
+    
   }
 }

@@ -17,6 +17,14 @@ class Args{
     this.nameVal = name;
     return name;
   }
+
+  caller(){
+
+  }
+
+  parmObject(){
+    
+  }
 }
 
 export default Args
