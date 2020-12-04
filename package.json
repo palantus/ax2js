@@ -15,11 +15,5 @@
     "fast-xml-parser": "^3.17.4",
     "jison": "*",
     "js-beautify": "^1.13.0"
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-0"
-    ]
   }
 }
