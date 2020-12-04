@@ -53,6 +53,24 @@ class Service{
 
     return menu;
   }
+
+  async getLabels(){
+    
+    return Element.search("tag:element prop:type=labelfile prop:language=da")
+                            .map(async l => {console.log(l.blob);await this.streamToString(l.blob)})
+                            .reduce((obj, item) => {Object.assign(obj, item)},{});    
+  }
+
+  async streamToString (stream) {
+    const chunks = []
+    return new Promise((resolve, reject) => {
+      stream.on('data', chunk => chunks.push(chunk))
+      stream.on('error', reject)
+      stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')))
+    })
+  }
 }
+
+
 
 module.exports = new Service()

@@ -1,10 +1,25 @@
-const { readdirSync, readFileSync} = require('fs')
+const { readdirSync, readFileSync, unlinkSync} = require('fs')
 const parser = require('fast-xml-parser');
 let Entity = require("entitystorage")
 let Element = require("./models/element.js");
 
 class D365{
+
   async readFolder(path){
+    try{unlinkSync("data/props.data")}catch(err){}
+    try{unlinkSync("data/tags.data")}catch(err){}
+    try{unlinkSync("data/blob_1.data")}catch(err){}
+
+    let models = readdirSync(path, { withFileTypes: true })
+                        .filter(dirent => dirent.isDirectory())
+                        .map(dirent => dirent.name);
+
+    for(let m of models){
+      this.readModel(`${path}/${m}/${m}`)
+    }                        
+  }
+
+  async readModel(path){
     this.elements = []
     this.path = path
     let typeFolders = readdirSync(path, { withFileTypes: true })
@@ -15,6 +30,7 @@ class D365{
       this.readType(`${path}/${f}`)
 
     console.log("Finished reading " + path)
+    return this
   }
 
   readType(folder){
@@ -37,6 +53,16 @@ class D365{
                   .prop("name", element.name)
                   .prop("type", element.type)
                   .tag("element");
+
+        switch(element.type){
+          case "labelfile":
+              let lang = element.metadata.Name.substr(element.metadata.Name.indexOf("_")+1)
+              let labels = readFileSync(`${folder}/LabelResources/${lang}/${element.metadata.LabelContentFileName}`, {encoding:'utf8', flag:'r'}); 
+              let labelsObj = labels.split("\n").filter(l => l.startsWith("@")).map(l => {let s = l.split('='); return {id: s[0], text: s[1]}})
+              e.prop("language", lang)
+              e.setBlob(labels)
+              break;
+        }
       }
 
       e.prop("metadata", element.metadata);
@@ -48,6 +74,6 @@ class D365{
 let run = async () => {
   await Entity.init("./data");
   Entity.search("tag:element").delete();
-  new D365().readFolder("input/models/PetStore")
+  new D365().readFolder("input/models")
 }
 run();

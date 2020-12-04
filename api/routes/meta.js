@@ -15,6 +15,10 @@ module.exports = (app) => {
     res.json(service.genMenu())
   });
 
+  route.get('/labels', async function (req, res, next) {
+    res.json(await service.getLabels())
+  });
+
   route.get('/:id', function (req, res, next) {
     res.json(Element.lookup(req.params.id).toObj())
   });
