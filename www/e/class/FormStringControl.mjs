@@ -7,8 +7,8 @@ export default class FormStringControl extends FormControl{
   }
 
   async init(){
-    this.element = document.createElement("ax-formstringcontrol");
-    this.element.setAttribute("label", this.name);
+    this.siteElement = document.createElement("ax-formstringcontrol");
+    this.siteElement.setAttribute("label", this.name);
   }
 }
 

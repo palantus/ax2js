@@ -1,13 +1,18 @@
 import FormControlType from "../enum/FormControlType.mjs"
 import FormBuildComboBoxControl from "./FormBuildComboBoxControl.mjs"
 import FormBuildStringControl from "./FormBuildStringControl.mjs"
-import FormGroup from "./FormGroup.mjs"
+import FormControlCollection from "./FormControlCollection.mjs"
 
-export default class FormDesign extends FormGroup{
+export default class FormDesign extends FormControlCollection{
 
   init(){
-    this.element = document.createElement("ax-formdesign")
-    this.element.shadowRoot.getElementById("title").innerText = this.form().metadata.metadata.Design.Caption
+    this.design(this)
+    this.siteElement = document.createElement("ax-formdesign")
+  }
+
+  caption(text = this.pCaption || ""){
+    this.siteElement.shadowRoot.getElementById("title").innerText = text
+    return this.pCaption = text
   }
 }
 const template = document.createElement('template');

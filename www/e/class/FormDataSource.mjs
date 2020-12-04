@@ -1,8 +1,23 @@
+import {tableNum} from "./Global.mjs"
+
 export default class FormDataSource{
 
   constructor(){
     this.pCursor = null;
     this.pName = "";
+  }
+
+  async init(){ //Called at runtime
+    // Load fields?
+  }
+
+  initFromMeta(meta){ // Called when added to form
+    this.name(meta.Name)
+    this.table(tableNum(meta.Table))
+  }
+
+  table(tabId = this.pTabId){
+    return this.pTabId = tabId
   }
 
   query(query){

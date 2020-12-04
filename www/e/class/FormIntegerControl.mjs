@@ -1,11 +1,11 @@
 import FormControl from "./FormControl.mjs";
 
-export default class FormComboBoxControl extends FormControl{
+export default class FormIntegerControl extends FormControl{
   constructor(name){
     super(name);
     this.name = name;
 
-    this.siteElement = document.createElement("ax-formcomboboxcontrol")
+    this.siteElement = document.createElement("ax-formintegercontrol")
   }
 
   enumType(typeNum){
@@ -17,7 +17,7 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
   </style>
-  Combobox
+  Integer
 `;
 
 class Element extends HTMLElement {
@@ -36,4 +36,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formcomboboxcontrol", Element);
+window.customElements.define("ax-formintegercontrol", Element);

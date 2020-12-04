@@ -1,15 +1,11 @@
 import FormControl from "./FormControl.mjs";
 
-export default class FormComboBoxControl extends FormControl{
+export default class FormCheckBoxControl extends FormControl{
   constructor(name){
     super(name);
     this.name = name;
 
-    this.siteElement = document.createElement("ax-formcomboboxcontrol")
-  }
-
-  enumType(typeNum){
-    
+    this.siteElement = document.createElement("ax-formcheckboxcontrol")
   }
 }
 
@@ -17,7 +13,7 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
   </style>
-  Combobox
+  Checkbox
 `;
 
 class Element extends HTMLElement {
@@ -36,4 +32,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formcomboboxcontrol", Element);
+window.customElements.define("ax-formcheckboxcontrol", Element);

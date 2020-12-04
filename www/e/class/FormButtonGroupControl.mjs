@@ -1,23 +1,26 @@
-import FormControl from "./FormControl.mjs";
+import FormControlCollection from "./FormControlCollection.mjs"
 
-export default class FormComboBoxControl extends FormControl{
+export default class FormButtonGroupControl extends FormControlCollection{
   constructor(name){
     super(name);
     this.name = name;
 
-    this.siteElement = document.createElement("ax-formcomboboxcontrol")
-  }
-
-  enumType(typeNum){
-    
+    this.siteElement = document.createElement("ax-formbuttongroupcontrol")
   }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+    div{
+      border: 1px solid black;
+      padding: 5px;
+    }
   </style>
-  Combobox
+  <div>
+    ButtonGroup
+    <slot/>
+  </div>
 `;
 
 class Element extends HTMLElement {
@@ -36,4 +39,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formcomboboxcontrol", Element);
+window.customElements.define("ax-formbuttongroupcontrol", Element);

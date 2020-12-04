@@ -1,9 +1,10 @@
 import {pageElement} from "/system/core.mjs"
 import "./Form.mjs"
 import Form from "./Form.mjs";
-import FormControlType from "../enum/FormControlType.mjs"
 import {enumNum} from "./Global.mjs"
 import {dataReady, getTableData} from "../../system/data.mjs"
+import genForm from "./Form_BuildFromMeta.mjs"
+import {getElementByType} from "./Metadata.mjs";
 
 export default class FormRun{
   constructor(args){
@@ -11,6 +12,10 @@ export default class FormRun{
   }
 
   async init(){
+    this.metadata = await getElementByType("form", this.args.name())
+    let form = await genForm(this.metadata)
+
+    /*
     let form = new Form(this.args.name());
     let formBuildDesign = await form.addDesign('design');
     let comboBox = await formBuildDesign.addControl(FormControlType.ComboBox,'Enum');
@@ -19,6 +24,7 @@ export default class FormRun{
     let group = await formBuildDesign.addControl(FormControlType.Group, "myGroup")
     await group.addControl(FormControlType.ComboBox, "combo2")
     await group.addControl(FormControlType.String, "string1")
+    */
 
     this._form = form;
 
@@ -40,7 +46,7 @@ export default class FormRun{
     //alert("Run: " + this.args.name())
 
     pageElement().innerHTML = '';
-    pageElement().append(this.form().element);
+    pageElement().append(this.form().siteElement);
   }
 
   async wait(){

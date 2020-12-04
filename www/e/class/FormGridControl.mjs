@@ -1,13 +1,8 @@
-import FormControl from "./FormControl.mjs";
+import FormControlCollection from "./FormControlCollection.mjs";
 
-export default class FormStringControl extends FormControl{
-  constructor(name){
-    super(name);
-    this.name = name;
-  }
-
+export default class FormGridControl extends FormControlCollection{
   async init(){
-    this.element = document.createElement("ax-formgridcontrol");
+    this.siteElement = document.createElement("ax-formgridcontrol");
   }
 }
 
@@ -18,6 +13,10 @@ template.innerHTML = `
       width: 100%;
     }
   </style>
+
+  <div>
+  Grid
+  <slot/>
   <table>
     <thead>
       <tr>
@@ -25,6 +24,9 @@ template.innerHTML = `
     </thead>
     <tbody>
     </tbody>
+  </table>
+  </div>
+
 `;
 
 class Element extends HTMLElement {
@@ -37,7 +39,6 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
-    this.shadowRoot.querySelector('label').innerText = this.getAttribute("label")
     this.style.display = "block"
 
     if(this.hasAttribute("right"))

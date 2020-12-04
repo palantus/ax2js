@@ -1,25 +1,20 @@
 import FormBuildDesign from "./FormBuildDesign.mjs";
-import {getElementByType} from "./Metadata.mjs";
 import FormDataSource from "./FormDataSource.mjs"
 
 export default class Form{
   constructor(name){
     this.name = name;
-    this.metadata = getElementByType("form", name)
-    this.element = document.createElement("ax-form")
+    this.siteElement = document.createElement("ax-form")
     this.dataSources = []
   }
 
   async addDesign(name){
-    //this.element.shadowRoot.getElementById("title").innerText = (await this.metadata).metadata.Design.Caption
-
-    this.metadata = await this.metadata;
-
+    //this.siteElement.shadowRoot.getElementById("title").innerText = (await this.metadata).metadata.Design.Caption
     this.design = new FormBuildDesign(name)
     this.design.form(this)
     await this.design.init();
 
-    this.element.append(this.design.element)
+    this.siteElement.append(this.design.siteElement)
     return this.design
   }
 
