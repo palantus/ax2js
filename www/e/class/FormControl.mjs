@@ -23,7 +23,10 @@ export default class FormControl{
   }
 
   initFromMeta(meta){
-    
+    this.properties = {}
+    for(let p in meta)
+      if(typeof meta[p] === "string")
+        this.properties[p] = meta[p]
   }
 
   onActiveRecord(){
@@ -31,6 +34,5 @@ export default class FormControl{
   }
 
   onNewData(data){
-
   }
 }

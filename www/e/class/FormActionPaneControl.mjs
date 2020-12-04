@@ -15,6 +15,7 @@ template.innerHTML = `
   div{
     border: 1px solid black;
     padding: 5px;
+    margin-bottom: 10px;
   }
   </style>
   <div>

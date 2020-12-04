@@ -10,6 +10,10 @@ export default class FormStringControl extends FormControl{
     this.siteElement = document.createElement("ax-formstringcontrol");
     this.siteElement.setAttribute("label", this.name);
   }
+
+  label(label = this.pLabel){
+    return (this.pLabel = label) || "N/A"
+  }
 }
 
 const template = document.createElement('template');

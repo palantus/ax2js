@@ -11,6 +11,10 @@ export default class FormIntegerControl extends FormControl{
   enumType(typeNum){
     
   }
+
+  label(label = this.pLabel){
+    return (this.pLabel = label) || "N/A"
+  }
 }
 
 const template = document.createElement('template');

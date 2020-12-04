@@ -47,9 +47,9 @@ export default class FormDataSource{
     return this.pName;
   }
 
-  executeQuery(){
+  async executeQuery(){
     this.pQueryRun = new QueryRun(this.pQuery)
-    this.pQueryRun.next()
+    await this.pQueryRun.next();
 
     this.form().fire("fds-data-available", this.pQueryRun.data)
   }
@@ -59,6 +59,6 @@ export default class FormDataSource{
   }
 
   form(form = this.pForm){
-    return this.pform = form;
+    return this.pForm = form;
   }
 }

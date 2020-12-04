@@ -10,11 +10,11 @@ export default class QueryRun{
     return this.pQuery = q;
   }
 
-  fetchData(){
+  async fetchData(){
     if(this.data) return;
     let ds = this.pQuery.dataSourceNo(1)
     let tabName = tableId2Name(ds.table())
-    let data = getTableData(tabName)
+    let data = await getTableData(tabName)
     
     //Ranges, sorting etc.
 
@@ -25,8 +25,8 @@ export default class QueryRun{
 
   }
 
-  next(){
-    this.fetchData()
+  async next(){
+    await this.fetchData()
 
     this.curIdx = (this.curIdx || -1) + 1
     return this.curIdx < this.data.length - 1

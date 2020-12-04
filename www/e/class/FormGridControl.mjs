@@ -2,11 +2,22 @@ import FormControlCollection from "./FormControlCollection.mjs";
 
 export default class FormGridControl extends FormControlCollection{
   async init(){
+    super.init()
     this.siteElement = document.createElement("ax-formgridcontrol");
   }
 
   onNewData(data){
     this.siteElement.data = data
+  }
+
+  addControl(...args){
+    super.addControl(...args)
+    /*
+    let head = []
+    for(let ctl of this.controls)
+      head.push({title: ctl.label(), field: ctl.properties.DataField})
+    this.siteElement.head = head
+    */
   }
 }
 
@@ -15,20 +26,32 @@ template.innerHTML = `
   <style>
     table{
       width: 100%;
+      border: 1px solid black;
+      margin-top: 5px;
+    }
+    td{
+      border-bottom: 1px dotted gray;
+    }
+    th{
+      text-align: left;
+      border-bottom: 1px solid black;
+    }
+    #controls{
+      display: none;
     }
   </style>
 
   <div>
-  Grid
-  <slot/>
-  <table>
-    <thead>
-      <tr>
-      </tr>
-    </thead>
-    <tbody id="tdata>
-    </tbody>
-  </table>
+    <table>
+      <thead>
+        <tr></tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <div id="controls">
+      <slot/>
+    </div>
   </div>
 
 `;
@@ -42,10 +65,21 @@ class Element extends HTMLElement {
 
   }
 
-  set data(data){
-    this.data = data
+  set head(head){
+    this.gridHead = head;
+    let tHead = this.shadowRoot.querySelector("thead tr");
+    for(let h in head){
+      let th = document.createElement("th")
+      th.innerText = h.title;
+      tHead.append(th)
+    }
 
-    let t = this.shadowRoot.getElementById("tdata");
+  }
+
+  set data(data){
+    this.gridData = data
+
+    let t = this.shadowRoot.querySelector("tbody");
     for(let d of data){
       let row = document.createElement("tr")
       for(let f in d){

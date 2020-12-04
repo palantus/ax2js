@@ -18,7 +18,6 @@ template.innerHTML = `
     }
   </style>
   <div>
-    ButtonGroup
     <slot/>
   </div>
 `;
