@@ -1,7 +1,7 @@
 
 import api from "/system/api.mjs"
 
-let elements = []
+export let elements = []
 
 export async function load() {
   if(elements.length < 1)

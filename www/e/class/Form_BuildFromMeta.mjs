@@ -7,7 +7,7 @@ export default async function build(meta){
   let dssMeta = [].concat(meta.metadata.DataSources)
 
   for(let dsMeta of dssMeta){
-    let fds = form.addDataSource(dsMeta.Name)
+    let fds = await form.addDataSource(dsMeta.Name)
     fds.initFromMeta(dsMeta)
   }
 
