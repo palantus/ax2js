@@ -1,7 +1,7 @@
 const { readdirSync, readFileSync} = require('fs')
 const parser = require('fast-xml-parser');
 let Entity = require("entitystorage")
-let Element = require("./server/element.js");
+let Element = require("./models/element.js");
 
 class D365{
   async readFolder(path){
