@@ -60,7 +60,7 @@ class D365{
               let labels = readFileSync(`${folder}/LabelResources/${lang}/${element.metadata.LabelContentFileName}`, {encoding:'utf8', flag:'r'}); 
               let labelsObj = labels.split("\n").filter(l => l.startsWith("@")).map(l => {let s = l.split('='); return {id: s[0], text: s[1]}})
               e.prop("language", lang)
-              e.setBlob(labels)
+              e.setBlob(JSON.stringify(labelsObj))
               break;
         }
       }

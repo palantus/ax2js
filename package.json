@@ -12,7 +12,7 @@
     "cors": "^2.8.5",
     "entitystorage": "^1.0.42",
     "express": "^4.14.0",
-    "fast-xml-parser": "^3.17.4",
+    "fast-xml-parser": "^3.17.5",
     "jison": "*",
     "js-beautify": "^1.13.0"
   }
