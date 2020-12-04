@@ -6,6 +6,7 @@ export default class Form{
     this.name = name;
     this.siteElement = document.createElement("ax-form")
     this.dataSources = []
+    this.eventHandlers = {}
   }
 
   async addDesign(name){
@@ -21,12 +22,34 @@ export default class Form{
   async addDataSource(name){
     let fds = new FormDataSource();
     fds.name(name)
+    fds.form(this)
     this.dataSources.push(fds)
     return fds;
   }
 
   dataSource(idxOrName){
     throw "Form.datasource stub"
+  }
+
+  on(eventName, id, fn){
+    if(this.eventHandlers[eventName] === undefined)
+      this.eventHandlers[eventName] = []
+
+    this.eventHandlers[eventName].push({fn, id})
+  }
+
+  off(eventName, id){
+    if(this.eventHandlers[eventName] === undefined)
+      return;
+
+    this.eventHandlers[eventName] = handlers[eventName].filter(h => h.id != id)
+  }
+
+  fire(eventName, data){
+    if(this.eventHandlers[eventName] === undefined)
+      return;
+
+    this.eventHandlers[eventName].forEach(h => h.fn(data))
   }
 }
 

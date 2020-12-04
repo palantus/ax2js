@@ -11,3 +11,7 @@ export function enumNum(){
 export function tableNum(name){
   return elements.find(e => e.name == name)?.id
 }
+
+export function tableId2Name(tabId){
+  return elements.find(e => e.id == tabId)?.name
+}

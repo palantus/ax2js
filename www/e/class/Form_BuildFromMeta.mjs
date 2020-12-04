@@ -4,7 +4,7 @@ import FormControlType from "../enum/FormControlType.mjs"
 export default async function build(meta){
   let form = new Form(meta.name);
   
-  let dssMeta = [].concat(meta.metadata.DataSources)
+  let dssMeta = [].concat(meta.metadata.DataSources.AxFormDataSource)
 
   for(let dsMeta of dssMeta){
     let fds = await form.addDataSource(dsMeta.Name)
