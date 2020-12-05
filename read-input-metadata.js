@@ -59,6 +59,20 @@ class D365{
     return this
   }
 
+  readALDLabels(path){
+    let labelFiles = readdirSync(path, { withFileTypes: true })
+                        .filter(dirent => !dirent.isDirectory())
+                        .map(dirent => dirent.name);
+
+    for(let f of labelFiles){
+      let labels = readFileSync(`${path}/${f}`, {encoding:'utf8', flag:'r'});
+      let labelsObj = labels.split("\r\n").filter(l => l.startsWith("@")).reduce((obj, cur) => {let s = cur.split(' '); obj[s.shift()] = s.join(" "); return obj;}, {})
+      Object.assign(this.labels, labelsObj)
+
+      console.log("Finished reading label file " + f) 
+    }
+  }
+
   readType(folder){
     let files = readdirSync(folder, { withFileTypes: true })
                       .filter(dirent => !dirent.isDirectory())
@@ -129,6 +143,8 @@ class D365{
 let run = async () => {
   await Entity.init("./data");
   Entity.search("tag:element").delete();
-  new D365().readFolder("input/models")
+  let d365 = new D365();
+  d365.readALDLabels("input/labels")
+  d365.readFolder("input/models")
 }
 run();

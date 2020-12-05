@@ -9,3 +9,4 @@ server/old
 server/test
 input/models/*
 !input/models/PetStore
+input/labels/*
