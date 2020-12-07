@@ -15,19 +15,28 @@ class Service{
     }
 
     let parseMenu = curMenu => {
-      if(curMenu.Elements){
+      if(curMenu.Elements !== undefined){
         return {
           type: "submenu", 
           name: curMenu.Name, 
           label: curMenu.Label, 
-          items: Array.isArray(curMenu.Elements.AxMenuElement) ? curMenu.Elements.AxMenuElement.map(m => parseMenu(m)) : [parseMenu(curMenu.Elements.AxMenuElement)]
+          items: curMenu.Elements ? Array.isArray(curMenu.Elements.AxMenuElement) ? curMenu.Elements.AxMenuElement.filter(m => m.Name != "Workspaces").map(m => parseMenu(m)) : [parseMenu(curMenu.Elements.AxMenuElement)] : []
         }
       } else {
-        let mi = Element.lookupType("menuitemdisplay", curMenu.Name)
+        let typeName = "menuitemdisplay"
+        switch(curMenu.MenuItemType){
+          case "Action":
+            typeName = "menuitemaction";
+            break;
+          case "Output":
+            typeName = "menuitemoutput";
+            break;
+        }
+        let mi = Element.lookupType(typeName, curMenu.Name)
         return {
           type: "menuitem", 
           name: curMenu.Name, 
-          label: mi?.metadata.Label,
+          label: mi?.metadata.Label || curMenu.Name,
           object: mi?.metadata.Object
         }
       }

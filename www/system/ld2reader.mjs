@@ -42,10 +42,11 @@ export default class LD2Reader{
 
   async getRecord(tableName, idx){
     let records = await this.getRecordsInRange(tableName, idx, 1);
-    return records[0]
+    return records[0] || null
   }
 
   async getRecordsInRange(tableName, offset, num){
+    if(!this.tables[tableName]) return [];
     await this.fillTableMetadata(tableName);
     let meta = this.tables[tableName];
 
@@ -79,6 +80,7 @@ export default class LD2Reader{
   }
 
   async getAllRecords(tableName){
+    if(!this.tables[tableName]) return [];
     await this.fillTableMetadata(tableName);
     let meta = this.tables[tableName];
     return await this.getRecordsInRange(tableName, 0, meta.recordCount)
@@ -135,6 +137,9 @@ export default class LD2Reader{
   }
 
   async fillTableMetadata(tableName){
+    if(!this.tables[tableName]) 
+      return;
+
     if(this.tables[tableName].dataPosition !== undefined)
       return;
 
