@@ -41,4 +41,12 @@ export default class FormControlCollection extends FormControl{
   controlCount(){
     return this.controls.length
   }
+
+  render(){
+    super.render();
+
+    for(let ctl of this.controls){
+      ctl.render();
+    }
+  }
 }

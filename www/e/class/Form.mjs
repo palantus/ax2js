@@ -31,6 +31,10 @@ export default class Form{
     throw "Form.datasource stub"
   }
 
+  render(){
+    this.design.render()
+  }
+
   on(eventName, id, fn){
     if(this.eventHandlers[eventName] === undefined)
       this.eventHandlers[eventName] = []

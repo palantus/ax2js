@@ -9,15 +9,12 @@ export default class FormGridControl extends FormControlCollection{
   onNewData(data){
     this.siteElement.data = data
   }
-
-  addControl(...args){
-    super.addControl(...args)
-    /*
+  render(){
+    super.render();
     let head = []
     for(let ctl of this.controls)
       head.push({title: ctl.label(), field: ctl.properties.DataField})
     this.siteElement.head = head
-    */
   }
 }
 
@@ -73,7 +70,6 @@ class Element extends HTMLElement {
       th.innerText = h.title;
       tHead.append(th)
     }
-
   }
 
   set data(data){

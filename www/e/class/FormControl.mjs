@@ -35,4 +35,8 @@ export default class FormControl{
 
   onNewData(data){
   }
+
+  render(){
+    
+  }
 }

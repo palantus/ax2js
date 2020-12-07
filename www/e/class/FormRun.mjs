@@ -13,6 +13,7 @@ export default class FormRun{
   async init(){
     this.metadata = await getElementByType("form", this.args.name())
     this.pForm = await genForm(this.metadata)
+    this.pForm.render()
 
     for(let ds of this.pForm.dataSources){
       ds.init()

@@ -19,6 +19,10 @@ module.exports = (app) => {
     res.json(await service.getLabels())
   });
 
+  route.get('/:type/:name', function (req, res, next) {
+    res.json(Element.lookupType(req.params.type, req.params.name).toObj())
+  });
+
   route.get('/:id', function (req, res, next) {
     res.json(Element.lookup(req.params.id).toObj())
   });
