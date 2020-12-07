@@ -125,7 +125,24 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("notifications").classList.toggle("shown")
     })
 
-    this.shadowRoot.getElementById('fileinput').addEventListener('change', this.readSingleFile, false);
+    let fileURL = new URL(window.location.href).searchParams.get("data");
+    if(fileURL){
+      this.shadowRoot.getElementById('fileinput').style.display = "none"
+      this.loadDataFromURL(fileURL)
+    } else {
+      this.shadowRoot.getElementById('fileinput').addEventListener('change', this.readSingleFile, false);
+    }
+  }
+
+  async loadDataFromURL(url){
+    try{
+      let response = await fetch(url);
+      let data = await response.blob();
+      this.onFile({target: {result: data}}, "data.ld2", ".ld2")
+    } catch(err){
+      console.log(err)
+      alert("Could not load url. Error: " + JSON.stringify(err))
+    }
   }
 
   readSingleFile(evt) {
