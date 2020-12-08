@@ -16,7 +16,7 @@ export default class FormControlCollection extends FormControl{
     }
     let newControl;
     try{
-      newControl = new (await import(`./Form${k}Control.mjs`)).default();
+      newControl = new (await import(`./Form${k}Control.mjs`)).default(name);
 
       if(!newControl){
         console.log("Unknown control type in FormGroup/Design: " + type)

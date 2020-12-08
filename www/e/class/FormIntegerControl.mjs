@@ -1,6 +1,6 @@
-import FormControl from "./FormControl.mjs";
+import FormField from "./FormField.mjs";
 
-export default class FormIntegerControl extends FormControl{
+export default class FormIntegerControl extends FormField{
   constructor(name){
     super(name);
     this.name = name;

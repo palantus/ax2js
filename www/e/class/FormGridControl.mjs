@@ -65,7 +65,8 @@ class Element extends HTMLElement {
   set head(head){
     this.gridHead = head;
     let tHead = this.shadowRoot.querySelector("thead tr");
-    for(let h in head){
+    tHead.innerHTML = '';
+    for(let h of head){
       let th = document.createElement("th")
       th.innerText = h.title;
       tHead.append(th)
@@ -78,9 +79,9 @@ class Element extends HTMLElement {
     let t = this.shadowRoot.querySelector("tbody");
     for(let d of data){
       let row = document.createElement("tr")
-      for(let f in d){
+      for(let f of this.gridHead){
         let field = document.createElement("td");
-        field.innerText = d[f]
+        field.innerText = d[f.field]
         row.append(field)
       }
       t.append(row)

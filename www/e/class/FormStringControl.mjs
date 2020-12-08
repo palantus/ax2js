@@ -1,18 +1,9 @@
-import FormControl from "./FormControl.mjs";
+import FormField from "./FormField.mjs";
 
-export default class FormStringControl extends FormControl{
-  constructor(name){
-    super(name);
-    this.name = name;
-  }
-
+export default class FormStringControl extends FormField{
   async init(){
     this.siteElement = document.createElement("ax-formstringcontrol");
-    this.siteElement.setAttribute("label", this.name);
-  }
-
-  label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
+    this.siteElement.setAttribute("label", this.name());
   }
 }
 

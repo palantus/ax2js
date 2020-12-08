@@ -8,6 +8,7 @@ export default {
   Real: 6,
   Integer: 7,
   ComboBox: 8,
+  Date: 10,
   Grid: 12,
   ButtonGroup: 13,
   TabPage: 14,
@@ -23,5 +24,7 @@ export default {
   Int64: 31,
   DateTime: 32,
   ActionPane: 33,
-  ActionPaneTab: 34
+  ActionPaneTab: 34,
+  ReferenceGroup: 39,
+  Container: 42
 }

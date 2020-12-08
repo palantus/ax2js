@@ -8,6 +8,10 @@ export default class FormControl{
     this.form().on("fds-data-available", this.pName, this.onNewData)
   }
 
+  name(name = this.pName){
+    return this.pName = name;
+  }
+
   design(design){
     if(design){
       this._design = design;

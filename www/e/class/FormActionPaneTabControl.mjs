@@ -1,19 +1,25 @@
-import FormField from "./FormField.mjs";
+import FormControlCollection from "./FormControlCollection.mjs"
 
-export default class FormCheckBoxControl extends FormField{
+export default class FormActionPaneTabControl extends FormControlCollection{
   constructor(name){
     super(name);
     this.name = name;
 
-    this.siteElement = document.createElement("ax-formcheckboxcontrol")
+    this.siteElement = document.createElement("ax-formactionpanetabcontrol")
   }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+    div{
+      border: 1px solid black;
+      padding: 5px;
+    }
   </style>
-  Checkbox
+  <div>
+    <slot/>
+  </div>
 `;
 
 class Element extends HTMLElement {
@@ -32,4 +38,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formcheckboxcontrol", Element);
+window.customElements.define("ax-formactionpanetabcontrol", Element);

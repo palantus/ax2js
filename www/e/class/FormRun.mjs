@@ -8,6 +8,8 @@ import {getElementByType} from "./Metadata.mjs";
 export default class FormRun{
   constructor(args){
     this.args = args
+
+    this.close = this.close.bind(this)
   }
 
   async init(){
@@ -31,8 +33,17 @@ export default class FormRun{
   async run(){
     await this.init()
 
-    pageElement().innerHTML = '';
+    Array.from(pageElement().getElementsByTagName("ax-form")).forEach(e => e.style.display = "none");
     pageElement().append(this.form().siteElement);
+
+    document.addEventListener("keydown", (evt) => {
+      switch(evt.keyCode){
+        case 27: //esc
+          if(this.form().siteElement.style.display != "none" && pageElement().getElementsByTagName("ax-form").length > 1)
+            this.close();
+          break;
+      }
+    })
   }
 
   async wait(){
@@ -44,6 +55,10 @@ export default class FormRun{
   }
 
   close(){
-    
+    if(!this.form().siteElement.isConnected) return;
+    pageElement().removeChild(this.form().siteElement);
+    let elements = pageElement().getElementsByTagName("ax-form")
+    if(elements.length > 0)
+      elements[elements.length - 1].style.display = "block"
   }
 }

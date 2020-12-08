@@ -1,11 +1,19 @@
 import FormField from "./FormField.mjs";
 
-export default class FormCheckBoxControl extends FormField{
+export default class FormRealControl extends FormField{
   constructor(name){
     super(name);
     this.name = name;
 
-    this.siteElement = document.createElement("ax-formcheckboxcontrol")
+    this.siteElement = document.createElement("ax-formrealcontrol")
+  }
+
+  enumType(typeNum){
+    
+  }
+
+  label(label = this.pLabel){
+    return (this.pLabel = label) || "N/A"
   }
 }
 
@@ -13,7 +21,7 @@ const template = document.createElement('template');
 template.innerHTML = `
   <style>
   </style>
-  Checkbox
+  Real
 `;
 
 class Element extends HTMLElement {
@@ -32,4 +40,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formcheckboxcontrol", Element);
+window.customElements.define("ax-formrealcontrol", Element);

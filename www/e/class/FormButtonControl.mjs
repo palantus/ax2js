@@ -3,6 +3,9 @@ import FormControl from "./FormControl.mjs";
 export default class FormButtonControl extends FormControl{
   async init(){
     this.siteElement = document.createElement("ax-formbuttoncontrol")
+
+    this.clicked = this.clicked.bind(this);
+    this.siteElement.addEventListener("clicked", this.clicked)
   }
   
   initFromMeta(meta){
@@ -12,6 +15,10 @@ export default class FormButtonControl extends FormControl{
   text(text = this.pText){
     this.siteElement.setAttribute("label", text)
     return this.pText = text;
+  }
+
+  clicked(){
+    
   }
 }
 
@@ -26,9 +33,15 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
+    this.clicked = this.clicked.bind(this)
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
+    this.shadowRoot.getElementById("btn").addEventListener("click", this.clicked)
+  }
+
+  clicked(){
+    this.dispatchEvent(new Event("clicked"))
   }
 
   connectedCallback() {
