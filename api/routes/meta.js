@@ -21,7 +21,7 @@ export default (app) => {
   });
 
   route.get('/:type/:name', function (req, res, next) {
-    res.json(Element.lookupType(req.params.type, req.params.name).toObj())
+    res.json(Element.lookupType(req.params.type, req.params.name)?.toObj())
   });
 
   route.get('/:id', function (req, res, next) {

@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, unlinkSync} from 'fs'
 import parser from 'fast-xml-parser';
 import Entity from "entitystorage"
 import Element from "./models/element.js";
+import {convert, expandAllElements} from "./services/convert.mjs"
 
 class D365{
 
@@ -11,9 +12,6 @@ class D365{
   }
 
   async readFolder(path){
-    try{unlinkSync("data/props.data")}catch(err){}
-    try{unlinkSync("data/tags.data")}catch(err){}
-    try{unlinkSync("data/blob_1.data")}catch(err){}
 
     let models = readdirSync(path, { withFileTypes: true })
                         .filter(dirent => dirent.isDirectory())
@@ -99,7 +97,7 @@ class D365{
     for(let f of files){
       let content = readFileSync(`${folder}/${f}`, {encoding:'utf8', flag:'r'}); 
 
-      let obj = parser.parse(content);
+      let obj = parser.parse(content, {ignoreAttributes : false, ignoreNameSpace : true});
       let typeName = Object.keys(obj)[0];
       let element = {type: typeName.substr(2).toLowerCase(), name: obj[typeName].Name, metadata: obj[typeName]}
 
@@ -128,10 +126,10 @@ class D365{
               e.prop("language", lang)
               e.setBlob(JSON.stringify(labelsObj))
               break;
+          default: 
+            convert(e, element.metadata)
         }
       }
-
-      e.prop("metadata", element.metadata);
     }
   }
 
@@ -160,10 +158,18 @@ class D365{
 
 
 let run = async () => {
+  try{unlinkSync("data/props.data")}catch(err){}
+  try{unlinkSync("data/tags.data")}catch(err){}
+  try{unlinkSync("data/blob_1.data")}catch(err){}
+  try{unlinkSync("data/blob_index.data")}catch(err){}
+  try{unlinkSync("data/rels.data")}catch(err){}
+  
   await Entity.init("./data");
   Entity.search("tag:element").delete();
   let d365 = new D365();
   d365.readLabels("input/labels")
   d365.readFolder("input/models")
+
+  expandAllElements()
 }
 run();
