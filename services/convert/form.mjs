@@ -36,21 +36,7 @@ export function convertForm(form, metadata) {
 
   let dataSources = getArray(metadata.DataSources?.AxFormDataSource)
   for(let ds of dataSources){
-    let eDS = Entity.find(`tag:fds prop:name=${ds.Name}`)
-    if(!eDS){
-      eDS = new Entity().tag("fds").prop("name", ds.Name).rel(form, "element")
-      form.rel(eDS, "ds")
-    }
-
-    storeProperties(eDS, ds)
-
-    let dsFields = getArray(ds.Fields?.AxFormDataSourceField)
-    for(let field of dsFields){
-      let f = new Entity().tag("fdsfield").prop("name", field.DataField).rel(form, "element")
-      eDS.rel(f, "field")
-
-      storeProperties(f, field);
-    }
+    storeDS(form, form, ds)
   }
 
   let design = new Entity().tag("formdesign").prop("name", "Design").rel(form, "element")
@@ -76,6 +62,30 @@ export function convertForm(form, metadata) {
   }
 }
 
+
+function storeDS(form, parent, ds){
+  let eDS = Entity.find(`tag:fds element.id:${form} prop:name=${ds.Name}`)
+  if(!eDS){
+    eDS = new Entity().tag("fds").prop("name", ds.Name).rel(form, "element")
+    parent.rel(eDS, "ds")
+  }
+
+  storeProperties(eDS, ds)
+
+  let dsFields = getArray(ds.Fields?.AxFormDataSourceField)
+  for(let field of dsFields){
+    let f = new Entity().tag("fdsfield").prop("name", field.DataField).rel(form, "element")
+    eDS.rel(f, "field")
+
+    storeProperties(f, field);
+  }
+
+  let refDSs = getArray(ds.ReferencedDataSources?.AxFormReferencedDataSource)
+  for(let refDS of refDSs){
+    storeDS(form, eDS, refDS)
+  }
+}
+
 function storeControl(element, parent, metadata){
   let ctl = new Entity().tag("formcontrol").rel(element, "element")
   parent.rel(ctl, "control")
@@ -85,5 +95,24 @@ function storeControl(element, parent, metadata){
   let controls = getArray(metadata.Controls?.AxFormControl)
   for(let control of controls){
     storeControl(element, ctl, control)
+  }
+}
+
+export function expandFormControl(e){
+  if(!e.dataSource) return;
+  let ds = Entity.find(`tag:fds element.id:${e.related.element} prop:name=${e.dataSource}`)
+
+  if(e.dataField){
+
+    let fieldName = e.dataField.substr(0, (e.dataField.indexOf("[")+1 || e.dataField.length+1)-1)
+
+    let tableField = Entity.find(`tag:tablefield element.prop:name=${ds.table} prop:name=${fieldName}`)
+
+    if(!tableField){
+      console.log(`Control ${e._id}:${e.name} uses table field ${ds.table}.${e.dataField}, which doesn't exist`)
+      return;
+    }
+
+    e.rel(tableField, "tableField")
   }
 }

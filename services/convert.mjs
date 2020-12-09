@@ -1,5 +1,5 @@
 import Entity from "entitystorage"
-import {convertForm} from "./convert/form.mjs"
+import {convertForm, expandFormControl} from "./convert/form.mjs"
 import {convertEDT, expandEDT} from "./convert/edt.mjs"
 import {convertEnum} from "./convert/enum.mjs"
 import {convertTable, expandTableField} from "./convert/table.mjs"
@@ -27,4 +27,5 @@ export function convert(entity, metadata){
 export function expandAllElements(){
   Entity.search("tag:edt !prop:extends=").map(e => expandEDT(e))
   Entity.search("tag:tablefield").map(e => expandTableField(e))
+  Entity.search("tag:formcontrol").map(e => expandFormControl(e))
 }

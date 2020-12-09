@@ -29,6 +29,13 @@ export default class Element extends Entity{
           obj.parentElementId = obj.children[rel][0]._id
           delete obj.children[rel]
         } else {
+          /*
+          if(this.tags.includes("formcontrol") && rel == "tableField")
+            obj[rel] = obj.children[rel][0].toObj();
+          else if(this.tags.includes("tablefield") && rel == "type")
+            obj[rel] = obj.children[rel][0].toObj();
+          else
+          */
           obj.children[rel] = obj.children[rel].map(e => e.toObj())
         }
       }
