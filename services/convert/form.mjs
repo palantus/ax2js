@@ -7,7 +7,7 @@ export function convertForm(form, metadata) {
   let elementMethods = getArray(metadata.SourceCode?.Methods?.Method)
 
   for(let method of elementMethods){
-    form.rel(new Entity().tag("element").tag("formfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(form, "element"), "function")
+    form.rel(new Entity().tag("formfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(form, "element"), "function")
   }
 
 
