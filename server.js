@@ -1,6 +1,14 @@
-var bodyParser = require('body-parser')
+import bodyParser from 'body-parser'
+import express from'express'
+import path from'path'
+import cors from'cors'
+import Entity from'entitystorage'
+import routes from'./api/index.js'
+import http from "http"
 
-
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 var router = async function(req, res){
   var data = req.body;
@@ -46,14 +54,8 @@ var router = async function(req, res){
 
 let load = async () => {
 
-  var express = require('express')
-    , http = require('http')
-    , path = require('path');
-  let cors = require('cors');
   var app = express();
-  let Entity = require("entitystorage")
   let {uiPath, uiAPI} = await Entity.init("./data");
-  let routes = require('./api');
 
   app.enable('trust proxy');
   app.use(cors());

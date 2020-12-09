@@ -1,5 +1,5 @@
 
-let Element = require("../models/element")
+import Element from "../models/element.js"
 
 class Service{
   genMenu(){
@@ -82,11 +82,11 @@ class Service{
       */
       stream.setEncoding('utf8');
       stream.on('data', data => resolve(data))
-      stream.on('end', () => console.log("Done"))
+      stream.on('end', () => null)
     })
   }
 }
 
 
 
-module.exports = new Service()
+export default new Service()

@@ -1,5 +1,6 @@
-let Entity = require("entitystorage")
-class Element extends Entity{
+import Entity from "entitystorage"
+
+export default class Element extends Entity{
     
     initNew(type, name){
         this.type = type;
@@ -28,5 +29,3 @@ class Element extends Entity{
         }
     }
 }
-
-module.exports = Element

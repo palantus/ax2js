@@ -1,8 +1,8 @@
-let Router = require("express").Router;
-let meta = require('./routes/meta');
+import express from "express";
+import meta from './routes/meta.js';
 
-module.exports = () => {
-	const app = Router();
+export default () => {
+	const app = express.Router();
 	meta(app);
 
 	return app

@@ -1,7 +1,7 @@
-const { readdirSync, readFileSync, unlinkSync} = require('fs')
-const parser = require('fast-xml-parser');
-let Entity = require("entitystorage")
-let Element = require("./models/element.js");
+import { readdirSync, readFileSync, unlinkSync} from 'fs'
+import parser from 'fast-xml-parser';
+import Entity from "entitystorage"
+import Element from "./models/element.js";
 
 class D365{
 

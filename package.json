@@ -1,6 +1,7 @@
 {
   "name": "ax2js",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "install-windows-service": "winser -i",
     "uninstall-windows-service": "winser -r",
@@ -10,7 +11,7 @@
     "body-parser": "^1.15.2",
     "connect": "*",
     "cors": "^2.8.5",
-    "entitystorage": "^1.0.42",
+    "entitystorage": "^1.0.45",
     "express": "^4.14.0",
     "fast-xml-parser": "^3.17.5",
     "jison": "*",

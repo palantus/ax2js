@@ -1,9 +1,10 @@
-let { Router, Request, Response } = require("express")
-const route = Router();
-let Element = require("../../models/element")
-let service = require("../../services/meta")
+import express from "express"
+import Element from "../../models/element.js"
+import service from "../../services/meta.js";
 
-module.exports = (app) => {
+const route = express.Router();
+
+export default (app) => {
 
   app.use("/meta", route)
 
