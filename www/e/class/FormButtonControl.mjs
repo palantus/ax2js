@@ -9,7 +9,7 @@ export default class FormButtonControl extends FormControl{
   }
   
   initFromMeta(meta){
-    this.text(meta.Text)
+    this.text(meta.text)
   }
 
   text(text = this.pText){

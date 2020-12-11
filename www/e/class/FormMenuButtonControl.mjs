@@ -1,10 +1,10 @@
 import FormControlCollection from "./FormControlCollection.mjs"
 
-export default class FormButtonGroupControl extends FormControlCollection{
+export default class FormMenuButtonControl extends FormControlCollection{
   constructor(name){
     super(name);
 
-    this.siteElement = document.createElement("ax-formbuttongroupcontrol")
+    this.siteElement = document.createElement("ax-formmenubuttoncontrol")
   }
 }
 
@@ -37,4 +37,4 @@ class Element extends HTMLElement {
   }
 }
 
-window.customElements.define("ax-formbuttongroupcontrol", Element);
+window.customElements.define("ax-formmenubuttoncontrol", Element);

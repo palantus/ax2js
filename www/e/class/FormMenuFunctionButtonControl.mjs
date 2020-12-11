@@ -8,7 +8,8 @@ export default class FormMenuFunctionButtonControl extends FormButtonControl{
   }
   
   initFromMeta(meta){
-    this.menuItemName(meta.MenuItemName)
+    this.menuItemName(meta.menuItemName)
+    this.text(meta.children?.menuItem[0]?.label || this.menuItemName())
   }
 
   menuItemName(text = this.pMenuItemName){

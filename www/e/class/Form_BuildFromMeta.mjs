@@ -4,36 +4,30 @@ import FormControlType from "../enum/FormControlType.mjs"
 export default async function build(meta){
   let form = new Form(meta.name);
   
-  let dssMeta = [].concat(meta.metadata.DataSources.AxFormDataSource)
-
-  for(let dsMeta of dssMeta){
-    let fds = await form.addDataSource(dsMeta.Name)
+  for(let dsMeta of meta.children.ds || []){
+    let fds = await form.addDataSource(dsMeta.name)
     fds.initFromMeta(dsMeta)
   }
 
-  let designMeta = meta.metadata.Design;
+  let designMeta = meta.children.design[0];
 
   let formBuildDesign = await form.addDesign('design');
-  formBuildDesign.caption(designMeta.Caption || meta.name)
+  formBuildDesign.caption(designMeta.caption || meta.name)
 
-  if(designMeta.Controls){
-    for(let c of [].concat(designMeta.Controls.AxFormControl)){
-      await addControlToParent(formBuildDesign, c)
-    }
+  for(let c of designMeta.children.control || []){
+    await addControlToParent(formBuildDesign, c)
   }
 
   return form;
 }
 
 async function addControlToParent(parent, control){
-  if(!control.Type) return;
-  let controlObj = await parent.addControl(FormControlType[control.Type], control.Name);
+  if(!control.type) return;
+  let controlObj = await parent.addControl(FormControlType[control.type], control.name);
   if(!controlObj) return;
   controlObj.initFromMeta(control);
 
-  if(control.Controls){
-    for(let c of [].concat(control.Controls.AxFormControl)){
-      await addControlToParent(controlObj, c)
-    }
+  for(let c of control.children.control || []){
+    await addControlToParent(controlObj, c)
   }
 }

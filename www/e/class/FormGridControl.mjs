@@ -13,7 +13,7 @@ export default class FormGridControl extends FormControlCollection{
     super.render();
     let head = []
     for(let ctl of this.controls)
-      head.push({title: ctl.label(), field: ctl.properties.DataField})
+      head.push({title: ctl.label(), field: ctl.dataField()})
     this.siteElement.head = head
   }
 }

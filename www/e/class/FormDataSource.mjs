@@ -21,8 +21,8 @@ export default class FormDataSource{
   }
 
   initFromMeta(meta){ // Called when added to form
-    this.name(meta.Name)
-    this.table(tableNum(meta.Table))
+    this.name(meta.name)
+    this.table(tableNum(meta.table))
   }
 
   table(tabId = this.pTabId){

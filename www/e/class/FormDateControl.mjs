@@ -3,7 +3,6 @@ import FormField from "./FormField.mjs";
 export default class FormDateControl extends FormField{
   constructor(name){
     super(name);
-    this.name = name;
 
     this.siteElement = document.createElement("ax-formdatecontrol")
   }
@@ -13,7 +12,7 @@ export default class FormDateControl extends FormField{
   }
 
   label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
+    return (this.pLabel = label) || this.name()
   }
 }
 

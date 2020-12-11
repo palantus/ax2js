@@ -36,8 +36,8 @@ class Service{
         return {
           type: "menuitem", 
           name: curMenu.Name, 
-          label: mi?.metadata.Label || curMenu.Name,
-          object: mi?.metadata.Object
+          label: mi?.label || curMenu.Name,
+          object: mi?.object
         }
       }
     }
