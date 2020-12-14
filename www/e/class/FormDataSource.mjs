@@ -52,6 +52,7 @@ export default class FormDataSource{
     await this.pQueryRun.next();
 
     this.form().fire("fds-data-available", this.pQueryRun.data)
+    this.form().fire("fds-new-active", this.pQueryRun.data[0] || null)
   }
 
   getFirst(){

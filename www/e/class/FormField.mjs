@@ -13,4 +13,8 @@ export default class FormField extends FormControl{
   dataField(dataField = this.pDataField){
     return this.pDataField = dataField;
   }
+
+  record2StrValue(record){
+    return record?.[this.pDataField] || ""
+  }
 }

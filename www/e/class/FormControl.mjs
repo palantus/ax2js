@@ -34,7 +34,6 @@ export default class FormControl{
   }
 
   onActiveRecord(){
-
   }
 
   onNewData(data){
