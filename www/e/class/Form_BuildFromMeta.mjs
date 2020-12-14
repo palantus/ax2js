@@ -24,7 +24,10 @@ export default async function build(meta){
 async function addControlToParent(parent, control){
   if(!control.type) return;
   let controlObj = await parent.addControl(FormControlType[control.type], control.name);
-  if(!controlObj) return;
+  if(!controlObj) {
+    console.log("ERROR: control.addControl must return new instance!")
+    return;
+  }
   controlObj.initFromMeta(control);
 
   for(let c of control.children.control || []){

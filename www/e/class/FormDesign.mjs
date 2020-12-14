@@ -18,6 +18,10 @@ export default class FormDesign extends FormControlCollection{
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+    h2{
+      margin-top: 5px;
+      margin-botton: 0px;
+    }
   </style>
   <h2 id="title"></h2>
   <slot/>

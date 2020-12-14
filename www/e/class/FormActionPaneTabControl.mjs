@@ -7,17 +7,22 @@ export default class FormActionPaneTabControl extends FormControlCollection{
 
     this.siteElement = document.createElement("ax-formactionpanetabcontrol")
   }
+
+  async initFromMeta(meta){
+    await super.initFromMeta(meta)
+    this.caption(meta.caption)
+  }
+
+  caption(caption = this.pCaption){
+    return this.pCaption = caption
+  }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    div{
-      border: 1px solid black;
-      padding: 5px;
-    }
   </style>
-  <div>
+  <div id="container">
     <slot/>
   </div>
 `;
