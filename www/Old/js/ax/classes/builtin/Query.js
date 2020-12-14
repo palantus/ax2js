@@ -33,11 +33,6 @@ QueryRun.prototype.next = function(){
 		return false
 	}
 };
-QueryRun.prototype.get = function(tab){
-	var record = Type_LessorPaytypeTransaction._new();
-	record.LessorPaytypeAmount = 123;
-	return record;
-};
 
 
 var Type_Query = Query;

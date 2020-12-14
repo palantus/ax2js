@@ -19,7 +19,6 @@ template.innerHTML = `
   }
   </style>
   <div>
-    ActionPane
     <slot/>
   </div>
 `;

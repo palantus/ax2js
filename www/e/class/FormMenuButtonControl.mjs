@@ -6,6 +6,15 @@ export default class FormMenuButtonControl extends FormControlCollection{
 
     this.siteElement = document.createElement("ax-formmenubuttoncontrol")
   }
+  
+  initFromMeta(meta){
+    this.text(meta.text)
+  }
+
+  text(text = this.pText){
+    this.siteElement.setAttribute("label", text)
+    return this.pText = text;
+  }
 }
 
 const template = document.createElement('template');
@@ -17,6 +26,7 @@ template.innerHTML = `
     }
   </style>
   <div>
+    <span id="text"></span>
     <slot/>
   </div>
 `;
@@ -34,6 +44,18 @@ class Element extends HTMLElement {
   }
 
   disconnectedCallback() {
+  }
+
+  static get observedAttributes() {
+    return ['label'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'label':
+        this.shadowRoot.getElementById("text").innerText = newValue
+        break;
+    }
   }
 }
 

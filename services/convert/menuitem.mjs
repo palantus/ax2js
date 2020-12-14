@@ -16,9 +16,7 @@ export function expandMenuFunctionButton(e){
     case "Output": type = "menuitemoutput"; break;
     case "Action": type = "menuitemaction"; break;
     default:       type = "menuitemdisplay"; break;
-  }
-
-  if(e.menuItemName == "LessorEmplPaytypeGroup")
+  }up")
     console.log("her")
 
   ext = Entity.find(`tag:menuitem prop:name=${e.menuItemName} prop:type=${type}`)
