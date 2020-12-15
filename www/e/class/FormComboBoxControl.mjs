@@ -29,7 +29,7 @@ export default class FormComboBoxControl extends FormField{
     this.siteElement.setAttribute("label", this.label())
 
     if(this.enumMetadata)
-      this.siteElement.values = this.enumMetadata.children?.value.map(v => {return {value: v.name, label: v.label || ""}}) || []
+      this.siteElement.values = this.enumMetadata.children?.value?.map(v => {return {value: v.name, label: v.label || ""}}) || []
     else
       console.log(`Enum ${this.properties.enumType} not loaded for field`, this)
   }
