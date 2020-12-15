@@ -3,18 +3,14 @@ import FormButtonControl from "./FormButtonControl.mjs"
 import MenuFunction from "./MenuFunction.mjs";
 
 export default class FormMenuFunctionButtonControl extends FormButtonControl{
-  async init(...args){
-    return super.init(...args)
-  }
   
   initFromMeta(meta){
-    this.menuItemName(meta.menuItemName)
+    super.initFromMeta(meta)
     this.text(meta.children?.menuItem[0]?.label || this.menuItemName())
   }
 
-  menuItemName(text = this.pMenuItemName){
-    this.siteElement.setAttribute("label", text)
-    return this.pMenuItemName = text;
+  menuItemName(text = this.properties.menuItemName){
+    return this.properties.menuItemName = text;
   }
 
   clicked(){

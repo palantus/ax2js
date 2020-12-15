@@ -8,6 +8,11 @@ export default class FormControlCollection extends FormControl{
     this.controls = []
   }
 
+  init(){
+    super.init();
+    this.controls.forEach(c => c.init())
+  }
+
   async addControl(type, name){
     let [k] = Object.entries(FormControlType).find(([k, v]) => v == type) || [null]
     if(!k){
@@ -29,8 +34,6 @@ export default class FormControlCollection extends FormControl{
     }
     this.controls.push(newControl)
     newControl.design(this.design())
-    await newControl.init();
-    this.siteElement.append(newControl.siteElement);
     return newControl;
   }
 
@@ -45,8 +48,11 @@ export default class FormControlCollection extends FormControl{
   render(){
     super.render();
 
-    for(let ctl of this.controls){
-      ctl.render();
+    if(!this.siteElement){
+      console.log("Missing siteElement on control " + this.name(), this)
     }
+
+    this.controls.forEach(c => c.render())
+    this.controls.forEach(c => this.siteElement.append(c.siteElement))
   }
 }

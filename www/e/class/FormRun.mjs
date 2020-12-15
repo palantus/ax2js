@@ -15,11 +15,9 @@ export default class FormRun{
   async init(){
     this.metadata = await getElementByType("form", this.args.name())
     this.pForm = await genForm(this.metadata)
-    this.pForm.render()
+    this.pForm.init();
 
-    for(let ds of this.pForm.dataSources){
-      ds.init()
-    }
+    await Promise.all(this.pForm.dataSources.map(ds => ds.init()))
   }
 
   form(){
@@ -30,8 +28,13 @@ export default class FormRun{
     return this.pForm.dataSource(idxOrName)
   }
 
+  dataSourceCount(){
+    return this.pForm.dataSourceCount()
+  }
+
   async run(){
     await this.init()
+    this.pForm.render()
 
     Array.from(pageElement().getElementsByTagName("ax-form")).forEach(e => e.style.display = "none");
     pageElement().append(this.form().siteElement);

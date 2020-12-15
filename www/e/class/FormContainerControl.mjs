@@ -11,17 +11,13 @@ export default class FormContainerControl extends FormField{
   enumType(typeNum){
     
   }
-
-  label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
-  }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
   </style>
-  Date
+  <span style="color: red">Container</span>
 `;
 
 class Element extends HTMLElement {

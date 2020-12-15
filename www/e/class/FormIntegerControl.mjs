@@ -11,17 +11,13 @@ export default class FormIntegerControl extends FormField{
   enumType(typeNum){
     
   }
-
-  label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
-  }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
   </style>
-  Integer
+  <span style="color: red">Integer</span>
 `;
 
 class Element extends HTMLElement {

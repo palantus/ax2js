@@ -9,13 +9,15 @@ export default class Form{
     this.eventHandlers = {}
   }
 
+  init(){
+    this.design.init();
+  }
+
   async addDesign(name){
     //this.siteElement.shadowRoot.getElementById("title").innerText = (await this.metadata).metadata.Design.Caption
     this.design = new FormBuildDesign(name)
     this.design.form(this)
-    await this.design.init();
-
-    this.siteElement.append(this.design.siteElement)
+    
     return this.design
   }
 
@@ -28,11 +30,27 @@ export default class Form{
   }
 
   dataSource(idxOrName){
-    throw "Form.datasource stub"
+    let res;
+    if(!idxOrName)
+      res = this.dataSources[0]
+    else if(isNaN(idxOrName))
+      res = this.dataSources.find(d => d.name() == idxOrName)
+    else
+      res = this.dataSources[idxOrName-1]
+      
+    if(!res){
+      console.log("Missing datasource", idxOrName, this)
+    }
+    return res || null;
+  }
+
+  dataSourceCount(){
+    return this.dataSources.length
   }
 
   render(){
     this.design.render()
+    this.siteElement.append(this.design.siteElement)
   }
 
   on(eventName, id, fn){

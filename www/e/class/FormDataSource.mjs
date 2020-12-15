@@ -9,6 +9,7 @@ export default class FormDataSource{
     this.pName = "";
     this.pQuery = null
     this.pQueryRun = null
+    this.eventHandlers = {}
   }
 
   async init(){ //Called at runtime
@@ -41,6 +42,10 @@ export default class FormDataSource{
     return this.pCursor;
   }
 
+  active(){
+
+  }
+
   name(name){
     if(name)
       this.pName = name;
@@ -51,15 +56,38 @@ export default class FormDataSource{
     this.pQueryRun = new QueryRun(this.pQuery)
     await this.pQueryRun.next();
 
-    this.form().fire("fds-data-available", this.pQueryRun.data)
-    this.form().fire("fds-new-active", this.pQueryRun.data[0] || null)
+    this.fire("data-available", this.pQueryRun.data)
+    this.fire("active", this.pQueryRun.data[0] || null)
+
+    this.active();
   }
 
   getFirst(){
-
+    return this.pQueryRun.data[0] || null
   }
 
   form(form = this.pForm){
     return this.pForm = form;
+  }
+
+  on(eventName, id, fn){
+    if(this.eventHandlers[eventName] === undefined)
+      this.eventHandlers[eventName] = []
+
+    this.eventHandlers[eventName].push({fn, id})
+  }
+
+  off(eventName, id){
+    if(this.eventHandlers[eventName] === undefined)
+      return;
+
+    this.eventHandlers[eventName] = handlers[eventName].filter(h => h.id != id)
+  }
+
+  fire(eventName, data){
+    if(this.eventHandlers[eventName] === undefined)
+      return;
+
+    this.eventHandlers[eventName].forEach(h => h.fn(data))
   }
 }

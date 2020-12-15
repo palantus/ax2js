@@ -2,8 +2,17 @@ import FormField from "./FormField.mjs";
 
 export default class FormStringControl extends FormField{
   async init(){
+    super.init()
     this.siteElement = document.createElement("ax-formstringcontrol");
-    this.siteElement.setAttribute("label", this.name());
+  }
+
+  onActiveRecord(record){
+    this.siteElement.setAttribute("valuestr", this.record2StrValue(record))
+  }
+
+  render(){
+    super.render()
+    this.siteElement.setAttribute("label", this.label())
   }
 }
 
@@ -31,7 +40,7 @@ template.innerHTML = `
         right: 0px;*/
     }
     label{
-      width: 100px;
+      width: 200px;
       display: inline-block;
       vertical-align: top;
     }
@@ -52,7 +61,6 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
-    this.shadowRoot.querySelector('label').innerText = this.getAttribute("label")
     this.style.display = "block"
 
     if(this.hasAttribute("right"))
@@ -60,6 +68,21 @@ class Element extends HTMLElement {
   }
 
   disconnectedCallback() {
+  }
+
+  static get observedAttributes() {
+    return ['label', 'valuestr'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'label':
+        this.shadowRoot.querySelector('label').innerText = newValue
+        break;
+      case 'valuestr':
+        this.shadowRoot.querySelector('input').value = newValue
+        break;
+    }
   }
 }
 

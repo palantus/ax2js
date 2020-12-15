@@ -3,16 +3,12 @@ import FormField from "./FormField.mjs";
 export default class FormStaticTextControl extends FormField{
   constructor(name){
     super(name);
-    this.name = name;
   }
 
   async init(){
+    super.init()
     this.siteElement = document.createElement("ax-formstatictextcontrol");
-    this.siteElement.setAttribute("label", this.name);
-  }
-
-  label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
+    this.siteElement.setAttribute("label", this.name());
   }
 }
 

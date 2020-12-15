@@ -11,7 +11,7 @@ export default class FormActionPaneControl extends FormControlCollection{
   }
 
   render(){
-
+    super.render();
     if(this.controlCount() < 1) return;
     if(this.controlNum(1) instanceof FormButtonGroupControl){
       this.siteElement.setStripMode()

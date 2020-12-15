@@ -5,14 +5,28 @@ import FormControlCollection from "./FormControlCollection.mjs"
 
 export default class FormDesign extends FormControlCollection{
 
-  init(){
+  constructor(name){
+    super(name);
     this.design(this)
+  }
+
+  init(){
+    super.init();
     this.siteElement = document.createElement("ax-formdesign")
   }
 
-  caption(text = this.pCaption || ""){
-    this.siteElement.shadowRoot.getElementById("title").innerText = text
-    return this.pCaption = text
+  initFromMeta(meta){
+    super.initFromMeta(meta)
+    this.caption(meta.caption)
+  } 
+
+  render(){
+    super.render();
+    this.siteElement.shadowRoot.getElementById("title").innerText = this.properties.caption
+  }
+
+  caption(text = this.properties.caption || ""){
+    return this.properties.caption = text
   }
 }
 const template = document.createElement('template');

@@ -99,10 +99,9 @@ function storeControl(element, parent, metadata){
 }
 
 export function expandFormControl(e){
-  if(!e.dataSource) return;
-  let ds = Entity.find(`tag:fds element.id:${e.related.element} prop:name=${e.dataSource}`)
-
   if(e.dataField){
+    if(!e.dataSource) return;
+    let ds = Entity.find(`tag:fds element.id:${e.related.element} prop:name=${e.dataSource}`)
 
     let fieldName = e.dataField.substr(0, (e.dataField.indexOf("[")+1 || e.dataField.length+1)-1)
 
@@ -114,5 +113,13 @@ export function expandFormControl(e){
     }
 
     e.rel(tableField, "tableField")
+  } else if(e.enumType){
+    let enumType = Entity.find(`tag:enum prop:name=${e.enumType}`)
+    if(!enumType){
+      console.log(`Control ${e._id}:${e.name} uses enumType ${e.enumType}, which doesn't exist`)
+      return;
+    }
+
+    e.rel(enumType, "type")
   }
 }

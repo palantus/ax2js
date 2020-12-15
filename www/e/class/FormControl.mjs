@@ -1,11 +1,14 @@
 export default class FormControl{
   constructor(name){
     this.pName = name;
+    this.onNewData = this.onNewData.bind(this)
+    this.onActiveRecord = this.onActiveRecord.bind(this)
+    this.properties = {}
   }
 
-  async init(){
-    this.onNewData = this.onNewData.bind(this)
-    this.form().on("fds-data-available", this.pName, this.onNewData)
+  init(){
+    this.form().dataSource(this.properties?.dataSource)?.on("data-available", this.pName, this.onNewData)
+    this.form().dataSource(this.properties?.dataSource)?.on("active", this.pName, this.onActiveRecord)
   }
 
   name(name = this.pName){
@@ -27,19 +30,19 @@ export default class FormControl{
   }
 
   initFromMeta(meta){
-    this.properties = {}
     for(let p in meta)
       if(typeof meta[p] === "string")
         this.properties[p] = meta[p]
   }
 
-  onActiveRecord(){
+  onActiveRecord(record){
   }
 
   onNewData(data){
   }
 
   render(){
-    
+    if(this.properties.visible == "No")
+      this.siteElement.style.display = "none"
   }
 }

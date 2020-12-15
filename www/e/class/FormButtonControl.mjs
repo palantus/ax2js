@@ -2,19 +2,20 @@ import FormControl from "./FormControl.mjs";
 
 export default class FormButtonControl extends FormControl{
   async init(){
+    super.init()
     this.siteElement = document.createElement("ax-formbuttoncontrol")
 
     this.clicked = this.clicked.bind(this);
     this.siteElement.addEventListener("clicked", this.clicked)
   }
-  
-  initFromMeta(meta){
-    this.text(meta.text)
+
+  text(text = this.properties.text){
+    return this.properties.text = text;
   }
 
-  text(text = this.pText){
-    this.siteElement.setAttribute("label", text)
-    return this.pText = text;
+  render(){
+    super.render()
+    this.siteElement.setAttribute("label", this.properties.text)
   }
 
   clicked(){

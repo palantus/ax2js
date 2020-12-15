@@ -8,20 +8,49 @@ export default class FormRealControl extends FormField{
     this.siteElement = document.createElement("ax-formrealcontrol")
   }
 
-  enumType(typeNum){
-    
+  onActiveRecord(record){
+    this.siteElement.setAttribute("valuestr", this.record2StrValue(record))
   }
 
-  label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
+  render(){
+    super.render()
+    this.siteElement.setAttribute("label", this.label())
   }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
+    label:not(.checkbox):after {
+      content: ":"; 
+    }
+
+    .value{
+        display: inline-block;
+        min-height:15px;
+        min-width: 30px;
+    }
+
+    .field{
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .value.right{
+        /*text-align: right;
+        position: absolute;
+        right: 0px;*/
+    }
+    label{
+      width: 200px;
+      display: inline-block;
+      vertical-align: top;
+    }
   </style>
-  Real
+  <div class="field">
+      <label for="val"></label>
+      <span name="val" class="value right"><input type="number" step=".01"></input></span>
+  </div>
 `;
 
 class Element extends HTMLElement {
@@ -34,9 +63,25 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
+    this.style.display = "block"
   }
 
   disconnectedCallback() {
+  }
+
+  static get observedAttributes() {
+    return ['label', 'valuestr'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'label':
+        this.shadowRoot.querySelector('label').innerText = newValue
+        break;
+      case 'valuestr':
+        this.shadowRoot.querySelector('input').value = newValue
+        break;
+    }
   }
 }
 

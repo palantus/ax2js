@@ -11,17 +11,13 @@ export default class FormInt64Control extends FormField{
   enumType(typeNum){
     
   }
-
-  label(label = this.pLabel){
-    return (this.pLabel = label) || "N/A"
-  }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
   </style>
-  Integer
+  <span style="color: red">Int64</span>
 `;
 
 class Element extends HTMLElement {

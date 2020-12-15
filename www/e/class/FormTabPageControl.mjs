@@ -3,6 +3,7 @@ import FormControlCollection from "./FormControlCollection.mjs"
 export default class FormTabPageControl extends FormControlCollection{
 
   init(){
+    super.init()
     this.siteElement = document.createElement("ax-formtabpagecontrol")
   }
 }
