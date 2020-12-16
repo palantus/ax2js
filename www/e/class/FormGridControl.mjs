@@ -4,6 +4,9 @@ export default class FormGridControl extends FormControlCollection{
   async init(){
     super.init()
     this.siteElement = document.createElement("ax-formgridcontrol");
+
+    this.rowClicked = this.rowClicked.bind(this);
+    this.siteElement.addEventListener("rowclicked", this.rowClicked)
   }
 
   onNewData(data){
@@ -16,6 +19,14 @@ export default class FormGridControl extends FormControlCollection{
     for(let ctl of this.controls)
       head.push({title: ctl.label(), field: ctl.dataField()})
     this.siteElement.head = head
+  }
+
+  rowClicked(evt){
+    this.form().dataSource(this.dataSource()).findIndex(evt.detail+1)
+  }
+
+  dataSource(){
+    return this.properties.dataSource
   }
 }
 
@@ -34,13 +45,19 @@ template.innerHTML = `
       text-align: left;
       border-bottom: 1px solid black;
     }
+    tr{
+      cursor: pointer;
+    }
+    tr.active{
+      background-color: #aaa;
+    }
     #controls{
       display: none;
     }
   </style>
 
   <div>
-    <table>
+    <table cellspacing="0">
       <thead>
         <tr></tr>
       </thead>
@@ -60,7 +77,7 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-
+    this.rowClicked = this.rowClicked.bind(this)
   }
 
   set head(head){
@@ -87,6 +104,7 @@ class Element extends HTMLElement {
       }
       t.append(row)
     }
+    this.shadowRoot.querySelector("tbody tr")?.classList.add("active")
   }
 
   connectedCallback() {
@@ -94,9 +112,20 @@ class Element extends HTMLElement {
 
     if(this.hasAttribute("right"))
       this.shadowRoot.querySelectorAll('span').forEach(e => e.classList.add("right"))
+
+    this.shadowRoot.querySelector("table").addEventListener("click", this.rowClicked)
   }
 
   disconnectedCallback() {
+  }
+
+  rowClicked(evt){
+    let row = evt.target.matches("tbody tr") ? evt.target : evt.target.closest("tbody tr");
+    if(!row) return;
+    this.shadowRoot.querySelectorAll("tbody tr").forEach(r => r.classList.remove("active"))
+    row.classList.add("active")
+    const idx = [...row.parentElement.children].indexOf(row);
+    this.dispatchEvent(new CustomEvent("rowclicked", {detail: idx}))
   }
 }
 

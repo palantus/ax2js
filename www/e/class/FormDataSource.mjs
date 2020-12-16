@@ -70,6 +70,10 @@ export default class FormDataSource{
     return this.pForm = form;
   }
 
+  findIndex(idx){
+    this.fire("active", this.pQueryRun.data[idx-1] || null)
+  }
+
   on(eventName, id, fn){
     if(this.eventHandlers[eventName] === undefined)
       this.eventHandlers[eventName] = []
