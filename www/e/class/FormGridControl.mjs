@@ -49,7 +49,7 @@ template.innerHTML = `
       cursor: pointer;
     }
     tr.active{
-      background-color: #aaa;
+      background-color: rgba(100, 100, 255, 0.4);
     }
     #controls{
       display: none;
