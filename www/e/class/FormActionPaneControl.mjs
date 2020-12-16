@@ -119,6 +119,14 @@ class Element extends HTMLElement {
 
   tabClicked(evt){
     let idx = evt.target.getAttribute("data-idx")
+
+    //Handle click on same tab
+    if(evt.target.classList.contains("active")){
+      evt.target.classList.remove("active")
+      this.shadowRoot.querySelector(".tabcontent:nth-child(" + idx + ")").style.display = "none"
+      return;
+    }
+
     this.shadowRoot.querySelectorAll(".tabcontent").forEach(e => e.style.display = "none")
     this.shadowRoot.querySelectorAll(".tablinks").forEach(e => e.classList.remove("active"))
     

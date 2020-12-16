@@ -6,6 +6,10 @@ export default class FormTabPageControl extends FormControlCollection{
     super.init()
     this.siteElement = document.createElement("ax-formtabpagecontrol")
   }
+
+  caption(caption = this.properties.caption){
+    return this.properties.caption = caption
+  }
 }
 const template = document.createElement('template');
 template.innerHTML = `
