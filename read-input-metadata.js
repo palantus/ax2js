@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, unlinkSync} from 'fs'
 import parser from 'fast-xml-parser';
 import Entity from "entitystorage"
 import Element from "./models/element.js";
-import {convert, expandAllElements} from "./services/convert.mjs"
+import {convert, expandAllElements, mergeExtensions} from "./services/convert.mjs"
 
 class D365{
 
@@ -171,5 +171,6 @@ let run = async () => {
   d365.readFolder("input/models")
 
   expandAllElements()
+  mergeExtensions()
 }
 run();

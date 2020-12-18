@@ -4,6 +4,7 @@ import {convertEDT, expandEDT} from "./convert/edt.mjs"
 import {convertEnum} from "./convert/enum.mjs"
 import {convertTable, expandTableField} from "./convert/table.mjs"
 import {convertMenuItem, expandMenuFunctionButton} from "./convert/menuitem.mjs"
+import {convertMenu, mergeExtension, expandMenuSubItem, convertMenuExtension, expandMenuSubRef} from "./convert/menu.mjs"
 
 export function convert(entity, metadata){
 
@@ -24,6 +25,12 @@ export function convert(entity, metadata){
     case "menuitemaction":
     case "menuitemoutput":
       return convertMenuItem(entity, metadata)
+    case "menu":
+      entity.prop("metadata", metadata); // TODO: REMOVE
+      return convertMenu(entity, metadata)
+    case "menuextension":
+      entity.prop("metadata", metadata); // TODO: REMOVE
+      return convertMenuExtension(entity, metadata)
     default:
       entity.prop("metadata", metadata);
   }
@@ -34,4 +41,10 @@ export function expandAllElements(){
   Entity.search("tag:tablefield").map(e => expandTableField(e))
   Entity.search("tag:formcontrol").map(e => expandFormControl(e))
   Entity.search("tag:formcontrol prop:type=MenuFunctionButton").map(e => expandMenuFunctionButton(e))
+  Entity.search("tag:menusubitem").map(e => expandMenuSubItem(e))
+  Entity.search("tag:menusubref").map(e => expandMenuSubRef(e))
+}
+
+export function mergeExtensions(){
+  Entity.search("tag:menuext").map(e => mergeExtension(e))
 }

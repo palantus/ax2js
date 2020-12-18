@@ -25,7 +25,7 @@ export function expandEDT(e){
     console.log(`EDT ${e.name} extends ${e.extends}, which doesn't exist`)
     return;
   }
-  console.log(e.name, e.extends, ext.name)
+  //console.log(e.name, e.extends, ext.name)
   expandEDT(ext)
   let extProps = ext.props
   let eProps = e.props

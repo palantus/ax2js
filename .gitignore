@@ -10,3 +10,4 @@ server/test
 input/models/*
 !input/models/PetStore
 input/labels/*
+log.txt
