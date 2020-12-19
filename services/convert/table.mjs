@@ -5,8 +5,17 @@ export function convertTable(table, metadata) {
   table.tag("table")
 
   storeProperties(table, metadata)
+  addSubItemsToTable(table, metadata)
+}
 
+export function convertTableExtension(table, metadata) {
+  table.tag("tableext")
 
+  storeProperties(table, metadata)
+  addSubItemsToTable(table, metadata)
+}
+
+function addSubItemsToTable(table, metadata){
   let methods = getArray(metadata.SourceCode?.Methods?.Method)
   for(let method of methods){
     table.rel(new Entity().tag("tablefunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(table, "element"), "function")
@@ -81,5 +90,18 @@ export function expandTableField(e){
 
   if(ext){
     e.rel(ext, "type")
+  }
+}
+
+export function mergeTableExtension(ext){
+  let tableName = ext.name.substring(0, ext.name.lastIndexOf("."))
+  let table = Entity.find(`tag:table prop:name=${tableName}`)
+  if(!table){
+    console.log(`table extension ${ext.name} extends a table which doesn't exist`)
+    return;
+  }
+
+  for(let r in ext.rels){
+    ext.rels[r].forEach(related => table.rel(related, r))
   }
 }

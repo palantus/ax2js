@@ -67,7 +67,7 @@ export function expandMenuSubRef(ref){
   }
 }
 
-export function mergeExtension(ext){
+export function mergeMenuExtension(ext){
   let menuName = ext.name.substring(0, ext.name.lastIndexOf("."))
   let menu = Entity.find(`tag:menu prop:name=${menuName}`)
   if(!menu){
