@@ -26,10 +26,8 @@ export function convert(entity, metadata){
     case "menuitemoutput":
       return convertMenuItem(entity, metadata)
     case "menu":
-      entity.prop("metadata", metadata); // TODO: REMOVE
       return convertMenu(entity, metadata)
     case "menuextension":
-      entity.prop("metadata", metadata); // TODO: REMOVE
       return convertMenuExtension(entity, metadata)
     default:
       entity.prop("metadata", metadata);

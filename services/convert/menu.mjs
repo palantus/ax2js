@@ -52,7 +52,7 @@ export function expandMenuSubItem(subI){
       typeName = "menuitemoutput";
       break;
   }
-  let mi = Entity.find(`tag:${typeName} prop:name=${subI.menuItemName}`)
+  let mi = Entity.find(`tag:menuitem prop:name=${subI.menuItemName} prop:type=${typeName}`)
   if(mi){
     subI.rel(mi, "menuitem")
     subI.label = subI.label || mi.label

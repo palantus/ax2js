@@ -42,10 +42,23 @@ class Page extends HTMLElement {
   }
 
   async fetchAndUpdateMainMenu(){
-    let menu = await api.get("meta/menu")
+    let menu = await api.get("meta/menu/MainMenu")
 
     let container = this.shadowRoot.querySelector("#container")
-    this.addMenu(container, menu)
+    this.addMenu(container, menu.children?.item||[])
+
+    this.addMenu(container, [{
+        type: "fixedsubmenu",
+        label: "System",
+        children: { 
+          item: [
+            {type: "fixeditem", label: "Users", page: "/setup/users"},
+            {type: "fixeditem", label: "Setup", page: "/system"},
+            {type: "fixeditem", label: "Tools", page: "/systemtools"}
+          ]
+        }
+      }
+    ])
   }
 
   toggleMenu(menu){
@@ -91,17 +104,22 @@ class Page extends HTMLElement {
   }
 
   addMenu(parent, content){
-    for(let menu of content){
+    for(let menu of (content||[]).sort((a, b) => a.positionIdx - b.positionIdx)){
       let item = document.createElement("div")
       let titleElement = document.createElement("span")
       item.appendChild(titleElement)
 
-      if(menu.type == "menuitem" || menu.type == "fixeditem"){
+      if(menu.type == "menuref"){
+        if(!menu.children?.menu){
+          continue;
+        }
+        this.addMenu(parent, menu.children?.menu||[])
+      } else if(menu.type == "item" || menu.type == "fixeditem"){
         item.className = "item"
         titleElement.attributes.class = "itemtitle"
         titleElement.innerText = " - " + menu.label
 
-        item.setAttribute("data-path", menu.page || "/ax/mi/" + menu.name)
+        item.setAttribute("data-path", menu.page || "/ax/mi/" + menu.menuItemName)
       } else {
         item.className = "menu"
         titleElement.innerText = menu.label
@@ -114,7 +132,7 @@ class Page extends HTMLElement {
 
       parent.appendChild(item)
 
-      if(menu.type == "submenu" || menu.type == "fixedsubmenu"){
+      if(menu.type == "menu" || menu.type == "submenu" || menu.type == "fixedsubmenu"){
         let subParent = document.createElement("div")
         subParent.classList.add("submenu")
         /*
@@ -123,7 +141,7 @@ class Page extends HTMLElement {
         subParent.append(subParentTitle)
         */
         item.append(subParent)
-        this.addMenu(subParent, menu.items);
+        this.addMenu(subParent, menu.children?.item||[]);
       }
     }
 

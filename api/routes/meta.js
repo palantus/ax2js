@@ -12,10 +12,6 @@ export default (app) => {
     res.json(Element.search("tag:element").map(e => { return { id: e._id, name: e.name, type: e.type } }))
   });
 
-  route.get('/menu', function (req, res, next) {
-    res.json(service.genMenu())
-  });
-
   route.get('/labels', async function (req, res, next) {
     res.json(await service.getLabels())
   });
