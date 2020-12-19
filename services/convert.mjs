@@ -31,7 +31,6 @@ export function convert(entity, metadata){
     case "menuextension":
       return convertMenuExtension(entity, metadata)
     case "formextension":
-      entity.prop("metadata", metadata);
       return convertFormExtension(entity, metadata)
     default:
       entity.prop("metadata", metadata);
