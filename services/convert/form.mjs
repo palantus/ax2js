@@ -123,3 +123,58 @@ export function expandFormControl(e){
     e.rel(enumType, "type")
   }
 }
+
+
+
+export function convertFormExtension(ext, metadata) {
+  let formName = ext.name.substring(0, ext.name.lastIndexOf("."))
+  ext.formName = formName
+  ext.tag("formext")
+
+  //TODO: dangerous, as it depends on forms being imported before extensions
+  let form = Entity.find(`tag:form prop:name=${formName}`)
+
+  if(!form){
+    console.log(`Form extension ${ext.name} extends form ${formName} which doesn't exist`)
+    return
+  }
+
+  storeProperties(ext, metadata)
+  getArray(metadata.Controls?.AxFormExtensionControl).forEach(m => {
+    let extItem = new Entity()
+    extItem.tag("formextcontrol")
+    ext.rel(extItem, "control")
+    ext.rel(form, "form")
+    storeProperties(extItem, m)
+
+    storeControl(form, extItem, m.FormControl)
+  })
+}
+
+export function mergeFormExtension(ext){
+  let form = ext.related.form
+
+  ext.rels.control.forEach((item, idx) => {
+    let parent = item.parent ? Entity.find(`tag:formcontrol element.id:${form} prop:name=${item.parent}`) : null;
+    let previousSibling = item.previousSibling ? Entity.find(`tag:formcontrol element.id:${form} prop:name=${item.previousSibling}`) : null;
+    
+    if(!parent){
+      parent = previousSibling?.relsrev?.control[0] || menu
+    }
+
+    parent.rel(item.related.control, "control")
+
+    switch(item.positionType){
+      case "AfterItem":
+        if(!previousSibling)
+          throw "previousSibling is missing"
+        item.related.control.positionIdx = previousSibling.positionIdx+(idx/100+0.01)
+        break;
+      case "Begin":
+        item.related.control.positionIdx = (-100)+idx
+        break;
+      default:
+        item.related.control.positionIdx = 1000+idx
+    }
+  })
+}

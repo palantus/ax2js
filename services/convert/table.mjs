@@ -8,10 +8,19 @@ export function convertTable(table, metadata) {
   addSubItemsToTable(table, metadata)
 }
 
-export function convertTableExtension(table, metadata) {
-  table.tag("tableext")
+export function convertTableExtension(tableExt, metadata) {
+  tableExt.tag("tableext")
 
-  storeProperties(table, metadata)
+  storeProperties(tableExt, metadata)
+
+  let tableName = tableExt.name.substring(0, tableExt.name.lastIndexOf("."))
+  let table = Entity.find(`tag:table prop:name=${tableName}`)
+
+  if(!table){
+    console.log(`Table extension ${tableExt.name} extends table ${tableName} which doesn't exist`)
+    return
+  }
+
   addSubItemsToTable(table, metadata)
 }
 
@@ -93,6 +102,7 @@ export function expandTableField(e){
   }
 }
 
+/*
 export function mergeTableExtension(ext){
   let tableName = ext.name.substring(0, ext.name.lastIndexOf("."))
   let table = Entity.find(`tag:table prop:name=${tableName}`)
@@ -105,3 +115,4 @@ export function mergeTableExtension(ext){
     ext.rels[r].forEach(related => table.rel(related, r))
   }
 }
+*/

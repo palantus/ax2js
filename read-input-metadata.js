@@ -170,7 +170,7 @@ let run = async () => {
   d365.readLabels("input/labels")
   d365.readFolder("input/models")
 
-  expandAllElements()
   mergeExtensions()
+  expandAllElements()
 }
 run();
