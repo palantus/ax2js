@@ -34,6 +34,7 @@ export default class FormControlCollection extends FormControl{
     }
     this.controls.push(newControl)
     newControl.design(this.design())
+    newControl.parent = this
     return newControl;
   }
 

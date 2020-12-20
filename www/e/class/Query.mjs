@@ -9,6 +9,7 @@ export default class Query{
     let qbds = new QueryBuildDataSource();
     qbds.table(tabId)
     this.dataSources.push(qbds);
+    return qbds;
   }
 
   dataSourceNo(idx){

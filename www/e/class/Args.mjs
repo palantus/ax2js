@@ -1,11 +1,16 @@
 class Args{
 
-  dataset(){
-
+  dataset(tableId){
+    if(tableId) this.pTableId = tableId;
+    return this.pTableId || 0;
   }
 
-  record(){
-
+  record(record){
+    if(record){
+      this.pRecord = record
+      this.dataset(record.TableId)
+    }
+    return this.pRecord || null
   }
 
   formViewOption(option = this.fvo){

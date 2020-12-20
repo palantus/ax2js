@@ -7,14 +7,19 @@ import {getElementByType} from "./Metadata.mjs";
 
 export default class FormRun{
   constructor(args){
-    this.args = args
+    this.args(args)
 
     this.close = this.close.bind(this)
   }
 
+  args(args = this.pArgs){
+    return this.pArgs = args
+  }
+
   async init(){
-    this.metadata = await getElementByType("form", this.args.name())
+    this.metadata = await getElementByType("form", this.args().name())
     this.pForm = await genForm(this.metadata)
+    this.pForm.formRun(this)
     this.pForm.init();
 
     await Promise.all(this.pForm.dataSources.map(ds => ds.init()))

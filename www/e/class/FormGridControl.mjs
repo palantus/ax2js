@@ -22,7 +22,7 @@ export default class FormGridControl extends FormControlCollection{
   }
 
   rowClicked(evt){
-    this.form().dataSource(this.dataSource()).findIndex(evt.detail+1)
+    this.owner().form().dataSource(this.dataSource()).findIndex(evt.detail+1)
   }
 
   dataSource(){

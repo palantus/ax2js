@@ -16,7 +16,7 @@ export default class Form{
   async addDesign(name){
     //this.siteElement.shadowRoot.getElementById("title").innerText = (await this.metadata).metadata.Design.Caption
     this.design = new FormBuildDesign(name)
-    this.design.form(this)
+    this.design.parent = this
     
     return this.design
   }
@@ -25,6 +25,7 @@ export default class Form{
     let fds = new FormDataSource();
     fds.name(name)
     fds.form(this)
+    fds.parent = this
     this.dataSources.push(fds)
     return fds;
   }
@@ -51,6 +52,15 @@ export default class Form{
   render(){
     this.design.render()
     this.siteElement.append(this.design.siteElement)
+  }
+
+  formRun(formRun){
+    if(formRun) this.pFormRun = formRun;
+    return this.pFormRun;
+  }
+
+  owner(){
+    return this.formRun()
   }
 
   on(eventName, id, fn){

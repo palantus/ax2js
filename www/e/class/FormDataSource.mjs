@@ -1,6 +1,7 @@
 import {tableNum} from "./Global.mjs"
 import QueryRun from "./QueryRun.mjs";
 import Query from "./Query.mjs";
+import {attemptJoinDatsSources} from "../../datamanagement/joins.mjs"
 
 export default class FormDataSource{
 
@@ -16,7 +17,9 @@ export default class FormDataSource{
     // Load fields?
 
     this.pQuery = new Query();
-    this.pQuery.addDataSource(this.table())
+    let qbds = this.pQuery.addDataSource(this.table())
+
+    attemptJoinDatsSources(this.owner().args().record(), qbds) //TODO: enable when args is available
 
     this.executeQuery() // Should only be called if property AutoQuery = Yes
   }
@@ -93,5 +96,9 @@ export default class FormDataSource{
       return;
 
     this.eventHandlers[eventName].forEach(h => h.fn(data))
+  }
+
+  owner(){
+    return this.parent.owner()
   }
 }

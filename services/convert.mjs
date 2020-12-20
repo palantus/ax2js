@@ -2,7 +2,7 @@ import Entity from "entitystorage"
 import {convertForm, expandFormControl, convertFormExtension, mergeFormExtension} from "./convert/form.mjs"
 import {convertEDT, expandEDT} from "./convert/edt.mjs"
 import {convertEnum} from "./convert/enum.mjs"
-import {convertTable, expandTableField, convertTableExtension} from "./convert/table.mjs"
+import {convertTable, expandTableField, convertTableExtension, updateTableReferences} from "./convert/table.mjs"
 import {convertMenuItem, expandMenuFunctionButton} from "./convert/menuitem.mjs"
 import {convertMenu, mergeMenuExtension, expandMenuSubItem, convertMenuExtension, expandMenuSubRef} from "./convert/menu.mjs"
 
@@ -50,4 +50,8 @@ export function mergeExtensions(){
   Entity.search("tag:menuext").map(e => mergeMenuExtension(e))
   //Entity.search("tag:tableext").map(e => mergeTableExtension(e))
   Entity.search("tag:formext").map(e => mergeFormExtension(e))
+}
+
+export function updateReferences(){
+  Entity.search("tag:table").forEach(e => updateTableReferences(e))
 }

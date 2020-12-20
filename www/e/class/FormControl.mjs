@@ -7,8 +7,8 @@ export default class FormControl{
   }
 
   init(){
-    this.form().dataSource(this.properties?.dataSource)?.on("data-available", this.pName, this.onNewData)
-    this.form().dataSource(this.properties?.dataSource)?.on("active", this.pName, this.onActiveRecord)
+    this.owner().form().dataSource(this.properties?.dataSource)?.on("data-available", this.pName, this.onNewData)
+    this.owner().form().dataSource(this.properties?.dataSource)?.on("active", this.pName, this.onActiveRecord)
   }
 
   name(name = this.pName){
@@ -16,17 +16,12 @@ export default class FormControl{
   }
 
   design(design){
-    if(design){
-      this._design = design;
-      this._form = design.form();
-    }
-    return this._design;
+    if(design) this.pDesign = design;
+    return this.pDesign;
   }
 
-  form(form){
-    if(form)
-      this._form = form;
-    return this._form;
+  owner(){
+    return this.parent.owner()
   }
 
   initFromMeta(meta){

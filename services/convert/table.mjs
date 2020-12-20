@@ -102,17 +102,18 @@ export function expandTableField(e){
   }
 }
 
-/*
-export function mergeTableExtension(ext){
-  let tableName = ext.name.substring(0, ext.name.lastIndexOf("."))
-  let table = Entity.find(`tag:table prop:name=${tableName}`)
-  if(!table){
-    console.log(`table extension ${ext.name} extends a table which doesn't exist`)
-    return;
-  }
+export function updateTableReferences(table){
+  let tabRelations = Entity.search(`tag:tablerelation element.tag:table prop:relatedTable=${table.name}`)
 
-  for(let r in ext.rels){
-    ext.rels[r].forEach(related => table.rel(related, r))
+  for(let rel of tabRelations){
+    let revRel = new Entity().tag("reverserelation")  
+                             .prop("table", rel.related.element.name)
+                             .prop("source", "tablerelation")
+
+    for(let c of rel.rels.constraint){
+      revRel.rel(c, "constraint")
+    }
+
+    table.rel(revRel, "reverserelation")
   }
 }
-*/
