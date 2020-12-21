@@ -1,7 +1,7 @@
 import {tableNum} from "./Global.mjs"
 import QueryRun from "./QueryRun.mjs";
 import Query from "./Query.mjs";
-import {attemptJoinDatsSources} from "../../datamanagement/joins.mjs"
+import {attemptJoinRecordAndQBDS, addAutoLinks} from "../../datamanagement/joins.mjs"
 
 export default class FormDataSource{
 
@@ -13,20 +13,28 @@ export default class FormDataSource{
     this.eventHandlers = {}
   }
 
-  async init(){ //Called at runtime
-    // Load fields?
+  async init(){
+    let qbds
+    if(this.joinSource()){
+      this.pParentFDS = this.owner().dataSource(this.joinSource())
+      this.pQuery = this.pParentFDS.query()
+      let parentQbds = this.pQuery.dataSourceName(this.joinSource())
+      qbds = parentQbds.addDataSource(this.table(), this.name())
+      
+      addAutoLinks(parentQbds, qbds)
+    } else {
+      this.pQuery = new Query();
+      qbds = this.pQuery.addDataSource(this.table(), this.name())
+      attemptJoinRecordAndQBDS(this.owner().args().record(), qbds)
+    }
 
-    this.pQuery = new Query();
-    let qbds = this.pQuery.addDataSource(this.table())
-
-    attemptJoinDatsSources(this.owner().args().record(), qbds) //TODO: enable when args is available
-
-    this.executeQuery() // Should only be called if property AutoQuery = Yes
+    await Promise.all(this.owner().dataSources().filter(ds => ds.joinSource() == this.name()).map(ds => ds.init()))
   }
 
-  initFromMeta(meta){ // Called when added to form
+  initFromMeta(meta){
     this.name(meta.name)
     this.table(tableNum(meta.table))
+    this.joinSource(meta.joinSource||"")
   }
 
   table(tabId = this.pTabId){
@@ -100,5 +108,9 @@ export default class FormDataSource{
 
   owner(){
     return this.parent.owner()
+  }
+
+  joinSource(joinSource = this.pJoinSource){
+    return this.pJoinSource = joinSource
   }
 }

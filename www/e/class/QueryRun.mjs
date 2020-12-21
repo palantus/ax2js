@@ -1,4 +1,4 @@
-import {getTableData} from "../../system/data.mjs"
+import {getTableData} from "../../datamanagement/data.mjs"
 import {tableId2Name} from "./Global.mjs"
 
 export default class QueryRun{

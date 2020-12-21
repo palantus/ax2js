@@ -14,20 +14,26 @@ export async function getElementByType(type, name, fillMetadata = true){
   let e = elements.find(e => e.type == type && e.name == name)
   if(!e) 
     throw `Element ${name} of type ${type} doesn't exist`
-  return fillMetadata ? cache[e.id] = await api.get("meta/" + e.id) : e;
+  return cache[e.id] || (fillMetadata ? cacheElement(await api.get("meta/" + e.id)) : e);
 }
 
 export function getCachedElementByType(type, name){
   let e = elements.find(e => e.type == type && e.name == name)
-  if(e)
-    return getCachedElementById(e.id)
-  else
-    throw `Element of type ${type} and name ${name} isn't cached`
+  return getCachedElementById(e.id) || null
 }
 
 export function getCachedElementById(id){
-  if(cache[id])
-    return cache[id]
-  else
-    throw `Element with id ${id} isn't cached`
+  return cache[id] || null
+}
+
+function cacheElement(e){
+  cache[e.id] = e;
+
+  for(let r in e.children){
+    for(let c of e.children[r]){
+      cacheElement(c)
+    }
+  }
+
+  return e;
 }

@@ -5,8 +5,8 @@ export default class Query{
     this.dataSources = []
   }
 
-  addDataSource(tabId){
-    let qbds = new QueryBuildDataSource();
+  addDataSource(tabId, name){
+    let qbds = new QueryBuildDataSource(name);
     qbds.table(tabId)
     this.dataSources.push(qbds);
     return qbds;
@@ -14,6 +14,18 @@ export default class Query{
 
   dataSourceNo(idx){
     return this.dataSources[idx-1]
+  }
+
+  dataSourceName(name){
+    for(let ds of this.dataSources){
+      if(ds.name() == name)
+        return ds;
+      let dsChild = ds.findChildDSByName(name)
+      if(dsChild)
+        return dsChild
+    }
+
+    return null;
   }
 
   pack(){

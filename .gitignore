@@ -11,3 +11,4 @@ input/models/*
 !input/models/PetStore
 input/labels/*
 log.txt
+www/datamanagement/dataupgrade.mjs

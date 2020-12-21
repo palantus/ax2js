@@ -4,8 +4,8 @@ import {state, projects} from "../system/core.mjs"
 import {on, off, fire} from "../system/events.mjs"
 import { changeProject } from "../system/core.mjs";
 import "/components/notification.mjs";
-import LD2Reader from "../system/ld2reader.mjs"
-import {setReader} from "../system/data.mjs"
+import LD2Reader from "../datamanagement/ld2reader.mjs"
+import {setReader} from "../datamanagement/data.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

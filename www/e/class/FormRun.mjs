@@ -22,7 +22,7 @@ export default class FormRun{
     this.pForm.formRun(this)
     this.pForm.init();
 
-    await Promise.all(this.pForm.dataSources.map(ds => ds.init()))
+    await Promise.all(this.dataSources().filter(ds => !ds.joinSource()).map(ds => ds.init()))
   }
 
   form(){
@@ -37,9 +37,15 @@ export default class FormRun{
     return this.pForm.dataSourceCount()
   }
 
+  dataSources(){
+    return this.pForm.dataSources
+  }
+
   async run(){
     await this.init()
     this.pForm.render()
+
+    this.pForm.dataSources.filter(ds => !ds.joinSource()).forEach(ds => ds.executeQuery())
 
     Array.from(pageElement().getElementsByTagName("ax-form")).forEach(e => e.style.display = "none");
     pageElement().append(this.form().siteElement);
@@ -55,7 +61,7 @@ export default class FormRun{
   }
 
   async wait(){
-    console.log("wait stub")
+    //console.log("wait stub")
   }
 
   detach(){

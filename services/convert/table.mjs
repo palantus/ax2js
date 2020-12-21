@@ -106,8 +106,10 @@ export function updateTableReferences(table){
   let tabRelations = Entity.search(`tag:tablerelation element.tag:table prop:relatedTable=${table.name}`)
 
   for(let rel of tabRelations){
+    let tab = rel.related.element;
     let revRel = new Entity().tag("reverserelation")  
-                             .prop("table", rel.related.element.name)
+                             .prop("tableName", tab.name)
+                             .prop("tableId", tab._id)
                              .prop("source", "tablerelation")
 
     for(let c of rel.rels.constraint){

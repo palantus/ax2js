@@ -9,7 +9,7 @@ export function enumNum(){
 }
 
 export function tableNum(name){
-  return elements.find(e => e.name == name)?.id
+  return elements.find(e => e.type == "table" && e.name == name)?.id
 }
 
 export function tableId2Name(tabId){

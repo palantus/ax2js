@@ -124,7 +124,14 @@ export function expandFormControl(e){
   }
 }
 
-
+export function expandFDS(fds){
+  let table = Entity.find(`tag:table prop:name=${fds.table}`)
+  if(table){
+    fds.rel(table, "table")
+  } else {
+    console.log(`FDS ${fds._id} refers to table ${fds.table} which doesn't exist`);
+  }
+}
 
 export function convertFormExtension(ext, metadata) {
   let formName = ext.name.substring(0, ext.name.lastIndexOf("."))

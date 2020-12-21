@@ -5,7 +5,7 @@ import api from "/system/api.mjs"
 import "/components/field-edit.mjs"
 import MenuFunction from "../e/class/MenuFunction.mjs";
 import {load} from "/e/class/Metadata.mjs"
-import {dataReady} from "../system/data.mjs"
+import {dataReady} from "../datamanagement/data.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

@@ -1,16 +1,18 @@
 import QueryBuildRange from "./QueryBuildRange.mjs";
 
 export default class QueryBuildDataSource{
-  constructor(){
+  constructor(name){
     this.dataSources = []
     this.ranges = []
     this.tabId = 0;
+    this.pName = name
   }
 
-  addDataSource(tabId){
-    let qbds = new QueryBuildDataSource();
+  addDataSource(tabId, name){
+    let qbds = new QueryBuildDataSource(name);
     qbds.table(tabId)
     this.dataSources.push(qbds);
+    return qbds
   }
 
   addRange(fieldId){
@@ -25,5 +27,21 @@ export default class QueryBuildDataSource{
     if(tabId)
       this.tabId = tabId;
     return this.tabId;
+  }
+
+  name(){
+    return this.pName
+  }
+
+  findChildDSByName(name){
+    for(let ds of this.dataSources){
+      if(ds.name() == name)
+        return ds
+
+      let childDS = ds.findChildDSByName()
+      if(childDS)
+        return childDS
+    }
+    return null
   }
 }
