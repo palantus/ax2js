@@ -82,7 +82,7 @@ function storeDS(form, parent, ds){
 
   let refDSs = getArray(ds.ReferencedDataSources?.AxFormReferencedDataSource)
   for(let refDS of refDSs){
-    storeDS(form, eDS, refDS)
+    storeDS(form, parent, refDS)
   }
 }
 
@@ -108,8 +108,18 @@ export function expandFormControl(e){
     let tableField = Entity.find(`tag:tablefield element.prop:name=${ds.table} prop:name=${fieldName}`)
 
     if(!tableField){
-      console.log(`Control ${e._id}:${e.name} uses table field ${ds.table}.${e.dataField}, which doesn't exist`)
-      return;
+      let table = Entity.find(`tag:table prop:name=${ds.table}`)
+      while(table && table.extends){
+        table = Entity.find(`tag:table prop:name=${table.extends}`)
+        if(!table) break;
+        tableField = table.rels.field?.find(f => f.name == fieldName)
+        if(tableField) break;
+      }
+
+      if(!tableField){
+        console.log(`Control ${e._id}:${e.name} uses table field ${ds.table}.${e.dataField}, which doesn't exist`)
+        return;
+      }
     }
 
     e.rel(tableField, "tableField")

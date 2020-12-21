@@ -1,6 +1,7 @@
 import {tableNum} from "./Global.mjs"
 import QueryRun from "./QueryRun.mjs";
 import Query from "./Query.mjs";
+import JoinMode from "../enum/JoinMode.mjs";
 import {attemptJoinRecordAndQBDS, addAutoLinks} from "../../datamanagement/joins.mjs"
 
 export default class FormDataSource{
@@ -20,6 +21,7 @@ export default class FormDataSource{
       this.pQuery = this.pParentFDS.query()
       let parentQbds = this.pQuery.dataSourceName(this.joinSource())
       qbds = parentQbds.addDataSource(this.table(), this.name())
+      qbds.joinMode(JoinMode[this.linkType()]||0)
       
       addAutoLinks(parentQbds, qbds)
     } else {
@@ -35,6 +37,7 @@ export default class FormDataSource{
     this.name(meta.name)
     this.table(tableNum(meta.table))
     this.joinSource(meta.joinSource||"")
+    this.linkType(meta.linkType||"")
   }
 
   table(tabId = this.pTabId){
@@ -112,5 +115,9 @@ export default class FormDataSource{
 
   joinSource(joinSource = this.pJoinSource){
     return this.pJoinSource = joinSource
+  }
+
+  linkType(linkType = this.pLinkType){
+    return this.pLinkType = linkType
   }
 }

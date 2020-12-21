@@ -15,6 +15,10 @@ export default class FormField extends FormControl{
     return this.properties.dataField = dataField;
   }
 
+  dataSource(dataSource = this.properties.dataSource){
+    return this.properties.dataSource = dataSource
+  }
+
   record2StrValue(record){
     return record?.[this.dataField()] || ""
   }

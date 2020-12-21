@@ -10,7 +10,10 @@ export default class FormGridControl extends FormControlCollection{
   }
 
   onNewData(data){
-    this.siteElement.data = data.map(r => this.controls.reduce((obj, c) => {obj[c.dataField()] = c.record2StrValue(r); return obj}, {}))
+    this.siteElement.data = data.map(r => this.controls.reduce((obj, c) => {
+      obj[c.dataField()] = c.record2StrValue(r[c.dataSource()]); 
+      return obj
+    }, {}))
   }
 
   render(){

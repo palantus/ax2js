@@ -1,5 +1,6 @@
 import {getTableData} from "../../datamanagement/data.mjs"
 import {tableId2Name} from "./Global.mjs"
+import {runQuery} from "../../datamanagement/queryRunner.mjs"
 
 export default class QueryRun{
   constructor(query){
@@ -12,13 +13,11 @@ export default class QueryRun{
 
   async fetchData(){
     if(this.data) return;
-    let ds = this.pQuery.dataSourceNo(1)
-    let tabName = tableId2Name(ds.table())
-    let data = await getTableData(tabName)
-    
-    //Ranges, sorting etc.
+    this.data = runQuery(this.pQuery)
+  }
 
-    this.data = data
+  async fetchDataRunDS(qbds){
+
   }
 
   async run(){
@@ -33,11 +32,11 @@ export default class QueryRun{
   }
 
   get(tabId){
-    return this.data[this.curIdx]
+    return this.data[this.curIdx][tableId2Name(tabId)]
   }
 
   getNo(idx){
-    return this.data[this.curIdx]
+    return this.data[this.curIdx][Object.keys(this.data[this.curIdx])[0]]
   }
 
   async prompt(){
