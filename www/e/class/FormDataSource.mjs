@@ -71,7 +71,7 @@ export default class FormDataSource{
     await this.pQueryRun.next();
 
     this.fire("data-available", this.pQueryRun.data)
-    this.fire("active", this.pQueryRun.data[0] || null)
+    this.fire("active", this.pQueryRun.data?.[0]?.[this.name()] || null)
 
     this.active();
   }
@@ -85,7 +85,7 @@ export default class FormDataSource{
   }
 
   findIndex(idx){
-    this.fire("active", this.pQueryRun.data[idx-1] || null)
+    this.fire("active", this.pQueryRun.data[idx-1]?.[this.name()] || null)
   }
 
   on(eventName, id, fn){
