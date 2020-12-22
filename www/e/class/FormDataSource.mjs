@@ -27,7 +27,9 @@ export default class FormDataSource{
     } else {
       this.pQuery = new Query();
       qbds = this.pQuery.addDataSource(this.table(), this.name())
-      attemptJoinRecordAndQBDS(this.owner().args().dataset(), this.owner().args().record(), qbds)
+      if(this.owner().args()?.dataset()){
+        attemptJoinRecordAndQBDS(this.owner().args().dataset(), this.owner().args().record(), qbds)
+      }
     }
 
     await Promise.all(this.owner().dataSources().filter(ds => ds.joinSource() == this.name()).map(ds => ds.init()))
@@ -52,12 +54,24 @@ export default class FormDataSource{
     return this.pQueryRun = queryRun
   }
 
-  cursor(){
+  cursor(cursor){
+    if(cursor !== undefined){
+      this.pCursor = cursor
+      this.fire("active", this.pCursor)
+      this.owner().dataSources().filter(ds => ds.joinSource() == this.name()).forEach(ds => ds.linkActive())
+      this.active()
+    }
     return this.pCursor;
   }
 
   active(){
 
+  }
+
+  linkActive(){
+    let pParentFDS = this.owner().dataSource(this.joinSource())
+    attemptJoinRecordAndQBDS(pParentFDS.table(), pParentFDS.cursor(), this.pQuery.dataSourceNo(1))
+    this.executeQuery()
   }
 
   name(name){
@@ -70,12 +84,8 @@ export default class FormDataSource{
     this.pQueryRun = new QueryRun(this.pQuery)
     await this.pQueryRun.next();
 
-    this.pCursor = this.pQueryRun.data?.[0]?.[this.name()] || null
-
     this.fire("data-available", this.pQueryRun.data)
-    this.fire("active", this.pCursor)
-
-    this.active();
+    this.cursor(this.pQueryRun.data?.[0]?.[this.name()] || null)
   }
 
   getFirst(){
@@ -87,8 +97,7 @@ export default class FormDataSource{
   }
 
   findIndex(idx){
-    this.pCursor = this.pQueryRun.data[idx-1]?.[this.name()] || null
-    this.fire("active", this.pCursor)
+    this.cursor(this.pQueryRun.data[idx-1]?.[this.name()] || null)
   }
 
   on(eventName, id, fn){

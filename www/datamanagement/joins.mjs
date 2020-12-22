@@ -2,6 +2,7 @@ import {getCachedElementById} from "/e/class/Metadata.mjs"
 import {tableNum} from "/e/class/Global.mjs"
 
 export function attemptJoinRecordAndQBDS(parentTableId, record, qbds){
+  qbds.clearRanges()
   let childMeta = getCachedElementById(qbds.table())
 
   for(let r of childMeta.children.reverserelation||[]){

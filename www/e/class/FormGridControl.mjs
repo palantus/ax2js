@@ -98,6 +98,7 @@ class Element extends HTMLElement {
     this.gridData = data
 
     let t = this.shadowRoot.querySelector("tbody");
+    t.innerHTML = '';
     for(let d of data){
       let row = document.createElement("tr")
       for(let f of this.gridHead){

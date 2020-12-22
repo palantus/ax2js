@@ -28,6 +28,10 @@ export default class QueryBuildDataSource{
     return range;
   }
 
+  clearRanges(){
+    this.ranges = []
+  }
+
   addLink(parentFieldNameOrId, childFieldNameOrId){
     let parent = typeof parentFieldNameOrId === "string" ? parentFieldNameOrId : fieldId2Name(null, parentFieldNameOrId)
     let child = typeof childFieldNameOrId === "string" ? childFieldNameOrId : fieldId2Name(null, childFieldNameOrId)
