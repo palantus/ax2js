@@ -9,7 +9,8 @@ export default (app) => {
   app.use("/meta", route)
 
   route.get('/', function (req, res, next) {
-    res.json(Element.search("tag:element").map(e => { return { id: e._id, name: e.name, type: e.type } }))
+    res.json(Element.search("tag:element").map(e => { return { id: e._id, name: e.name, type: e.type } })
+              .concat(Element.search("tag:tablefield").map(e => { return { id: e._id, name: e.name, type: "tablefield", tableId: e.related?.element?._id}})))
   });
 
   route.get('/labels', async function (req, res, next) {

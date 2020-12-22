@@ -15,6 +15,12 @@ export function runQuery (q) {
     return newRecord
   })
 
+  for(let range of qbds.ranges){
+    let fieldName = range.fieldName()
+    let rangeValue = range.value()
+    result = result.filter(r => r[qbdsName][fieldName] == rangeValue)
+  }
+
   for(let ds of qbds.dataSources){
     joinQBDS(result, tabName, ds)
   }

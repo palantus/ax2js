@@ -19,3 +19,7 @@ export function tableId2Name(tabId){
 export function fieldId2Name(irrelevantTableId, fieldId){
   return elements.find(e => e.id == fieldId)?.name || ""
 }
+
+export function fieldNum(tableId, fieldName){
+  return elements.find(e => e.type == "tablefield" && e.name == fieldName && e.tableId == tableId)?.id
+}

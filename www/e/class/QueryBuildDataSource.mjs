@@ -17,10 +17,13 @@ export default class QueryBuildDataSource{
     return qbds
   }
 
-  addRange(fieldId){
+  addRange(fieldIdOrName){
     let range = new QueryBuildRange();
     range.table(this.tabId)
-    range.field(fieldId)
+    if(typeof fieldIdOrName === "string")
+      range.fieldName(fieldIdOrName)
+    else
+      range.field(fieldIdOrName)
     this.ranges.push(range)
     return range;
   }

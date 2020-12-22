@@ -27,7 +27,7 @@ export default class FormDataSource{
     } else {
       this.pQuery = new Query();
       qbds = this.pQuery.addDataSource(this.table(), this.name())
-      attemptJoinRecordAndQBDS(this.owner().args().record(), qbds)
+      attemptJoinRecordAndQBDS(this.owner().args().dataset(), this.owner().args().record(), qbds)
     }
 
     await Promise.all(this.owner().dataSources().filter(ds => ds.joinSource() == this.name()).map(ds => ds.init()))
@@ -70,8 +70,10 @@ export default class FormDataSource{
     this.pQueryRun = new QueryRun(this.pQuery)
     await this.pQueryRun.next();
 
+    this.pCursor = this.pQueryRun.data?.[0]?.[this.name()] || null
+
     this.fire("data-available", this.pQueryRun.data)
-    this.fire("active", this.pQueryRun.data?.[0]?.[this.name()] || null)
+    this.fire("active", this.pCursor)
 
     this.active();
   }
@@ -85,7 +87,8 @@ export default class FormDataSource{
   }
 
   findIndex(idx){
-    this.fire("active", this.pQueryRun.data[idx-1]?.[this.name()] || null)
+    this.pCursor = this.pQueryRun.data[idx-1]?.[this.name()] || null
+    this.fire("active", this.pCursor)
   }
 
   on(eventName, id, fn){

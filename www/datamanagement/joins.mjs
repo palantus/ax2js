@@ -1,10 +1,29 @@
 import {getCachedElementById} from "/e/class/Metadata.mjs"
 import {tableNum} from "/e/class/Global.mjs"
 
-export function attemptJoinRecordAndQBDS(record, qbds){
-  let table = getCachedElementById(qbds.table())
+export function attemptJoinRecordAndQBDS(parentTableId, record, qbds){
+  let childMeta = getCachedElementById(qbds.table())
 
-  console.log(table, record, qbds)
+  for(let r of childMeta.children.reverserelation||[]){
+    if(r.tableId != parentTableId) continue
+
+    for(let c of r.children.constraint||[]){
+      qbds.addRange(c.relatedField).value(record[c.field])
+      //console.log(`${childMeta.name}.${c.relatedField} == ${record[c.field]}`)
+    }
+  }
+
+  for(let r of childMeta.children.relation||[]){
+    let tabName = r.relatedTable
+    let tabId = tableNum(tabName)
+    if(tabId != parentTableId) continue
+
+    for(let c of r.children.constraint||[]){
+      let qbr = qbds.addRange(c.field)
+      qbr.value(record[c.relatedField])
+      //console.log(`${childMeta.name}.${c.field} == ${record[c.relatedField]}`)
+    }
+  }
 }
 
 export function addAutoLinks(parent, child){
@@ -18,6 +37,7 @@ export function addAutoLinks(parent, child){
       child.addLink(c.field, c.relatedField)
       //console.log(`JOIN ${tableName}.${c.field} <-> ${childMeta.name}.${c.relatedField}`)
     }
+    return; // Only use one relation per table
   }
 
   for(let r of childMeta.children.relation||[]){
@@ -29,5 +49,6 @@ export function addAutoLinks(parent, child){
       child.addLink(c.relatedField, c.field)
       //console.log(`JOIN ${tabName}.${c.field} <-> ${childMeta.name}.${c.relatedField}`)
     }
+    return; // Only use one relation per table
   }
 }

@@ -1,6 +1,8 @@
+import {fieldNum, fieldId2Name} from './Global.mjs'
+
 export default class QueryBuildRange{
   constructor(){
-    this.value = ""
+    this.pValue = ""
     this.tabId = 0;
     this.fieldId = 0;
   }
@@ -14,7 +16,23 @@ export default class QueryBuildRange{
     return this.tabId = tabId;
   }
 
-  table(fieldId = this.fieldId){
-    return this.fieldId = fieldId;
+  field(fieldId = this.fieldId){
+    if(fieldId){
+      this.pFieldName = fieldId2Name(fieldId)
+      this.fieldId = fieldId;
+    }
+    return this.fieldId
+  }
+
+  fieldName(fieldName = this.pFieldName){
+    if(fieldName){
+      this.fieldId = fieldNum(fieldName)
+      this.pFieldName = fieldName;  
+    }
+    return this.pFieldName
+  }
+
+  value(value = this.pValue){
+    return this.pValue = value
   }
 }
