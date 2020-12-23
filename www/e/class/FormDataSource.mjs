@@ -58,7 +58,7 @@ export default class FormDataSource{
     if(cursor !== undefined){
       this.pCursor = cursor
       this.fire("active", this.pCursor)
-      this.owner().dataSources().filter(ds => ds.joinSource() == this.name()).forEach(ds => ds.linkActive())
+      this.owner().dataSources().filter(ds => ds.joinSource() == this.pName).forEach(ds => ds.linkActive())
       this.active()
     }
     return this.pCursor;
