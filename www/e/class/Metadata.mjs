@@ -3,18 +3,26 @@ import api from "/system/api.mjs"
 
 export let elements = []
 let cache = {}
+let loadPromise = null;
 
 export async function load() {
   if(elements.length < 1)
-    elements = await api.get("meta")
-  return elements
+    loadPromise = api.get("meta")
+  return elements = await loadPromise
 }
 
 export async function getElementByType(type, name, fillMetadata = true){
-  let e = elements.find(e => e.type == type && e.name == name)
-  if(!e) 
-    throw `Element ${name} of type ${type} doesn't exist`
-  return cache[e.id] || (fillMetadata ? cacheElement(await api.get("meta/" + e.id)) : e);
+  if(elements.length > 0){
+    let e = elements.find(e => e.type == type && e.name == name)
+    if(!fillMetadata)
+      return e;
+
+    let cachedElement = cache[e.id];
+    if(cachedElement) 
+      return cachedElement;
+  }
+
+  return cacheElement(await api.get(`meta/${type}/${name}`))
 }
 
 export function getCachedElementByType(type, name){

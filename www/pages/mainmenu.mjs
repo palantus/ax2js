@@ -1,7 +1,8 @@
 const elementName = 'main-menu'
 import {goto, state} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
-import api from "/system/api.mjs"
+import {getElementByType} from "/e/class/Metadata.mjs"
+import {load} from "/e/class/Metadata.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -42,7 +43,12 @@ class Page extends HTMLElement {
   }
 
   async fetchAndUpdateMainMenu(){
-    let menu = await api.get("meta/menu/MainMenu")
+    //Start preloading
+    import("/e/class/Form.mjs")
+    load();
+
+    //Fetch menu
+    let menu = await getElementByType("menu", "MainMenu")
 
     let container = this.shadowRoot.querySelector("#container")
     this.addMenu(container, menu.children?.item||[])
