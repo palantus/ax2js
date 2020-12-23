@@ -44,6 +44,19 @@ function addSubItemsToTable(table, metadata){
     }
   }
 
+  let fieldGroupExtensions = getArray(metadata.FieldGroupExtensions?.AxTableFieldGroupExtension)
+  for(let fieldGroup of fieldGroupExtensions){
+    let fg = Entity.find(`tag:tablefieldgroup element.id:${table._id} prop:name=${fieldGroup.Name}`)
+    if(!fg) continue;
+    
+    let fields = getArray(fieldGroup.Fields?.AxTableFieldGroupField)
+    for(let field of fields){
+      let f = new Entity().tag("tablefieldgroupfield").rel(table, "element")
+      fg.rel(f, "field")
+      storeProperties(f, field)
+    }
+  }
+
   let fields = getArray(metadata.Fields?.AxTableField)
   for(let field of fields){
     let f = new Entity().tag("tablefield").rel(table, "element")
