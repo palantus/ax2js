@@ -5,7 +5,7 @@ import api from "/system/api.mjs"
 import "/components/field-edit.mjs"
 import MenuFunction from "../e/class/MenuFunction.mjs";
 import {load} from "/e/class/Metadata.mjs"
-import {dataReady} from "../datamanagement/data.mjs"
+import {dataReady, tryUpgrade} from "../datamanagement/data.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -89,6 +89,8 @@ class Element extends HTMLElement {
 
   async loadMenuItem(itemName){
     await Promise.all([load(), dataReady]);
+    await tryUpgrade();
+    
 
     /*
     let miInfo = this.data.elements.find(i => i.type == "menuitemdisplay" && i.name == itemName)

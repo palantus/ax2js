@@ -4,6 +4,7 @@ let recIdCounter = 1;
 export let dataReady = new Promise(ready => {dataReadyFunction = ready})
 let database = {}
 import {getCachedElementByType} from "../e/class/Metadata.mjs"
+let isUpgradeDone = false;
 
 export async function setReader(_reader){
   reader = _reader;
@@ -12,15 +13,18 @@ export async function setReader(_reader){
     database[tabName] = await reader.getAllRecords(tabName)
     r()
   })))
+  dataReadyFunction();
+}
 
+export async function tryUpgrade(){
+  if(isUpgradeDone) return;
+  isUpgradeDone = true;
   try{
     let upgrade = await import("/datamanagement/dataupgrade.mjs")
     if(upgrade && upgrade.default){
       await upgrade.default()
     }
   } catch(err){}
-
-  dataReadyFunction();
 }
 
 export function getTableData(tableName){
