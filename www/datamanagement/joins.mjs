@@ -4,6 +4,7 @@ import {tableNum} from "/e/class/Global.mjs"
 export function attemptJoinRecordAndQBDS(parentTableId, record, qbds){
   qbds.clearRanges()
   let childMeta = getCachedElementById(qbds.table())
+  if(!childMeta) return;
 
   for(let r of childMeta.children.reverserelation||[]){
     if(r.tableId != parentTableId) continue

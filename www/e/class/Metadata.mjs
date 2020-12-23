@@ -19,7 +19,7 @@ export async function getElementByType(type, name, fillMetadata = true){
 
 export function getCachedElementByType(type, name){
   let e = elements.find(e => e.type == type && e.name == name)
-  return getCachedElementById(e.id) || null
+  return getCachedElementById(e?.id) || null
 }
 
 export function getCachedElementById(id){
