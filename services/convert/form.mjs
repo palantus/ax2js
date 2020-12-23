@@ -196,6 +196,45 @@ export function mergeFormExtension(ext){
   })
 }
 
+export function createMissingFormControlsInGroup(e){
+  if(!e.dataSource || !e.dataGroup) return;
+
+  let form = e.related.element;
+  if(!form) return;
+  let ds = Entity.find(`tag:fds element.id:${form} prop:name=${e.dataSource}`)
+  if(!ds) return;
+  let table = Entity.find(`tag:table prop:name=${ds.table}`)
+  if(!table) return;
+
+  let group = table.rels.fieldgroup.find(fg => fg.name == e.dataGroup)
+  if(!group) return;
+
+  for(let gf of group.rels?.field||[]){
+    let control = e.rels.control?.find(c => c.dataField == gf.dataField)
+    if(control) continue;
+    let field = table.rels.field.find(f => f.name == gf.dataField)
+    if(!field) continue;
+    let type = field.rels.type?.[0]
+    if(!type) continue;
+
+
+    switch(type.type){
+      case "enum":
+        let ctl = new Entity().tag("formcontrol")
+                              .rel(form, "element")
+                              .prop("dataSource", ds.name)
+                              .prop("dataField", gf.dataField)
+                              .prop("type", "ComboBox")
+                              .rel(field, "tableField")
+        e.rel(ctl, "control")
+        break;
+
+      default:
+        console.log(`Form ${e.related.element.name} has group/grid ${e.name} which is missing field ${gf.dataField} of type ${type.type} (unhandled type!)`)
+    }
+  }
+}
+
 export function updateFormFieldJumpAndLookup(e){
   let tableField = e.related?.tableField
   if(!tableField) return;

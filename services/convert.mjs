@@ -1,5 +1,5 @@
 import Entity from "entitystorage"
-import {convertForm, expandFormControl, convertFormExtension, mergeFormExtension, expandFDS, updateFormFieldJumpAndLookup} from "./convert/form.mjs"
+import {convertForm, expandFormControl, convertFormExtension, mergeFormExtension, expandFDS, updateFormFieldJumpAndLookup, createMissingFormControlsInGroup} from "./convert/form.mjs"
 import {convertEDT, expandEDT} from "./convert/edt.mjs"
 import {convertEnum} from "./convert/enum.mjs"
 import {convertTable, expandTableField, convertTableExtension, updateTableReferences} from "./convert/table.mjs"
@@ -38,22 +38,22 @@ export function convert(entity, metadata){
 }
 
 export function expandAllElements(){
-  Entity.search("tag:edt !prop:extends=").map(e => expandEDT(e))
-  Entity.search("tag:tablefield").map(e => expandTableField(e))
-  Entity.search("tag:formcontrol").map(e => expandFormControl(e))
-  Entity.search("tag:formcontrol prop:type=MenuFunctionButton").map(e => expandMenuFunctionButton(e))
-  Entity.search("tag:menusubitem").map(e => expandMenuSubItem(e))
-  Entity.search("tag:menusubref").map(e => expandMenuSubRef(e))
-  Entity.search("tag:fds").map(e => expandFDS(e))
+  Entity.search("tag:edt !prop:extends=").forEach(e => expandEDT(e))
+  Entity.search("tag:tablefield").forEach(e => expandTableField(e))
+  Entity.search("tag:formcontrol").forEach(e => expandFormControl(e))
+  Entity.search("tag:formcontrol prop:type=MenuFunctionButton").forEach(e => expandMenuFunctionButton(e))
+  Entity.search("tag:menusubitem").forEach(e => expandMenuSubItem(e))
+  Entity.search("tag:menusubref").forEach(e => expandMenuSubRef(e))
+  Entity.search("tag:fds").forEach(e => expandFDS(e))
+  Entity.search("tag:formcontrol (prop:type=Grid|prop:type=Group) !prop:dataField=").forEach(e => createMissingFormControlsInGroup(e))
 }
 
 export function mergeExtensions(){
-  Entity.search("tag:menuext").map(e => mergeMenuExtension(e))
-  //Entity.search("tag:tableext").map(e => mergeTableExtension(e))
-  Entity.search("tag:formext").map(e => mergeFormExtension(e))
+  Entity.search("tag:menuext").forEach(e => mergeMenuExtension(e))
+  Entity.search("tag:formext").forEach(e => mergeFormExtension(e))
 }
 
 export function updateReferences(){
   Entity.search("tag:table").forEach(e => updateTableReferences(e))
-  Entity.search("tag:formcontrol").map(e => updateFormFieldJumpAndLookup(e))
+  Entity.search("tag:formcontrol").forEach(e => updateFormFieldJumpAndLookup(e))
 }
