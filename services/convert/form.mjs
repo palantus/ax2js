@@ -195,3 +195,20 @@ export function mergeFormExtension(ext){
     }
   })
 }
+
+export function updateFormFieldJumpAndLookup(e){
+  let tableField = e.related?.tableField
+  if(!tableField) return;
+  let type = tableField.related?.type
+  if(!type) return;
+  let ref = type.related?.reference
+  if(!ref) return;
+
+  let relatedTable = Entity.find(`tag:table prop:name=${ref.table}`)
+  if(!relatedTable?.formRef) return;
+
+  let mi = Entity.find(`tag:menuitem prop:name=${relatedTable.formRef} prop:type=menuitemdisplay`)
+  if(!mi) return;
+
+  e.rel(mi, "jumpRef")
+}

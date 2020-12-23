@@ -1,5 +1,5 @@
 import Entity from "entitystorage"
-import {convertForm, expandFormControl, convertFormExtension, mergeFormExtension, expandFDS} from "./convert/form.mjs"
+import {convertForm, expandFormControl, convertFormExtension, mergeFormExtension, expandFDS, updateFormFieldJumpAndLookup} from "./convert/form.mjs"
 import {convertEDT, expandEDT} from "./convert/edt.mjs"
 import {convertEnum} from "./convert/enum.mjs"
 import {convertTable, expandTableField, convertTableExtension, updateTableReferences} from "./convert/table.mjs"
@@ -55,4 +55,5 @@ export function mergeExtensions(){
 
 export function updateReferences(){
   Entity.search("tag:table").forEach(e => updateTableReferences(e))
+  Entity.search("tag:formcontrol").map(e => updateFormFieldJumpAndLookup(e))
 }

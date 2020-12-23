@@ -4,6 +4,8 @@ export default class FormStringControl extends FormField{
   async init(){
     super.init()
     this.siteElement = document.createElement("ax-formstringcontrol");
+    this.jumpRef = this.jumpRef.bind(this);
+    this.siteElement.addEventListener("jumpRef", this.jumpRef)
   }
 
   onActiveRecord(record){
@@ -13,6 +15,10 @@ export default class FormStringControl extends FormField{
   render(){
     super.render()
     this.siteElement.setAttribute("label", this.label())
+    if(this.hasJumpRef()){
+      this.siteElement.setAttribute("hasref", "true")
+      this.siteElement.setAttribute("reflabel", this.pJumpRef.label || "Reference")
+    }
   }
 }
 
@@ -44,10 +50,14 @@ template.innerHTML = `
       display: inline-block;
       vertical-align: top;
     }
+    #jumpref{
+      display: none;
+    }
   </style>
   <div class="field">
       <label for="val"></label>
       <span name="val" class="value right"><input type="text"></input></span>
+      <button id="jumpref">JUMP</button>
   </div>
 `;
 
@@ -57,7 +67,13 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.jumpRefClicked = this.jumpRefClicked.bind(this)
+    this.shadowRoot.getElementById("jumpref").addEventListener("click", this.jumpRefClicked)
 
+  }
+
+  jumpRefClicked(){
+    this.dispatchEvent(new Event("jumpRef"))
   }
 
   connectedCallback() {
@@ -71,7 +87,7 @@ class Element extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['label', 'valuestr'];
+    return ['label', 'valuestr', 'hasref', 'reflabel'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -81,6 +97,12 @@ class Element extends HTMLElement {
         break;
       case 'valuestr':
         this.shadowRoot.querySelector('input').value = newValue
+        break;
+      case 'hasref':
+        this.shadowRoot.getElementById("jumpref").style.display = newValue == "true" ? "inline-block" : "none"
+        break;
+      case 'reflabel':
+        this.shadowRoot.getElementById("jumpref").innerText = newValue
         break;
     }
   }

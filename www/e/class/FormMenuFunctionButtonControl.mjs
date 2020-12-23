@@ -1,7 +1,6 @@
 import FormButtonControl from "./FormButtonControl.mjs"
 import MenuFunction from "./MenuFunction.mjs";
 import Args from "./Args.mjs"
-import {tableNum} from "./Global.mjs"
 
 
 export default class FormMenuFunctionButtonControl extends FormButtonControl{
@@ -20,6 +19,5 @@ export default class FormMenuFunctionButtonControl extends FormButtonControl{
     args.dataset(this.owner().dataSource(1).table())
     args.record(this.owner().dataSource(1).cursor())
     new MenuFunction(this.menuItemName()).run(args);
-    //goto(this.menuItemName())
   }
 }

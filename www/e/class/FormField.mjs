@@ -1,10 +1,14 @@
 import FormControl from "./FormControl.mjs"
+import MenuFunction from "./MenuFunction.mjs";
+import Args from "./Args.mjs"
 
 export default class FormField extends FormControl{
   initFromMeta(meta){
     super.initFromMeta(meta)
     this.label(meta.label || meta.text || meta.children.type?.[0].label || meta.children.tableField?.[0].label || meta.children.tableField?.[0]?.children?.type?.[0]?.label || "")
     this.dataField(meta.dataField)
+
+    this.pJumpRef = meta.children?.jumpRef?.[0]
   }
 
   label(label = this.properties.label){
@@ -21,5 +25,18 @@ export default class FormField extends FormControl{
 
   record2StrValue(record){
     return record?.[this.dataField()] || ""
+  }
+
+  jumpRef(){
+    if(!this.pJumpRef) return;
+    let args = new Args()
+    let fds = this.owner().dataSource(this.dataSource())
+    args.dataset(fds.table())
+    args.record(fds.cursor())
+    new MenuFunction(this.pJumpRef.name).run(args);
+  }
+
+  hasJumpRef(){
+    return this.pJumpRef ? true : false
   }
 }
