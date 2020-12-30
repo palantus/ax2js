@@ -7,7 +7,16 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Compile all",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/compiler/run-compile-all.mjs"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Read metadata",
       "skipFiles": [
         "<node_internals>/**"
       ],
