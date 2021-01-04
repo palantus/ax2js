@@ -15,5 +15,10 @@ export default class ClassGenerator{
 
   }
 
+  generate(){
+    return `class ${this.name}{
+      
+    }`
+  }
   
 }
