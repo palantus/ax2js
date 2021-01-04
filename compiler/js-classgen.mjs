@@ -4,6 +4,7 @@ export default class ClassGenerator{
   constructor(parent, name){
     this.parent = parent
     this.name = name
+    this.functions = []
   }
 
   addDependencyByName(name){
@@ -11,14 +12,16 @@ export default class ClassGenerator{
     this.parent.rel(entity, "dep")
   }
 
-  addFunction(name, source){
-
+  addFunction(name, source, parms, isStatic){
+    this.functions.push({name, source, isStatic, parms})
   }
 
   generate(){
-    return `class ${this.name}{
-      
-    }`
+    return `class ${this.name}{${
+        this.functions.map(f => 
+          `\n  ${f.isStatic ? "static " : ""}${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
+        ).join("\n\n")
+      }}`
   }
   
 }

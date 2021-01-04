@@ -17,6 +17,25 @@ export default (app) => {
     res.json(await service.getLabels())
   });
 
+  route.get('/:type/:name/:func.xpp', function (req, res, next) {
+    let element = Element.lookupType(req.params.type, req.params.name)
+    let func = req.params.func == "declaration" ? element?.related.declaration : element?.rels.function?.find(f => f.name == req.params.func)
+    res.setHeader('content-type', 'text/plain');
+    res.send(func?.related?.xpp?.source||null)
+  });
+
+  route.get('/:type/:name/:func-ast.json', function (req, res, next) {
+    let element = Element.lookupType(req.params.type, req.params.name)
+    let func = req.params.func == "declaration" ? element?.related.declaration : element?.rels.function?.find(f => f.name == req.params.func)
+    res.json(func?.related?.ast?.source||null)
+  });
+
+  route.get('/:type/:name.js', function (req, res, next) {
+    let element = Element.lookupType(req.params.type, req.params.name)
+    res.setHeader('content-type', 'application/javascript');
+    res.send(element?.related?.js?.source||null)
+  });
+
   route.get('/:type/:name', function (req, res, next) {
     res.json(Element.lookupType(req.params.type, req.params.name)?.toObj())
   });

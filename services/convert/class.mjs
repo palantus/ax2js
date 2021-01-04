@@ -25,11 +25,17 @@ export function convertClassExtension(clsExt, metadata) {
 }
 
 function addSubItemsToClass(cls, metadata){
-  let decl = metadata.SourceCode.Declaration || ""
-  cls.rel(new Entity().tag("classdeclaration").prop("sourceXPP", decl).rel(cls, "element"), "declaration")
+  let xppSource = metadata.SourceCode.Declaration || ""
+  let declElement = new Entity().tag("classdeclaration").rel(cls, "element")
+  cls.rel(declElement, "declaration")
+
+  declElement.rel(new Entity().tag("xpp").prop("source", xppSource), "xpp")
 
   let methods = getArray(metadata.SourceCode?.Methods?.Method)
   for(let method of methods){
-    cls.rel(new Entity().tag("classfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(cls, "element"), "function")
+    let funcElement = new Entity().tag("classfunction").prop("name", method.Name).rel(cls, "element")
+    cls.rel(funcElement, "function")
+
+    funcElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
   }
 }

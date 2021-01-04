@@ -25,7 +25,7 @@ export default class Element extends Entity{
       Object.assign(obj, this.props);
       obj.children = this.rels
       for(let rel in obj.children){
-        if(rel == "element"){
+        if(rel == "element" || rel == "xpp" || rel == "js" || rel == "ast"){
           obj.parentElementId = obj.children[rel][0]._id
           delete obj.children[rel]
         } else {

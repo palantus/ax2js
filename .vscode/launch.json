@@ -11,7 +11,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/compiler/run-compile-all.mjs"
+      "program": "${workspaceFolder}/compile-all.mjs"
     },
     {
       "type": "node",
