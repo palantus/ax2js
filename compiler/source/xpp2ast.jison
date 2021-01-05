@@ -516,8 +516,8 @@ systemref
 enumstr
   : id
     {$$ = $1}
-  | DO id
-    {$$ = 'do' + $2}
+  /*| DO id
+    {$$ = $1 + $2}*/
   | CLIENT
     {$$ = $1}
   | SERVER

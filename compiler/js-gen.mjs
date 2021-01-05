@@ -1,5 +1,7 @@
 import Entity from 'entitystorage'
 import ClassGen from './js-classgen.mjs'
+import js_beautify from 'js-beautify';
+let beautify = js_beautify.js
 
 class Compiler{
 
@@ -24,7 +26,7 @@ class Compiler{
     this.e.rels.function?.forEach(this.compileFunction)
     
     e.rels.js?.forEach(e => e.delete())
-    let jsSource = this.gen.generate()
+    let jsSource = beautify(this.gen.generate(), { indent_size: 2 });
     e.rel(new Entity().tag("js").prop("source", jsSource), "js")
   }
 
@@ -153,7 +155,6 @@ class Compiler{
 			}
 		}
 
-		ret += ";";
 		return ret;
 	}
 
@@ -230,7 +231,7 @@ class Compiler{
 			return ret;
 		}
 
-		return "if(" + this.compileExpression(ast.condition, parents) + "){" + this.compileExpression(ast.body, parents) + "}"
+		return "if(" + this.compileExpression(ast.condition, parents) + "){\n" + this.compileExpression(ast.body, parents) + "}"
 	}
 
 	compileSelect(ast, parents){
