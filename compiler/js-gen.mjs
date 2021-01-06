@@ -27,10 +27,17 @@ class Compiler{
     this.compileDeclaration();
     this.e.rels.function?.forEach(this.compileFunction)
 
+    if(e.type == 'table'){
+      this.dependencies.add("Common")
+      this.gen.setExtends("Common")
+    }
+
     e.rels.js?.forEach(e => e.delete())
     let jsSource = this.gen.generate()
     let imports = this.genImports()
     let fullSource = `${imports}${imports?';':''}\n\n${jsSource}; export default ${this.e.name};`;
+
+    
 
     e.rel(new Entity().tag("js").prop("source", beautify(fullSource, { indent_size: 2 })), "js")
   }
@@ -135,7 +142,12 @@ class Compiler{
 			case "for":
 				return "for(" + this.compileExpression(ast.vardeclaration, context) + "; " + this.compileExpression(ast.condition, context) + "; " + this.compileExpression(ast.counter, context) + "){" + this.compileExpression(ast.body, context) + "}"
 			case "enumval":
-				return this.compileId(ast.enum, context) + "." + this.compileId(ast.val, context)
+        let enumEntity = Entity.find(`prop:name=${this.compileId(ast.enum, context)} tag:enum`)
+        let enumValue = this.compileId(ast.val, context)
+        if(enumEntity)
+          return ''+enumEntity.rels.value?.find(e => e.name == enumValue)?.value||0
+        else
+          return '0'
 			case "select":
 				return this.compileSelect(ast, context)
 			case "equals":

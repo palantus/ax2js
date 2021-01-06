@@ -17,10 +17,14 @@ export default class ClassGenerator{
   }
 
   generate(){
-    return `class ${this.name}{${
+    return `class ${this.name}${this.extendsVal?` extends ${this.extendsVal}`:''}{${
         this.functions.map(f => 
-          `\n  ${f.isStatic ? "static " : ""}${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
-        ).join("\n\n")
+          `${f.isStatic ? "static " : ""}${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
+        ).join("\n")
       }}`
+  }
+
+  setExtends(extendsVal){
+    this.extendsVal = extendsVal
   }
 }
