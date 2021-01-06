@@ -4,9 +4,12 @@ import Entity from "entitystorage"
 
 Entity.init("./data").then(() => {
   //let elements = Entity.search(`tag:tablefunction`).map(e => e.related.xpp)
-  let elements = Entity.search("xpp.tag:xpp element.prop:name=AhkPetHelper")
+  let elements = Entity.search("xpp.tag:xpp element.prop:name=^AhkPet")
   elements.forEach(e => genAST(e))
 
-  elements = [Entity.find("tag:class prop:name=AhkPetHelper")]
+  elements = [
+    Entity.find("tag:class prop:name=AhkPetHelper"),
+    Entity.find("tag:table prop:name=AhkPets")
+  ]
   elements.forEach(e => compileElement(e))
 })

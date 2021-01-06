@@ -30,7 +30,7 @@ export default (app) => {
     res.json(func?.related?.ast?.source||null)
   });
 
-  route.get('/:type/:name.js', function (req, res, next) {
+  route.get('/:type/:name.mjs', function (req, res, next) {
     let element = Element.lookupType(req.params.type, req.params.name)
     res.setHeader('content-type', 'application/javascript');
     res.send(element?.related?.js?.source||null)

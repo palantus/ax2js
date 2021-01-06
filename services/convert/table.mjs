@@ -27,7 +27,10 @@ export function convertTableExtension(tableExt, metadata) {
 function addSubItemsToTable(table, metadata){
   let methods = getArray(metadata.SourceCode?.Methods?.Method)
   for(let method of methods){
-    table.rel(new Entity().tag("tablefunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(table, "element"), "function")
+    let funcElement = new Entity().tag("tablefunction").prop("name", method.Name).rel(table, "element")
+    table.rel(funcElement, "function")
+
+    funcElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
   }
 
   let fieldGroups = getArray(metadata.FieldGroups?.AxTableFieldGroup)

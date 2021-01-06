@@ -23,5 +23,4 @@ export default class ClassGenerator{
         ).join("\n\n")
       }}`
   }
-  
 }
