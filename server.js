@@ -67,6 +67,7 @@ let load = async () => {
   app.use("/api", routes());
   app.use(express.static('www'));
   app.use("/ax", (req, res) => res.sendFile(path.join(__dirname, "www/index.html")))
+  app.get("/favicon.ico", (req, res) => res.sendFile(path.join(__dirname, "www/img/favicon.ico")))
 
   http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));

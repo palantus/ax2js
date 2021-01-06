@@ -1,10 +1,11 @@
 import {genAST, initASTParser} from "./compiler/ast-gen.mjs"
-import {compileElement} from "./compiler/js-gen.mjs"
+import {compileElement, initJSCompiler} from "./compiler/js-gen.mjs"
 import Entity from "entitystorage"
 
 Promise.all([
   Entity.init("./data"),
-  initASTParser()
+  initASTParser(),
+  initJSCompiler()
 ]).then(() => {
   //let elements = Entity.search(`tag:tablefunction`).map(e => e.related.xpp)
   let elements = Entity.search("xpp.tag:xpp element.prop:name=^AhkPet")

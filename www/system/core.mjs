@@ -131,7 +131,9 @@ class AxmCore{
 }
 
 let axm = new AxmCore();
-axm.init();
+if (typeof window !== 'undefined'){
+  axm.init();
+}
 
 export function goto(path){axm.goto(path)}
 export function pushStateQuery(path){axm.pushStateQuery(path)}

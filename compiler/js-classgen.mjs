@@ -5,6 +5,8 @@ export default class ClassGenerator{
     this.parent = parent
     this.name = name
     this.functions = []
+    this.classVars = ""
+    this.extendsVal = ""
   }
 
   addDependencyByName(name){
@@ -17,7 +19,7 @@ export default class ClassGenerator{
   }
 
   generate(){
-    return `class ${this.name}${this.extendsVal?` extends ${this.extendsVal}`:''}{${
+    return `class ${this.name}${this.extendsVal?` extends ${this.extendsVal}`:''}{${this.classVars}\n${
         this.functions.map(f => 
           `${f.isStatic ? "static " : ""}${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
         ).join("\n")
@@ -26,5 +28,9 @@ export default class ClassGenerator{
 
   setExtends(extendsVal){
     this.extendsVal = extendsVal
+  }
+
+  addClassVars(classVars){
+    this.classVars = classVars
   }
 }

@@ -1,5 +1,5 @@
 
-import api from "/system/api.mjs"
+import api from "../../system/api.mjs"
 
 export let elements = []
 let cache = {}

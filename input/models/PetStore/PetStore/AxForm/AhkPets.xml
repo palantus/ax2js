@@ -9,11 +9,45 @@
 [Form]
 public class AhkPets extends FormRun
 {
+    QueryBuildRange qbrType;
+
 }
 ]]></Source>
 			</Method>
 		</Methods>
-		<DataSources xmlns="" />
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>AhkPets</Name>
+				<Methods>
+					<Method>
+						<Name>executeQuery</Name>
+						<Source><![CDATA[
+        public void executeQuery()
+        {
+            super();
+
+            AhkPetType pType = PetTypeFilter.selection();
+            qbrType.value(pType ? queryValue(pType) : SysQuery::valueUnlimited());
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+
+            qbrType = AhkPets_ds.query().dataSourceNo(1).addRange(fieldNum(AhkPets, Type));
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+		</DataSources>
 		<DataControls xmlns="">
 			<Control>
 				<Name>LoadData</Name>
@@ -26,6 +60,61 @@ public class AhkPets extends FormRun
         {
             AhkPetHelper::loadData();
             AhkPets_ds.executeQuery();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>ExportData</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            
+            LessorDataExport_LD2 ex = new LessorDataExport_LD2();
+            ex.beginExport();
+            ex.beginTable(tableNum(AhkPets));
+            AhkPets pets;
+            while select pets   
+                ex.exportRecord(pets);
+            ex.endTable();
+            
+            ex.beginTable(tableNum(AhkPetSetup));
+            AhkPetSetup setup;
+            while select setup
+                ex.exportRecord(setup);
+            ex.endTable();
+
+            ex.endExport();
+
+            File::SendFileToUser(ex.parmStream(), 'pets.ld2');
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>PetTypeFilter</Name>
+				<Type>ComboBox</Type>
+				<Methods>
+					<Method>
+						<Name>modified</Name>
+						<Source><![CDATA[
+        public boolean modified()
+        {
+            boolean ret;
+    
+            ret = super();
+
+            AhkPets_ds.executeQuery();
+    
+            return ret;
         }
 
 ]]></Source>
@@ -95,6 +184,14 @@ public class AhkPets extends FormRun
 									i:nil="true" />
 								<Text>Load data</Text>
 							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormButtonControl">
+								<Name>ExportData</Name>
+								<Type>Button</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Text>Export</Text>
+							</AxFormControl>
 						</Controls>
 					</AxFormControl>
 				</Controls>
@@ -131,6 +228,16 @@ public class AhkPets extends FormRun
 								</AxFormControlExtensionProperty>
 							</ExtensionProperties>
 						</FormControlExtension>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormComboBoxControl">
+						<Name>PetTypeFilter</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>ComboBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<EnumType>AhkPetType</EnumType>
+						<Items />
 					</AxFormControl>
 				</Controls>
 				<ArrangeMethod>HorizontalLeft</ArrangeMethod>

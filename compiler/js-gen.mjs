@@ -3,6 +3,8 @@ import ClassGen from './js-classgen.mjs'
 import js_beautify from 'js-beautify';
 let beautify = js_beautify.js
 
+let globalCaseMap;
+
 class Compiler{
 
   constructor(){
@@ -10,7 +12,9 @@ class Compiler{
     this.compileExpression = this.compileExpression.bind(this)
     this.rootContext = {variables: [], parent: null}
     this.dependencies = new Set()
+    this.globalUsages = new Set()
   }
+
   compile(e){
     this.e = e
 
@@ -37,28 +41,43 @@ class Compiler{
     let imports = this.genImports()
     let fullSource = `${imports}${imports?';':''}\n\n${jsSource}; export default ${this.e.name};`;
 
-    
-
     e.rel(new Entity().tag("js").prop("source", beautify(fullSource, { indent_size: 2 })), "js")
   }
 
   genImports(){
-    return Array.from(this.dependencies).map(i => {
-      let type = Entity.find(`prop:name=${i} (tag:class|tag:edt|tag:enum|tag:table)`)?.type;
-      if(type)
-        return `import ${i} from '/api/meta/${type}/${i}.mjs'`
+    let imports = new Set()
+    this.dependencies.forEach(i => {
+      let e = Entity.find(`prop:name=${i} (tag:class|tag:edt|tag:enum|tag:table)`);
+      if(e)
+        imports.add(`import ${i} from '/api/meta/${e.type}/${e.name}.mjs'`)
       else
-        return `import ${i} from '/e/class/${i}.mjs'`
-    }).join(";\n")
+        imports.add(`import ${i} from '/e/class/${i}.mjs'`)
+    })
+
+    if(this.globalUsages.size > 0){
+      imports.add(`import {${Array.from(this.globalUsages).join(", ")}} from '/e/class/Global.mjs'`)
+    }
+    return Array.from(imports).join(";\n")
   }
 
   compileDeclaration(){
-    let ast = this.e.related.declaration?.related.ast
+    let ast = this.e.related.declaration?.related.ast.source
     if(!ast) return;
 
-    console.log("STUB: Compile declaration")
+    let body = this.compileDeclarationVars(ast.child.body)
+
+    this.gen.addClassVars(body)
 
     //TODO: add variables to this.rootContext
+  }
+
+  compileDeclarationVars(ast){
+    if(ast.type == "empty") return ""
+
+    if(ast instanceof Array )
+      return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join(", ")
+    this.rootContext.variables.push("this."+ast.name.id)
+    return ast.name.id
   }
 
   compileFunction(f){
@@ -74,7 +93,9 @@ class Compiler{
   compileFunctionParms(ast){
     if(ast.type == "empty") return ""
 
-    return ""
+    if(ast instanceof Array )
+      return ast.map(p => this.compileFunctionParms(p)).join(", ")
+    return ast.id.id
   }
 
   compileFunctionBody(ast){
@@ -236,7 +257,10 @@ class Compiler{
     if(ret == "ttsbegin" || ret == "ttscommit"){
       console.log("ttsbegin/ttscommit unsupported")
       ret = 'console.log("' + ret + '")';
-	  }
+    }
+    
+    if(context && context.variables.includes("this."+ret))
+      return "this."+ret
 
     return ret;
   }
@@ -245,8 +269,17 @@ class Compiler{
 		var parms = "";
 		if(ast.parameters != undefined){
 			parms = this.compileMethodCallParms(ast.parameters, context);
-		}
-		return (ast.element != undefined ? this.compileExpression(ast.element, context) + "." : "") + this.compileId(ast.method, context) + "(" + parms + ")";
+    }
+    
+    if(ast.element){
+      return this.compileExpression(ast.element, context) + "." + this.compileId(ast.method, context) + "(" + parms + ")";
+    } else {
+      let methodName = this.compileId(ast.method, context)
+      let globalName = globalCaseMap[methodName.toLowerCase()]
+      if(globalName)
+        this.globalUsages.add(globalName)
+      return (globalName?globalName:methodName) + "(" + parms + ")";
+    }
 	}
 
 	compileMethodCallParms(ast, context){
@@ -302,6 +335,14 @@ class Compiler{
   }
 }
 
-export function compileElement(e){
+export async function initJSCompiler(){
+  let imp = await import('../www/e/class/Global.mjs')
+  globalCaseMap = Object.keys(imp).reduce((obj, cur) => {
+    obj[cur.toLowerCase()] = cur
+    return obj
+  }, {})
+}
+
+export async function compileElement(e){
   new Compiler().compile(e)
 }

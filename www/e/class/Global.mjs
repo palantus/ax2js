@@ -23,3 +23,11 @@ export function fieldId2Name(irrelevantTableId, fieldId){
 export function fieldNum(tableId, fieldName){
   return elements.find(e => e.type == "tablefield" && e.name == fieldName && e.tableId == tableId)?.id
 }
+
+export function info(text){
+  console.log(text)
+}
+
+export function strFmt(container, ...args){
+  return container
+}

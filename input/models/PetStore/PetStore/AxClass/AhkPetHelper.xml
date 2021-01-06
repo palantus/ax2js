@@ -5,6 +5,8 @@
 		<Declaration><![CDATA[
 class AhkPetHelper
 {
+    int numAdded = 0;
+
 }
 ]]></Declaration>
 		<Methods>
@@ -13,34 +15,44 @@ class AhkPetHelper
 				<Source><![CDATA[
     public static void loadData()
     {
-        AhkPets pet;
+        AhkPetHelper adder = new AhkPetHelper();
 
-        pet = AhkPets::find("Lucky");
+        adder.addPet("Lucky", 10, AhkPetType::Dog);
+        adder.addPet("Baloo", 2, AhkPetType::Cat);
+        adder.addPet("Simba", 1, AhkPetType::Cat);
+        adder.addPet("Bob", 8, AhkPetType::Cat);
+
+        adder.infoCount();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addPet</Name>
+				<Source><![CDATA[
+    public void addPet(str _name, int _age, AhkPetType _petType)
+    {
+        AhkPets pet = AhkPets::find(_name);
+
         if(!pet)
         {
-            pet.Name = "Lucky";
-            pet.Age = 10;
-            pet.Type = AhkPetType::Dog;
+            pet.Name = _name;
+            pet.Age = _age;
+            pet.Type = _petType;
             pet.insert();
+
+            numAdded++;
         }
-        
-        pet = AhkPets::find("Baloo");
-        if(!pet)
-        {
-            pet.Name = "Baloo";
-            pet.Age = 2;
-            pet.Type = AhkPetType::Cat;
-            pet.insert();
-        }
-        
-        pet = AhkPets::find("Simba");
-        if(!pet)
-        {
-            pet.Name = "Simba";
-            pet.Age = 1;
-            pet.Type = AhkPetType::Cat;
-            pet.insert();
-        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>infoCount</Name>
+				<Source><![CDATA[
+    public void infoCount()
+    {
+        Info(strFmt("%1 pets added", numAdded));
     }
 
 ]]></Source>
