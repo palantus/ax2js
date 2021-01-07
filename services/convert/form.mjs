@@ -7,10 +7,16 @@ export function convertForm(form, metadata) {
   let elementMethods = getArray(metadata.SourceCode?.Methods?.Method)
 
   for(let method of elementMethods){
-    form.rel(new Entity().tag("formfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(form, "element"), "function")
+    if(method.Name == "classDeclaration"){
+      let declElement = new Entity().tag("classdeclaration").rel(form, "element")
+      form.rel(declElement, "declaration")
+      declElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
+    } else {
+      let funcElement = new Entity().tag("formfunction").prop("name", method.Name).rel(form, "element")
+      form.rel(funcElement, "function")
+      funcElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
+    }
   }
-
-
 
   let dataSourcesWithMethods = getArray(metadata.SourceCode?.DataSources?.DataSource)
   for(let ds of dataSourcesWithMethods){
@@ -19,7 +25,9 @@ export function convertForm(form, metadata) {
 
     let dsMethods = getArray(ds.Methods?.Method)
     for(let method of dsMethods){
-      eDS.rel(new Entity().tag("fdsfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(form, "element"), "function")
+      let funcElement = new Entity().tag("fdsfunction").prop("name", method.Name).rel(form, "element")
+      eDS.rel(funcElement, "function")
+      funcElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
     }
     
     let dsFields = getArray(ds.Fields?.Field)
@@ -29,7 +37,9 @@ export function convertForm(form, metadata) {
 
       let fieldMethods = getArray(field.Methods?.Method)
       for(let method of fieldMethods){
-        f.rel(new Entity().tag("fdsfieldfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(form, "element"), "function")
+        let funcElement = new Entity().tag("fdsfieldfunction").prop("name", method.Name).rel(form, "element")
+        f.rel(funcElement, "function")
+        funcElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
       }
     }
   }
@@ -54,7 +64,9 @@ export function convertForm(form, metadata) {
     if(ctl){
       let controlMethods = getArray(control.Methods?.Method)
       for(let method of controlMethods){
-        ctl.rel(new Entity().tag("controlfunction").prop("name", method.Name).prop("sourceXPP", method.Source).rel(form, "element"), "function")
+        let funcElement = new Entity().tag("controlfunction").prop("name", method.Name).rel(form, "element")
+        ctl.rel(funcElement, "function")
+        funcElement.rel(new Entity().tag("xpp").prop("source", method.Source), "xpp")
       }
     } else {
       console.log(`Warning: Form ${form.name} has source code for control ${control.Name}, but it doesn't exist`)

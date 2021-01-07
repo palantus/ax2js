@@ -14,6 +14,8 @@ export async function initASTParser(){
 
 export function genAST(func){
   //try{
+    console.log(`Generating AST for ${func.related.element.type} ${func.related.element.name}.${func.name}`)
+
     func.rels.ast?.forEach(e => e.delete())
     let sourceXPP = func.related.xpp?.source
     func.rel(new Entity().tag("ast").prop("source", parser.parse(sourceXPP)), "ast")

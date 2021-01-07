@@ -13,7 +13,8 @@ Promise.all([
 
   elements = [
     Entity.find("tag:class prop:name=AhkPetHelper"),
-    Entity.find("tag:table prop:name=AhkPets")
+    Entity.find("tag:table prop:name=AhkPets"),
+    Entity.find("tag:form prop:name=AhkPets")
   ]
   elements.forEach(e => compileElement(e))
 })

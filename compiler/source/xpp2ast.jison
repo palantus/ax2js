@@ -165,13 +165,23 @@ pgm
 
 class
   : METEXPOSUREPUBLIC CLASS id classextends LBRACE el RBRACE
-    {$$ = {type: "class", exposure: $1, name: $3, extends: $4, body: $6}}
+    {$$ = {type: "class", attributes: [], exposure: $1, name: $3, extends: $4, body: $6}}
   | CLASS id classextends LBRACE el RBRACE
-    {$$ = {type: "class", name: $2, body: $5}}
+    {$$ = {type: "class", attributes: [], name: $2, body: $5}}
+  | attributes METEXPOSUREPUBLIC CLASS id classextends LBRACE el RBRACE
+    {$$ = {type: "class", attributes: $1, exposure: $2, name: $4, extends: $5, body: $7}}
+  | attributes CLASS id classextends LBRACE el RBRACE
+    {$$ = {type: "class", attributes: $1, name: $3, body: $6}}
   ;
 
 classextends
   : EXTENDS id
+  |
+  ;
+
+attributes
+  :  LBRACKET id RBRACKET
+    {$$ = {type: "attributelist", list: $2}}
   |
   ;
 
@@ -237,7 +247,9 @@ vdllist
 
 mdl
   : methodmodifiers t methodname LPAREN methodvariables RPAREN LBRACE methodbody RBRACE
-    {$$ = {type: "method", isStatic: $1 == 'static', name: $3, parms: $5, body: $8}}
+    {$$ = {type: "method", attributes: [], isStatic: $1 == 'static', name: $3, parms: $5, body: $8}}
+  | attributes methodmodifiers t methodname LPAREN methodvariables RPAREN LBRACE methodbody RBRACE
+    {$$ = {type: "method", attributes: $1, isStatic: $2 == 'static', name: $4, parms: $6, body: $9}}
   ;
 
 methodmodifiers
@@ -291,7 +303,7 @@ methodmodifiers
   ;
 
 methodname
-    : id
+  : id
     {$$ = $1}
   | FROM
     {$$ = {type: "id", id: 'from'}}
@@ -352,7 +364,9 @@ selectstatement
 
 whileselectstatement
   : WHILE SELECT selectstatementinner LBRACE el RBRACE
-    {$$ = {type: "whileselect", inner: $2}}
+    {$$ = {type: "whileselect", inner: $2, body: $5}}
+  | WHILE SELECT selectstatementinner statement
+    {$$ = {type: "whileselect", inner: $2, body: $4}}
   ;
 
 selectstatementinner
@@ -378,10 +392,16 @@ selectlist
   ;
 
 selectwhere
-  : WHERE e
+  : WHERE selectwhereexp
     {$$ = {type: "where", e: $2}}
   |
     {$$ = ''}
+  ;
+
+selectwhereexp
+  : id DOT id EQUALITY e
+    {$$ = {type: "whereexpequals", buffer: $1, field: $3, e: $5}}
+  |
   ;
 
 selectindex
@@ -574,20 +594,15 @@ el
     {$$ = [{type: "methodinner", name: $3, returns: $1, strlen: $2, parms: $5, body: $8}, $10]}
   | LBRACE el RBRACE el
     {$$ = [{type: "scope", body: $2}, $4]}
-  | e SEMICOLON el
+  | statement SEMICOLON el
     {$$ = [$1, $3]}
-  | e
-    {$$ = $1}
   | SEMICOLON el
-    {$$ = [{type: "empty"}, $2]}
-  | vdl SEMICOLON el
-    {$$ = [$1, $3]}
-  | vdl
-    {$$ = {type: "statement", e: $1}}
+    {$$ = $2}
   |
     {$$ = {type: "empty"}}
   ;
 
+/* What can can't be used as a full statement - eg. x++ can, but x alone can't */
 e
   : NATLITERAL
     {$$ = {type: "literal", val: $1}}
@@ -603,12 +618,8 @@ e
     {$$ = {type: "literal", val: "null"}}
   | id
     {$$ = {type: "id", id: $1}}
-  | NEW e
-    {$$ = {type: "new", e: $2}}
   | THIS
     {$$ = {type: "literal", val: "this"}}
-  | READNAT LPAREN RPAREN
-  | PRINTNAT LPAREN e RPAREN
   | MINUS e
     {$$ = {type: "negative", e: $2}}
   | PLUS e
@@ -657,8 +668,36 @@ e
     {$$ = {type: "or", left: $1, right: $3}}
   | e AND e
     {$$ = {type: "and", left: $1, right: $3}}
-  | e DOT id
+  | e DOT e
     {$$ = {type: "memberref", element: $1, ref: $3}}
+  | NEW id LPAREN methodcallparams RPAREN
+    {$$ = {type: "new", id: $2, parameters: $4}}
+  | id DOUBLECOLON enumstr
+    {$$ = {type: "enumval", enum: $1, val: $3}}
+  | id DOUBLECOLON id LPAREN methodcallparams RPAREN
+    {$$ = {type: "methodcall", method: $3, isStaticCall: true, element: $1, parameters: $5}}
+  | id LPAREN methodcallparams RPAREN
+    {$$ = {type: "methodcall", method: $1, parameters: $3}}
+  | container
+    {$$ = $1}
+  | e QUESTIONMARK e COLON e
+    {$$ = {type: "onelineif", condition: $1, trueval: $3, falseval: $5}}
+  | LPAREN e RPAREN
+    {$$ = {type: "paran", content: $2}}
+  | e DOT LPAREN methodcallparams RPAREN
+    {$$ = {type: "fieldrefbyid", element: $1, idexpression: $4}}
+  | e DOT methodname LPAREN methodcallparams RPAREN
+    {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
+  | id DOT methodname LPAREN methodcallparams RPAREN
+    {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
+  ;
+
+/* What can be a full statement - ie. be alone between two semicolons */
+statement
+  : NEW id LPAREN methodcallparams RPAREN
+    {$$ = {type: "new", id: $2, parameters: $4}}
+  | READNAT LPAREN RPAREN
+  | PRINTNAT LPAREN e RPAREN
   | NEXT id
     {$$ = {type: "selectnext", element: $2}}
   | THROW e
@@ -679,28 +718,28 @@ e
     {$$ = {type: "negassign", left: $1, right: $3}}
   | e DOT id ASSIGN e
     {$$ = {type: "assign", leftelement: $1, left: $3, right: $5}}
+  | id DOT id ASSIGN e
+    {$$ = {type: "assign", leftelement: $1, left: $3, right: $5}}
   | id LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", method: $1, parameters: $3}}
   | id DOUBLECOLON id LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", method: $3, isStaticCall: true, element: $1, parameters: $5}}
-  | id DOUBLECOLON enumstr
-    {$$ = {type: "enumval", enum: $1, val: $3}}
   | e DOT methodname LPAREN methodcallparams RPAREN
+    {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
+  | id DOT methodname LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
   | e DOT LPAREN methodcallparams RPAREN ASSIGN e
     {$$ = {type: "fieldrefbyidassign", element: $1, idexpression: $4, assign: $7}}
-  | e DOT LPAREN methodcallparams RPAREN
-    {$$ = {type: "fieldrefbyid", element: $1, idexpression: $4}}
-  | LPAREN e RPAREN
-    {$$ = {type: "paran", content: $2}}
   | LBRACKET e RBRACKET
     {$$ = {type: "container", content: $2}}
-  | container
-    {$$ = $1}
-  | e QUESTIONMARK e COLON e
-    {$$ = {type: "onelineif", condition: $1, trueval: $3, falseval: $5}}
   | NATLITERAL BACKSLASH NATLITERAL BACKSLASH NATLITERAL
     {$$ = {type: "literal", val: 'new Date(' + parseInt($5) + ',' + parseInt($3) + ',' + parseInt($1) + ')'}}
   | SQUARE id
     {$$ = {type: "macroref", id: $2}}
+  | e PLUS PLUS
+    {$$ = {type: "plusplus", e: $1}}
+  | e MINUS MINUS
+    {$$ = {type: "minusminus", e: $1}}
+  | vdl
+    {$$= $1}
   ;

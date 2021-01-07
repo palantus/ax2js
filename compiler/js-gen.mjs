@@ -18,14 +18,10 @@ class Compiler{
   compile(e){
     this.e = e
 
-    switch(e.type){
-      case "class":
-      case "table":
-        break;
+    if(!["class", "table", "form"].includes(e.type))
+      return;
 
-      default:
-        return;
-    }
+    console.log(`Compiling ${e.type} ${e.name}`)
 
     this.gen = new ClassGen(e, e.name);
     this.compileDeclaration();
@@ -40,6 +36,10 @@ class Compiler{
     let jsSource = this.gen.generate()
     let imports = this.genImports()
     let fullSource = `${imports}${imports?';':''}\n\n${jsSource}; export default ${this.e.name};`;
+
+    if(e.type == "form"){
+      console.log("Stub: Generate form control and fds code")
+    }
 
     e.rel(new Entity().tag("js").prop("source", beautify(fullSource, { indent_size: 2 })), "js")
   }
@@ -76,7 +76,6 @@ class Compiler{
     this.rootContext.variables.push("this."+ast.name.id)
 
     if(ast.defval){
-      console.log("STUB: variable default value in class declarations")
       return `${ast.name.id} = ${this.compileExpression(ast.defval, this.rootContext)}`
     } else {
       let baseType = this.idToBaseType(ast.vartype.id)
@@ -95,6 +94,8 @@ class Compiler{
   }
 
   compileFunctionParms(ast){
+    if(!ast)
+      console.log("her")
     if(ast.type == "empty") return ""
 
     if(ast instanceof Array )
@@ -139,7 +140,7 @@ class Compiler{
 			case "return":
 				return "return " + (ast.e != undefined ? this.compileExpression(ast.e, context) : "");
 			case "new":
-				return "new " + this.compileExpression(ast.e, context);
+				return "new " + this.compileExpression(ast.e || ast.id, context);
 			case "macroval":
 				return ast.macro + "." + ast.val;
 			case "container":
@@ -176,13 +177,14 @@ class Compiler{
 			case "select":
 				return this.compileSelect(ast, context)
 			case "equals":
-				return this.compileExpression(ast.left, context) + " == " + this.compileExpression(ast.right, context);
+        return this.compileExpression(ast.left, context) + " == " + this.compileExpression(ast.right, context);
+      case "whereexpequals":
+        return `${this.compileId(ast.buffer, context)}.${this.compileId(ast.field, context)} == ${this.compileExpression(ast.e, context)}`
 			default:
 				if(ast.type != undefined)
-					this.missingImplementations.add("Unsupported expression type: " + ast.type)
-				else if(debug){
-					console.log("Unknown type for expression: " + ast);
-				}
+				  console.log("Unsupported expression type: " + ast.type)
+				else
+					console.log("Unknown type for expression for ast: " + JSON.stringify(ast));
 		}
 
 		return "";
