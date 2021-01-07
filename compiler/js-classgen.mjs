@@ -19,7 +19,8 @@ export default class ClassGenerator{
   }
 
   generate(){
-    return `class ${this.name}${this.extendsVal?` extends ${this.extendsVal}`:''}{${this.classVars}\n${
+    return (this.doExportClassDefault ? "export default " : this.doExportClass ? "export " : "") +
+        `class ${this.name}${this.extendsVal?` extends ${this.extendsVal}`:''}{${this.classVars}\n${
         this.functions.map(f => 
           `${f.isStatic ? "static " : ""}${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
         ).join("\n")
@@ -32,5 +33,13 @@ export default class ClassGenerator{
 
   addClassVars(classVars){
     this.classVars = classVars
+  }
+
+  exportClass(){
+    this.doExportClass = true
+  }
+
+  exportClassDefault(){
+    this.doExportClassDefault = true
   }
 }

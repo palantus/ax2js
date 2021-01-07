@@ -67,39 +67,6 @@ public class AhkPets extends FormRun
 				</Methods>
 			</Control>
 			<Control>
-				<Name>ExportData</Name>
-				<Type>Button</Type>
-				<Methods>
-					<Method>
-						<Name>clicked</Name>
-						<Source><![CDATA[
-        public void clicked()
-        {
-            
-            LessorDataExport_LD2 ex = new LessorDataExport_LD2();
-            ex.beginExport();
-            ex.beginTable(tableNum(AhkPets));
-            AhkPets pets;
-            while select pets   
-                ex.exportRecord(pets);
-            ex.endTable();
-            
-            ex.beginTable(tableNum(AhkPetSetup));
-            AhkPetSetup setup;
-            while select setup
-                ex.exportRecord(setup);
-            ex.endTable();
-
-            ex.endExport();
-
-            File::SendFileToUser(ex.parmStream(), 'pets.ld2');
-        }
-
-]]></Source>
-					</Method>
-				</Methods>
-			</Control>
-			<Control>
 				<Name>PetTypeFilter</Name>
 				<Type>ComboBox</Type>
 				<Methods>
@@ -183,14 +150,6 @@ public class AhkPets extends FormRun
 								<FormControlExtension
 									i:nil="true" />
 								<Text>Load data</Text>
-							</AxFormControl>
-							<AxFormControl xmlns=""
-								i:type="AxFormButtonControl">
-								<Name>ExportData</Name>
-								<Type>Button</Type>
-								<FormControlExtension
-									i:nil="true" />
-								<Text>Export</Text>
 							</AxFormControl>
 						</Controls>
 					</AxFormControl>

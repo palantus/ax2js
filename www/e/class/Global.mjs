@@ -33,3 +33,7 @@ export function strFmt(container, ...args){
   container.match(/\%\d+/g).forEach(v => {ret = ret.replaceAll(v, args[v.substr(1)-1])})
   return ret
 }
+
+export function queryValue(val){
+  return val
+}

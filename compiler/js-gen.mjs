@@ -23,7 +23,15 @@ class Compiler{
 
     console.log(`Compiling ${e.type} ${e.name}`)
 
-    this.gen = new ClassGen(e, e.name);
+    if(e.type == "form"){
+      this.rootContext.variables = [
+        ...Entity.search(`tag:formcontrol element.id:${e} prop:autoDeclaration=Yes`).map(c => c.name),
+        ...Entity.search(`tag:fds element.id:${e}`).map(c => c.name + "_ds")
+      ]
+    }
+
+    this.gen = new ClassGen(e, e.type == "form" ? `Form_${e.name}` : e.name);
+    this.gen.exportClassDefault()
     this.compileDeclaration();
     this.e.rels.function?.forEach(this.compileFunction)
 
@@ -34,14 +42,46 @@ class Compiler{
 
     e.rels.js?.forEach(e => e.delete())
     let jsSource = this.gen.generate()
-    let imports = this.genImports()
-    let fullSource = `${imports}${imports?';':''}\n\n${jsSource}; export default ${this.e.name};`;
-
-    if(e.type == "form"){
-      console.log("Stub: Generate form control and fds code")
+    if(this.e.type == "form"){
+      jsSource += '\n\n' + this.compileFormControlsAndFDS()
     }
+    let imports = this.genImports()
+    let fullSource = `${imports}${imports?';':''}\n\n${jsSource}`;
 
     e.rel(new Entity().tag("js").prop("source", beautify(fullSource, { indent_size: 2 })), "js")
+  }
+
+  compileFormControlsAndFDS(){
+    let form = this.e;
+    let formGen = this.gen
+    let jsSource = `Form_${form.name}.controlTypes = {};\n\n`
+    
+    for(let ds of form.rels.ds||[]){
+      this.e = ds
+      this.gen = new ClassGen(ds, `FDS_${ds.name}`);
+      let baseTypeName = `FormDataSource`
+      this.gen.setExtends(baseTypeName)
+      this.dependencies.add(baseTypeName)
+      this.compileDeclaration()
+      this.e.rels.function?.forEach(this.compileFunction)
+      jsSource += `Form_${form.name}.controlTypes.${ds.name} = ${this.gen.generate()}\n\n`
+    }
+
+    for(let ctl of Entity.search(`tag:formcontrol element.id:${form}`)){
+      this.e = ctl
+      this.gen = new ClassGen(ctl, `Control_${ctl.name}`);
+      let baseTypeName = `Form${ctl.type||''}Control`
+      this.gen.setExtends(baseTypeName)
+      this.dependencies.add(baseTypeName)
+      this.e.rels.function?.forEach(this.compileFunction)
+      jsSource += `Form_${form.name}.controlTypes.${ctl.name} = ${this.gen.generate()}\n\n`
+    }
+
+    //Restore status
+    this.gen = formGen
+    this.e = form
+
+    return jsSource
   }
 
   genImports(){
@@ -168,12 +208,7 @@ class Compiler{
 			case "for":
 				return "for(" + this.compileExpression(ast.vardeclaration, context) + "; " + this.compileExpression(ast.condition, context) + "; " + this.compileExpression(ast.counter, context) + "){" + this.compileExpression(ast.body, context) + "}"
 			case "enumval":
-        let enumEntity = Entity.find(`prop:name=${this.compileId(ast.enum, context)} tag:enum`)
-        let enumValue = this.compileId(ast.val, context)
-        if(enumEntity)
-          return ''+enumEntity.rels.value?.find(e => e.name == enumValue)?.value||0
-        else
-          return '0'
+        return this.compileEnumVal(ast, context)
 			case "select":
 				return this.compileSelect(ast, context)
 			case "equals":
@@ -190,6 +225,16 @@ class Compiler{
 		return "";
   }
 
+  compileEnumVal(ast, context){
+    let enumName = this.compileId(ast.enum, context)
+    let enumEntity = Entity.find(`prop:name=${enumName} tag:enum`)
+    let enumValue = this.compileId(ast.val, context)
+    if(enumEntity)
+      return ''+enumEntity.rels.value?.find(e => e.name == enumValue)?.value||0
+    else
+      return '0'
+  }
+
 	compileVariableDeclaration(ast, context){
     let id = this.compileId(ast.name)
     context.variables.push(id)
@@ -199,8 +244,10 @@ class Compiler{
 			ret += ", " + this.compileVariableDeclarationMore(ast.more, context);
     }
     
+    /*
     if(ast.vartype?.type == "id")
       this.refUsed(ast.vartype.id, context)
+    */
 
 		if(ast.defval != undefined){
 			ret += " = " + this.compileExpression(ast.defval, context);
@@ -278,6 +325,8 @@ class Compiler{
     }
     
     if(ast.element){
+      if(ast.element.type == "id")
+        this.refUsed(ast.element.id, context)
       return this.compileExpression(ast.element, context) + "." + this.compileId(ast.method, context) + "(" + parms + ")";
     } else {
       let methodName = this.compileId(ast.method, context)
@@ -334,7 +383,7 @@ class Compiler{
     if(["str", "int", "real"].indexOf(refName)>=0)
       return // Native type
 
-    if(context.variables.indexOf(refName)>=0)
+    if(context.variables.indexOf(refName)>=0 || context.variables.indexOf("this."+refName)>=0)
       return; // Local variable
 
     this.dependencies.add(refName)
