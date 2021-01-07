@@ -29,7 +29,7 @@ export function info(text){
 }
 
 export function strFmt(container, ...args){
-  return container
-
-  //str.match(/\%\d+/g) returns eg. Array [ "%1", "%2" ]
+  let ret = container
+  container.match(/\%\d+/g).forEach(v => {ret = ret.replaceAll(v, args[v.substr(1)-1])})
+  return ret
 }

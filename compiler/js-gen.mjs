@@ -65,10 +65,7 @@ class Compiler{
     if(!ast) return;
 
     let body = this.compileDeclarationVars(ast.child.body)
-
     this.gen.addClassVars(body)
-
-    //TODO: add variables to this.rootContext
   }
 
   compileDeclarationVars(ast){
@@ -77,7 +74,14 @@ class Compiler{
     if(ast instanceof Array )
       return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join(", ")
     this.rootContext.variables.push("this."+ast.name.id)
-    return ast.name.id
+
+    if(ast.defval){
+      console.log("STUB: variable default value in class declarations")
+      return `${ast.name.id} = ${this.compileExpression(ast.defval, this.rootContext)}`
+    } else {
+      let baseType = this.idToBaseType(ast.vartype.id)
+      return `${ast.name.id} = ${this.nullValueForBaseType(baseType)}`
+    }
   }
 
   compileFunction(f){
@@ -332,6 +336,25 @@ class Compiler{
       return; // Local variable
 
     this.dependencies.add(refName)
+  }
+
+  idToBaseType(id){
+    if(["str", "int", "real", "int64", "container"].indexOf(id))
+      return id
+
+    console.log(`Unknown type for id ${id}`)
+    return null;
+  }
+
+  nullValueForBaseType(baseTypeName){
+    switch(baseTypeName){
+      case "str": return '""';
+      case "int": return "0";
+      case "real": return '0.0';
+      case "int64": return '0';
+      case "container": return '[]';
+      default: return 'null';
+    }
   }
 }
 
