@@ -105,10 +105,18 @@ class Compiler{
 
   compileDeclaration(){
     let ast = this.e.related.declaration?.related.ast.source
-    if(!ast) return;
+    let body = [];
 
-    let body = this.compileDeclarationVars(ast.child.body)
-    this.gen.addClassVars(body)
+
+    if(this.e.type == "table"){
+      body.push(`TableId = ${this.e._id}`)
+    }
+
+    if(ast){
+      body.push(this.compileDeclarationVars(ast.child.body))
+    }
+
+    this.gen.addClassVars(body.join(", "))
   }
 
   compileDeclarationVars(ast){
@@ -122,7 +130,7 @@ class Compiler{
       return `${ast.name.id} = ${this.compileExpression(ast.defval, this.rootContext)}`
     } else {
       let baseType = this.idToBaseType(ast.vartype.id)
-      return `${ast.name.id} = ${this.nullValueForBaseType(baseType)}`
+      return `${ast.name.id} = ${this.nullValueForBaseType(baseType, ast.vartype.id)}`
     }
   }
 
@@ -256,7 +264,7 @@ class Compiler{
 			ret += " = " + this.compileExpression(ast.defval, context);
 		} else {
       let baseType = this.idToBaseType(ast.vartype.id)
-      ret += ` = ${this.nullValueForBaseType(baseType)}`
+      ret += ` = ${this.nullValueForBaseType(baseType, ast.vartype.id)}`
     }
 
 		return ret;
@@ -389,14 +397,22 @@ class Compiler{
   }
 
   idToBaseType(id){
-    if(["str", "int", "real", "int64", "container", "boolean"].indexOf(id))
+    if(["str", "int", "real", "int64", "container", "boolean"].includes(id))
       return id
+
+    let typeEntity = Entity.find(`prop:name=${id} (tag:table|tag:class|tag:edt|tag:enum)`)
+    if(typeEntity){
+      switch(typeEntity.type){
+        case "table":
+            return "tablebuffer";
+      }
+    }
 
     console.log(`Unknown type for id ${id}`)
     return null;
   }
 
-  nullValueForBaseType(baseTypeName){
+  nullValueForBaseType(baseTypeName, varName){
     switch(baseTypeName){
       case "str": return '""';
       case "int": return "0";
@@ -404,6 +420,7 @@ class Compiler{
       case "int64": return '0';
       case "container": return '[]';
       case "boolean": return 'false';
+      case "tablebuffer": return `new ${varName}()`;
       default: return 'null';
     }
   }

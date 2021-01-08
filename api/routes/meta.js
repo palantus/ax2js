@@ -17,6 +17,18 @@ export default (app) => {
     res.json(await service.getLabels())
   });
 
+  route.get('/fieldEnumMapping', async function (req, res, next) {
+    let result = Element.search(`tag:tablefield type.prop:type=enum`).reduce((obj, f) => {
+      if(!obj[f.related.element.name]) obj[f.related.element.name] = {}
+      obj[f.related.element.name][f.name] = f.related.type.rels.value.reduce((valueObj, v) => {
+        valueObj[v.name] = v.value || 0
+        return valueObj;
+      }, {})
+      return obj;
+    }, {})
+    res.json(result)
+  });
+
   route.get('/form/:name/:control/:func.xpp', function (req, res, next) {
     let form = Element.lookupType("form", req.params.name)
     let element = Element.find(`tag:formcontrol element.id:${form} prop:name=${req.params.control}`)

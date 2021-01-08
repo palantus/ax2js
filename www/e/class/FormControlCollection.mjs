@@ -16,7 +16,7 @@ export default class FormControlCollection extends FormControl{
   async addControl(type, name){
     
     let newControl;
-    if(typeof type !== "string"){
+    if(typeof type !== "number"){
       newControl = new type(name)
     } else {
       let [k] = Object.entries(FormControlType).find(([k, v]) => v == type) || [null]

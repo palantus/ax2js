@@ -3,6 +3,7 @@ export default class LD2Reader{
     this.buffer = buffer;
     this.tables = {};
     this.header = {}
+    this.recIdCounter = 1
 
     if(_jszip && "undefined" === typeof JSZip){
       this.JSZip = _jszip
@@ -71,6 +72,11 @@ export default class LD2Reader{
         record[meta.fields[f].name] = this.parseValue(dataView, data, pos, fieldSize, meta.fields[f].type)
 
         pos += fieldSize;
+      }
+
+      if(!record.RecId){
+        record.RecId = this.recIdCounter
+        this.recIdCounter++;
       }
 
       records.push(record);

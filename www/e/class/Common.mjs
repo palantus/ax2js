@@ -1,6 +1,12 @@
+import {insertRecord} from "../../datamanagement/data.mjs"
+
 export default class Common{
   _hasValue(){
     return this.RecId ? true : false;
+  }
+
+  clear(){
+    this.RecId = 0
   }
 
   initValue(){
@@ -8,7 +14,7 @@ export default class Common{
   }
 
   insert(){
-    console.log(this)
+    insertRecord(this)
   }
 
   write(){

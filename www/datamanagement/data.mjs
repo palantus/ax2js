@@ -3,16 +3,28 @@ let dataReadyFunction;
 let recIdCounter = 1;
 export let dataReady = new Promise(ready => {dataReadyFunction = ready})
 let database = {}
-import {getCachedElementByType} from "../e/class/Metadata.mjs"
+import {getCachedElementByType, getCachedElementById, getEnumMapping} from "../e/class/Metadata.mjs"
 let isUpgradeDone = false;
 
 export async function setReader(_reader){
   reader = _reader;
 
-  await Promise.all(Object.keys(reader.tables).map(tabName => new Promise(async r => {
+  await Promise.all([...Object.keys(reader.tables).map(tabName => new Promise(async r => {
     database[tabName] = await reader.getAllRecords(tabName)
     r()
-  })))
+  })), getEnumMapping()])
+
+  Object.entries(await getEnumMapping()).forEach(([tableName, fields]) => {
+    let fieldKeys = Object.keys(fields)
+    database[tableName]?.forEach(r => {
+      fieldKeys?.forEach(f => {
+        r[f] = fields[f][r[f]]
+      })
+    })
+  })
+
+  recIdCounter = reader.recIdCounter || 1
+
   dataReadyFunction();
 }
 
@@ -27,25 +39,33 @@ export async function tryUpgrade(){
   } catch(err){}
 }
 
-export function getTableData(tableName){
-  let tabMeta = getCachedElementByType("table", tableName)
-  if(tabMeta && tabMeta.extends)
+export function getTableData(tableNameOrId){
+  let tabMeta = typeof tableNameOrId === "string" ? getCachedElementByType("table", tableNameOrId) : getCachedElementById(tableNameOrId)
+  if(!tabMeta)
+    return []
+  else if(tabMeta && tabMeta.extends)
     return database[tabMeta.extends] || []
   else
-    return database[tableName] || []
+    return database[tabMeta.name] || []
 }
 
-export function insertRecord(tableName, record){
-  if(!record.RecId)
-    record.RecId = recIdCounter++;
+export function insertRecord(buffer){
+  buffer.RecId = recIdCounter++;
 
-  let tabMeta = getCachedElementByType("table", tableName)
+  let tabMeta = getCachedElementById(buffer.TableId)
+  let tableName = tabMeta.name
   if(tabMeta && tabMeta.extends)
     tableName = tabMeta.extends
 
+  let rawRecord = tabMeta.children.field.reduce((obj, f) => {
+    obj[f.name] = buffer[f.name] || null
+    return obj
+  }, {})
+  rawRecord.RecId = buffer.RecId
+  
   if(database[tableName])
-    database[tableName].push(record)
+    database[tableName].push(rawRecord)
   else
-    database[tableName] = [record]
-  return record
+    database[tableName] = [rawRecord]
+  return rawRecord
 }

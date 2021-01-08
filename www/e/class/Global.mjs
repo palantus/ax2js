@@ -1,4 +1,5 @@
 import {elements} from "./Metadata.mjs"
+import {fire} from "../../system/events.mjs"
 
 export function formStr(formName){
   return formName
@@ -26,6 +27,10 @@ export function fieldNum(tableId, fieldName){
 
 export function info(text){
   console.log(text)
+  fire("log", {
+    level: "info", 
+    message: text
+  })
 }
 
 export function strFmt(container, ...args){

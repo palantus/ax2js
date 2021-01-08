@@ -4,6 +4,7 @@ import api from "../../system/api.mjs"
 export let elements = []
 let cache = {}
 let loadPromise = null;
+let enumMapping = null;
 
 export async function load() {
   if(elements.length < 1)
@@ -44,4 +45,10 @@ function cacheElement(e){
   }
 
   return e;
+}
+
+export async function getEnumMapping(){
+  if(!enumMapping)
+    enumMapping = await api.get(`meta/fieldEnumMapping`)
+  return enumMapping
 }

@@ -24,7 +24,8 @@ export default class FormComboBoxControl extends FormField{
   }
 
   onActiveRecord(record){
-    this.siteElement.setAttribute("value", record?.[this.dataField()] || "")
+    if(this.dataField())
+      this.siteElement.setAttribute("value", record?.[this.dataField()] || 0)
   }
 
   selection(value = this.pValue){
@@ -47,7 +48,7 @@ export default class FormComboBoxControl extends FormField{
   }
 
   record2StrValue(record){
-    return this.enumMetadata?.children.value?.find(v => v.name == record?.[this.dataField()])?.label || ""
+    return this.enumMetadata?.children.value?.find(v => (v.value||0) == record?.[this.dataField()])?.label || ""
   }
 }
 

@@ -5,7 +5,7 @@ export default async function build(meta, fr){
   let form = new Form(meta.name);
   
   for(let dsMeta of meta.children.ds || []){
-    let fds = await form.addDataSource(Object.getPrototypeOf(fr).constructor.controlTypes[dsMeta.name] || dsMeta.name)
+    let fds = await form.addDataSource(Object.getPrototypeOf(fr)?.constructor?.controlTypes?.[dsMeta.name] || dsMeta.name)
     fds.initFromMeta(dsMeta)
   }
 
@@ -23,7 +23,7 @@ export default async function build(meta, fr){
 
 async function addControlToParent(parent, control, fr){
   if(!control.type) return;
-  let controlObj = await parent.addControl(Object.getPrototypeOf(fr).constructor.controlTypes[control.name] || FormControlType[control.type], control.name);
+  let controlObj = await parent.addControl(Object.getPrototypeOf(fr)?.constructor?.controlTypes?.[control.name] || FormControlType[control.type], control.name);
   if(!controlObj) {
     console.log("ERROR: control.addControl must return new instance!")
     return;
