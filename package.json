@@ -5,16 +5,20 @@
   "scripts": {
     "install-windows-service": "winser -i",
     "uninstall-windows-service": "winser -r",
-    "start": "node server.js"
+    "start": "node server.js",
+    "runDev": "nodemon server.js"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
     "connect": "*",
     "cors": "^2.8.5",
-    "entitystorage": "^1.0.45",
+    "entitystorage": "^1.0.48",
     "express": "^4.14.0",
     "fast-xml-parser": "^3.17.5",
     "jison": "^0.4.18",
     "js-beautify": "^1.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }

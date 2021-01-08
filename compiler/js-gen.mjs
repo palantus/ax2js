@@ -25,8 +25,8 @@ class Compiler{
 
     if(e.type == "form"){
       this.rootContext.variables = [
-        ...Entity.search(`tag:formcontrol element.id:${e} prop:autoDeclaration=Yes`).map(c => c.name),
-        ...Entity.search(`tag:fds element.id:${e}`).map(c => c.name + "_ds")
+        ...Entity.search(`tag:formcontrol element.id:${e} prop:autoDeclaration=Yes`).map(c => ({type: "control", id: c.name})),
+        ...Entity.search(`tag:fds element.id:${e}`).map(c => ({type: "control", id: c.name + "_ds"}))
       ]
     }
 
@@ -38,6 +38,9 @@ class Compiler{
     if(e.type == 'table'){
       this.dependencies.add("Common")
       this.gen.setExtends("Common")
+    } else if(e.type == 'form'){
+      this.dependencies.add("FormRun")
+      this.gen.setExtends("FormRun")
     }
 
     e.rels.js?.forEach(e => e.delete())
@@ -113,7 +116,7 @@ class Compiler{
 
     if(ast instanceof Array )
       return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join(", ")
-    this.rootContext.variables.push("this."+ast.name.id)
+    this.rootContext.variables.push({type: "this", id: ast.name.id})
 
     if(ast.defval){
       return `${ast.name.id} = ${this.compileExpression(ast.defval, this.rootContext)}`
@@ -128,7 +131,7 @@ class Compiler{
     if(!ast) return;
 
     let parms = this.compileFunctionParms(ast.child.parms)
-    let body = this.compileFunctionBody(ast.child.body)
+    let body = this.compileFunctionBody(ast.child.body, Object.assign({}, this.rootContext, {functionName: f.name}))
 
     this.gen.addFunction(f.name, body, parms, ast.child.isStatic === true)
   }
@@ -143,9 +146,9 @@ class Compiler{
     return ast.id.id
   }
 
-  compileFunctionBody(ast){
+  compileFunctionBody(ast, context){
     this.rootContext.parent = ast
-    return this.compileExpression(ast, this.rootContext)
+    return this.compileExpression(ast, context)
   }
 
   compileExpression(ast, context){
@@ -154,7 +157,7 @@ class Compiler{
     }).join(";\n    ")
 
     context.parent = context.lastContext
-    context.lastContext = {parent: context.parent, lastContext: context.lastContext, cur: context.cur}
+    context.lastContext = {parent: context.parent, lastContext: context.lastContext, cur: context.cur, functionName: context.functionName}
     context.cur = ast
 
     switch(ast.type){
@@ -237,7 +240,7 @@ class Compiler{
 
 	compileVariableDeclaration(ast, context){
     let id = this.compileId(ast.name)
-    context.variables.push(id)
+    context.variables.push({type: "local", id})
 
 		var ret = `let ${id}`;
 		if(ast.more != undefined){
@@ -251,23 +254,10 @@ class Compiler{
 
 		if(ast.defval != undefined){
 			ret += " = " + this.compileExpression(ast.defval, context);
-		} else if(typeof ast.vartype === "string"){
-      switch(ast.vartype.toLowerCase()){
-        case "str":
-          ret += " = ''";
-          break;
-        default:
-          console.log("Unsupported vartype in var declaration (str): " + ast.vartype)
-      }
-		} else if(typeof ast.vartype === 'object'){
-			switch(ast.vartype.type){
-				case "id":
-					ret += " = new " + this.compileId(ast.vartype.id, context) + "()";
-					break;
-				default:
-					console.log("Unsupported vartype in var declaration (obj): " + ast.vartype.type)
-			}
-		}
+		} else {
+      let baseType = this.idToBaseType(ast.vartype.id)
+      ret += ` = ${this.nullValueForBaseType(baseType)}`
+    }
 
 		return ret;
 	}
@@ -279,8 +269,6 @@ class Compiler{
 		}
 		return ret;
   }
-  
-  
 
   compileId(ast, context){
     let ret = "";
@@ -312,13 +300,25 @@ class Compiler{
       ret = 'console.log("' + ret + '")';
     }
     
-    if(context && context.variables.includes("this."+ret))
-      return "this."+ret
-
-    return ret;
+    let v = context?.variables.find(v => v.id == ret)
+    switch(v?.type){
+      case "this": return "this."+ret
+      case "control": return `this.owner().namedControls.${ret}`
+      case "local": return ret
+      default: return ret
+    }
   }
 
   compileMethodCall(ast, context){
+    let methodName = this.compileId(ast.method, context)
+    
+    //Handle builtin functions
+    switch(methodName){ 
+      case "fieldNum":
+        let f = Entity.find(`tag:tablefield element.prop:name=${ast.parameters[0].id.id} prop:name=${ast.parameters[1].id.id}`)
+        return ""+f._id || `fieldNum("${ast.parameters[0].id.id}", "${ast.parameters[1].id.id}")`
+    }
+
 		var parms = "";
 		if(ast.parameters != undefined){
 			parms = this.compileMethodCallParms(ast.parameters, context);
@@ -327,13 +327,12 @@ class Compiler{
     if(ast.element){
       if(ast.element.type == "id")
         this.refUsed(ast.element.id, context)
-      return this.compileExpression(ast.element, context) + "." + this.compileId(ast.method, context) + "(" + parms + ")";
+      return this.compileExpression(ast.element, context) + "." + methodName + "(" + parms + ")";
     } else {
-      let methodName = this.compileId(ast.method, context)
       let globalName = globalCaseMap[methodName.toLowerCase()]
       if(globalName)
         this.globalUsages.add(globalName)
-      return (globalName?globalName:methodName) + "(" + parms + ")";
+      return (globalName?globalName:methodName) + (methodName == "super" ? `.${context.functionName}`:'') + "(" + parms + ")";
     }
 	}
 
@@ -383,14 +382,14 @@ class Compiler{
     if(["str", "int", "real"].indexOf(refName)>=0)
       return // Native type
 
-    if(context.variables.indexOf(refName)>=0 || context.variables.indexOf("this."+refName)>=0)
+    if(context.variables.find(v => v.id == refName))
       return; // Local variable
 
     this.dependencies.add(refName)
   }
 
   idToBaseType(id){
-    if(["str", "int", "real", "int64", "container"].indexOf(id))
+    if(["str", "int", "real", "int64", "container", "boolean"].indexOf(id))
       return id
 
     console.log(`Unknown type for id ${id}`)
@@ -404,6 +403,7 @@ class Compiler{
       case "real": return '0.0';
       case "int64": return '0';
       case "container": return '[]';
+      case "boolean": return 'false';
       default: return 'null';
     }
   }

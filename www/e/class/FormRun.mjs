@@ -10,6 +10,7 @@ export default class FormRun{
     this.args(args)
 
     this.close = this.close.bind(this)
+    this.namedControls = {}
   }
 
   args(args = this.pArgs){
@@ -18,7 +19,7 @@ export default class FormRun{
 
   async init(){
     this.metadata = await getElementByType("form", this.args().name())
-    this.pForm = await genForm(this.metadata)
+    this.pForm = await genForm(this.metadata, this)
     this.pForm.formRun(this)
     this.pForm.init();
 

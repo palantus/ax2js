@@ -15,6 +15,8 @@ export default class FormDataSource{
   }
 
   async init(){
+    this.owner().namedControls[`${this.pName}_ds`] = this
+
     let qbds
     if(this.joinSource() && JoinMode[this.linkType()] !== undefined){ // TODO: need to handle Active, Passive and Delayed link types!
       this.pParentFDS = this.owner().dataSource(this.joinSource())

@@ -24,10 +24,9 @@ public class AhkPets extends FormRun
 						<Source><![CDATA[
         public void executeQuery()
         {
-            super();
-
             AhkPetType pType = PetTypeFilter.selection();
             qbrType.value(pType ? queryValue(pType) : SysQuery::valueUnlimited());
+            super();
         }
 
 ]]></Source>

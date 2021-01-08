@@ -18,7 +18,8 @@ export function runQuery (q) {
   for(let range of qbds.ranges){
     let fieldName = range.fieldName()
     let rangeValue = range.value()
-    result = result.filter(r => r[qbdsName][fieldName] == rangeValue)
+    if(rangeValue && rangeValue != "*")
+      result = result.filter(r => r[qbdsName][fieldName] == rangeValue)
   }
 
   for(let ds of qbds.dataSources){

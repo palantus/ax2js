@@ -7,8 +7,13 @@ export default class FormControl{
   }
 
   init(){
+    // Intentional that it is on all controls - even though they don't have a data source. AX defaults to first one!
     this.owner().form().dataSource(this.properties?.dataSource)?.on("data-available", this.pName, this.onNewData)
     this.owner().form().dataSource(this.properties?.dataSource)?.on("active", this.pName, this.onActiveRecord)
+
+    if(this.properties?.autoDeclaration == "Yes" && this.pName){
+      this.owner().namedControls[this.pName] = this
+    }
   }
 
   name(name = this.pName){

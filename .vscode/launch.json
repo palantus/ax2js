@@ -21,6 +21,15 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/read-input-metadata.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch dev server",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/server.js"
     }
   ]
 }

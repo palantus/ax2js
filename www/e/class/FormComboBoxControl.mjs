@@ -6,7 +6,10 @@ export default class FormComboBoxControl extends FormField{
   constructor(name){
     super(name);
 
+    this.userModifiedValue = this.userModifiedValue.bind(this)
+
     this.siteElement = document.createElement("ax-formcomboboxcontrol")
+    this.siteElement.addEventListener("modified", this.userModifiedValue)
     this.enumMetadata = null
   }
 
@@ -24,12 +27,21 @@ export default class FormComboBoxControl extends FormField{
     this.siteElement.setAttribute("value", record?.[this.dataField()] || "")
   }
 
+  selection(value = this.pValue){
+    return this.pValue = value || 0
+  }
+
+  userModifiedValue(evt){
+    this.selection(parseInt(evt.detail))
+    super.userModifiedValue(evt)
+  }
+
   render(){
     super.render()
     this.siteElement.setAttribute("label", this.label())
 
     if(this.enumMetadata)
-      this.siteElement.values = this.enumMetadata.children?.value?.map(v => {return {value: v.name, label: v.label || ""}}) || []
+      this.siteElement.values = this.enumMetadata.children?.value?.map(v => {return {value: v.value||0, label: v.label || ""}}) || []
     else
       console.log(`Enum ${this.properties.enumType} not loaded for field`, this)
   }
@@ -70,7 +82,7 @@ template.innerHTML = `
   </style>
   <div class="field">
       <label for="val"></label>
-      <span name="val" class="value right"><select></select></span>
+      <span name="val" class="value right"><select id="valueselect"></select></span>
   </div>
 `;
 
@@ -80,14 +92,20 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-
+    this.modifiedByUser = this.modifiedByUser.bind(this)
   }
 
   connectedCallback() {
     this.style.display = "block"
+    this.shadowRoot.getElementById("valueselect").addEventListener("change", this.modifiedByUser)
   }
 
   disconnectedCallback() {
+    this.shadowRoot.getElementById("valueselect").removeEventListener("change", this.modifiedByUser)
+  }
+
+  modifiedByUser(){
+    this.dispatchEvent(new CustomEvent("modified", {detail: this.shadowRoot.getElementById("valueselect").value}))
   }
 
   set values(values){

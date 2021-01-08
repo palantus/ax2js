@@ -1,3 +1,5 @@
-export function valueUnlimited(){
-  return '*'
+export default class SysQuery{
+  static valueUnlimited(){
+    return '*'
+  }
 }

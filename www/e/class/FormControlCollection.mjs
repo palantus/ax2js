@@ -14,22 +14,26 @@ export default class FormControlCollection extends FormControl{
   }
 
   async addControl(type, name){
-    let [k] = Object.entries(FormControlType).find(([k, v]) => v == type) || [null]
-    if(!k){
-      console.log("Unknown control type in FormGroup/Design: " + type)
-      return null;
-    }
+    
     let newControl;
-    try{
-      newControl = new (await import(`./Form${k}Control.mjs`)).default(name);
-
-      if(!newControl){
+    if(typeof type !== "string"){
+      newControl = new type(name)
+    } else {
+      let [k] = Object.entries(FormControlType).find(([k, v]) => v == type) || [null]
+      if(!k){
         console.log("Unknown control type in FormGroup/Design: " + type)
         return null;
       }
-    } catch(err) {
-      console.log(err)
-      console.log("Unknown control type in FormGroup/Design: " + k)
+      try{
+        newControl = new (await import(`./Form${k}Control.mjs`)).default(name);
+      } catch(err) {
+        console.log(err)
+        console.log("Unknown control type in FormGroup/Design: " + k)
+        return null;
+      }
+    }
+    if(!newControl){
+      console.log("Unknown control type in FormGroup/Design", type)
       return null;
     }
     this.controls.push(newControl)

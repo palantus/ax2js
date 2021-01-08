@@ -39,4 +39,13 @@ export default class FormField extends FormControl{
   hasJumpRef(){
     return this.pJumpRef ? true : false
   }
+
+  // Called when a user modified value. Not AX method. Purpose is to register the new value, to use when calling eg. write/insert
+  userModifiedValue(){
+    this.modified()
+  }
+
+  modified(){
+
+  }
 }

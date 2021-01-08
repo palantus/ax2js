@@ -21,8 +21,13 @@ export default class Form{
     return this.design
   }
 
-  async addDataSource(name){
-    let fds = new FormDataSource();
+  async addDataSource(nameOrType){
+    let fds
+    if(typeof nameOrType !== "string"){
+      fds = new nameOrType()
+    } else {
+      fds = new FormDataSource();
+    }
     fds.name(name)
     fds.form(this)
     fds.parent = this

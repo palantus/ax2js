@@ -1,11 +1,11 @@
 import Form from "./Form.mjs";
 import FormControlType from "../enum/FormControlType.mjs"
 
-export default async function build(meta){
+export default async function build(meta, fr){
   let form = new Form(meta.name);
   
   for(let dsMeta of meta.children.ds || []){
-    let fds = await form.addDataSource(dsMeta.name)
+    let fds = await form.addDataSource(Object.getPrototypeOf(fr).constructor.controlTypes[dsMeta.name] || dsMeta.name)
     fds.initFromMeta(dsMeta)
   }
 
@@ -15,15 +15,15 @@ export default async function build(meta){
   formBuildDesign.caption(designMeta.caption || meta.name)
 
   for(let c of designMeta.children.control || []){
-    await addControlToParent(formBuildDesign, c)
+    await addControlToParent(formBuildDesign, c, fr)
   }
 
   return form;
 }
 
-async function addControlToParent(parent, control){
+async function addControlToParent(parent, control, fr){
   if(!control.type) return;
-  let controlObj = await parent.addControl(FormControlType[control.type], control.name);
+  let controlObj = await parent.addControl(Object.getPrototypeOf(fr).constructor.controlTypes[control.name] || FormControlType[control.type], control.name);
   if(!controlObj) {
     console.log("ERROR: control.addControl must return new instance!")
     return;
@@ -31,6 +31,6 @@ async function addControlToParent(parent, control){
   controlObj.initFromMeta(control);
 
   for(let c of control.children.control || []){
-    await addControlToParent(controlObj, c)
+    await addControlToParent(controlObj, c, fr)
   }
 }

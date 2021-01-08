@@ -18,9 +18,10 @@ class MenuFunction{
 
   async run(args = new Args()){
     let mi = await getElementByType("menuitemdisplay", this.menuItemName)
+    
     args.name(mi.object)
     
-    let formRun = ClassFactory.formRunClass(args);
+    let formRun = await ClassFactory.formRunClass(args);
     formRun.run();
     formRun.wait();
   }
