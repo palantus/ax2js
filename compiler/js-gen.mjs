@@ -124,6 +124,12 @@ class Compiler{
 
     if(ast instanceof Array )
       return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join(", ")
+      
+    if(ast.type == "macroref"){
+      console.log("STUB: unhandled macro in declaration")
+      return '';
+    }
+
     this.rootContext.variables.push({type: "this", id: ast.name.id})
 
     if(ast.defval){
@@ -137,6 +143,11 @@ class Compiler{
   compileFunction(f){
     let ast = f.related.ast?.source
     if(!ast) return;
+
+    if(ast.subtype == "macro-method"){
+      console.log("STUB: Ignored macro method")
+      return;
+    }
 
     let parms = this.compileFunctionParms(ast.child.parms)
     let body = this.compileFunctionBody(ast.child.body, Object.assign({}, this.rootContext, {functionName: f.name}))
