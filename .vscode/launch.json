@@ -7,6 +7,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Compile test",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/testcompile.mjs"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Compile all",
       "skipFiles": [
         "<node_internals>/**"

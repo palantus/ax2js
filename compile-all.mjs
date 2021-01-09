@@ -4,14 +4,13 @@ import Entity from "entitystorage"
 
 Promise.all([
   Entity.init("./data"),
-  //initASTParser(),
+  initASTParser(),
   initJSCompiler()
 ]).then(() => {
   
   // Generate AST:
-  //Entity.search("xpp.tag:xpp element.prop:name=^AhkPet").forEach(e => genAST(e))
+  Entity.search("xpp.tag:xpp element.prop:name=^AhkPet").forEach(e => genAST(e))
 
   // Compile to Javascript:
-  //Entity.search("prop:name=^AhkPet (tag:form|tag:table|tag:class)").forEach(e => compileElement(e))
-  Entity.search("prop:name=AhkPets tag:table").forEach(e => compileElement(e))
+  Entity.search("prop:name=^AhkPet (tag:form|tag:table|tag:class)").forEach(e => compileElement(e))
 })

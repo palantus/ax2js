@@ -8,31 +8,12 @@ hexnumber                    "0x"[0-9a-f]*[u]*
 utcdate                        [0-9][0-9][0-9][0-9]"-"[0-9][0-9]"-"[0-9][0-9]"T"[0-9][0-9]":"[0-9][0-9]":"[0-9][0-9]
 
 %options case-insensitive
+%options easy_keyword_rules
 
 %%
 
-"/*"(.|\r|\n)*?"*/"                %{
-                                        if (yytext.match(/\r|\n/)) {
-                                            parser.newLine = true;
-                                        }
-
-                                        if (parser.restricted && parser.newLine) {
-                                            this.unput(yytext);
-                                            parser.restricted = false;
-                                            return ";";
-                                        }
-                                   %}
-"//".*($|\r\n|\r|\n)               %{
-                                        if (yytext.match(/\r|\n/)) {
-                                            parser.newLine = true;
-                                        }
-
-                                        if (parser.restricted && parser.newLine) {
-                                            this.unput(yytext);
-                                            parser.restricted = false;
-                                            return ";";
-                                        }
-                                   %}
+"//".*                                /* IGNORE */
+[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]   /* IGNORE */
 
 
 "extends"                   return 'EXTENDS';
@@ -259,6 +240,8 @@ methodmodifiers
     {$$ = 'static'}
   | SERVER CLIENT STATIC
     {$$ = 'static'}
+  | SERVER methodexposure STATIC
+    {$$ = 'static'}
 
   | CLIENT STATIC
     {$$ = 'static'}
@@ -283,6 +266,8 @@ methodmodifiers
   | methodexposure
     {$$ = ''}
   | methodexposure STATIC
+    {$$ = 'static'}
+  | methodexposure STATIC SERVER
     {$$ = 'static'}
   | methodexposure CLIENT SERVER STATIC
     {$$ = 'static'}

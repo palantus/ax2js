@@ -135,7 +135,7 @@ class Compiler{
   }
 
   compileFunction(f){
-    let ast = f.related.ast.source
+    let ast = f.related.ast?.source
     if(!ast) return;
 
     let parms = this.compileFunctionParms(ast.child.parms)
@@ -184,7 +184,6 @@ class Compiler{
 				}
 				return this.compileId(ast.id, context);
 			case "and":
-				this.checkForMissingImplementations(ast, ["left", "right"]);
 				return this.compileExpression(ast.left, context) + " \&\& " + this.compileExpression(ast.right, context);
 			case "empty":
 				return "";

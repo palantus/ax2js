@@ -1,6 +1,6 @@
 import Entity from "entitystorage"
 import {readFile} from "fs"
-import jison from "jison"
+import jison from "jison-gho"
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -13,14 +13,14 @@ export async function initASTParser(){
 }
 
 export function genAST(func){
-  //try{
+  try{
     console.log(`Generating AST for ${func.related.element.type} ${func.related.element.name}.${func.name}`)
 
     func.rels.ast?.forEach(e => e.delete())
     let sourceXPP = func.related.xpp?.source
     func.rel(new Entity().tag("ast").prop("source", parser.parse(sourceXPP)), "ast")
     
-  /*} catch(err){
-    
-  }*/
+  } catch(err){
+    console.log(err)
+  }
 }
