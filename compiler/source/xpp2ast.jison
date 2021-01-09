@@ -675,8 +675,6 @@ e
     {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
   | id DOT methodname LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
-  | id DOT id
-    {$$ = {type: "memberref", element: $1, ref: $3}}
   ;
 
 /* What can be a full statement - ie. be alone between two semicolons */
