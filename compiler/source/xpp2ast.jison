@@ -174,7 +174,7 @@ vdl
   | id id COMMA vdllist
     {$$ = {type: "variabledeclaration", vartype: $1, name: $2, more: $4}}
   | t id ASSIGN e
-    {$$ = {type: "variabledeclaration", vartype: $1, name: $2}}
+    {$$ = {type: "variabledeclaration", vartype: $1, name: $2, defval: $4}}
   | t id
     {$$ = {type: "variabledeclaration", vartype: $1, name: $2}}
   | t id COMMA vdllist
@@ -305,10 +305,14 @@ methodname
 methodvariables
   : methodvariables COMMA methodvariables
     {$$ = [$1, $3]}
-  | t id
-    {$$ = $2}
+  | id id ASSIGN e
+    {$$ = {type: "variabledeclaration", vartype: $1, name: $2, defval: $4}}
+  | id id
+    {$$ = {type: "variabledeclaration", vartype: $1, name: $2}}
   | t id ASSIGN e
-    {$$ = $2}
+    {$$ = {type: "variabledeclaration", vartype: $1, name: $2, defval: $4}}
+  | t id
+    {$$ = {type: "variabledeclaration", vartype: $1, name: $2}}
   |
     {$$ = {type: "empty"}}
   ;
@@ -352,7 +356,7 @@ selectstatement
 whileselectstatement
   : WHILE SELECT selectstatementinner LBRACE el RBRACE
     {$$ = {type: "whileselect", inner: $2, body: $5}}
-  | WHILE SELECT selectstatementinner statement
+  | WHILE SELECT selectstatementinner e
     {$$ = {type: "whileselect", inner: $2, body: $4}}
   ;
 
@@ -469,7 +473,7 @@ dowhilestatement
 
 switchstatement
   : SWITCH LPAREN e RPAREN LBRACE switchbody RBRACE
-  {$$ = {type: "switch", on: $3, body: $6}}
+    {$$ = {type: "switch", on: $3, body: $6}}
   ;
 
 switchbody
@@ -482,10 +486,14 @@ switchbody
   ;
 
 switchcaselist
-  : e COMMA switchcaselist
-    {$$ = [{type: "switchcaselist", switchcase: $1}, $3]}
-  | e
-    {$$ = {type: "switchcaselist", switchcase: $1}}
+  : switchcaselist COMMA switchcaselist
+    {$$ = [$1, $3]}
+  | literalvalue
+    {$$ = $1}
+  | id DOUBLECOLON enumstr
+    {$$ = {type: "enumval", enum: $1, val: $3}}
+  | 
+    {$$ = {type: "empty"}}
   ;
 
 statementbody
@@ -507,8 +515,8 @@ trycatch
   ;
 
 t
-    : id
-    | NATVOID
+  : id
+  | NATVOID
   | SYSTEM DOT t
   | SYSTEM DOT id DOT t
   | STR NATLITERAL
@@ -546,6 +554,10 @@ id
     {$$ = {type: "dotnetsystemcall", ref: $3}}
   | ID LBRACKET e RBRACKET
     {$$ = {type: "arrayref", id: $1, index: $3}}
+  | THIS
+    {$$ = {type: "literal", val: "this"}}
+  | NEXT
+    {$$ = {type: "literal", val: "this"}}
     ;
 
 el
@@ -581,7 +593,7 @@ el
     {$$ = [{type: "methodinner", name: $3, returns: $1, strlen: $2, parms: $5, body: $8}, $10]}
   | LBRACE el RBRACE el
     {$$ = [{type: "scope", body: $2}, $4]}
-  | statement SEMICOLON el
+  | e SEMICOLON el
     {$$ = [$1, $3]}
   | SEMICOLON el
     {$$ = $2}
@@ -589,8 +601,7 @@ el
     {$$ = {type: "empty"}}
   ;
 
-/* What can can't be used as a full statement - eg. x++ can, but x alone can't */
-e
+literalvalue
   : NATLITERAL
     {$$ = {type: "literal", val: $1}}
   | HEXNUMBER
@@ -603,10 +614,13 @@ e
     {$$ = {type: "literal", val: $1.substring(0, 1) == "@" ? $1.substring(1) : $1}}
   | NULL
     {$$ = {type: "literal", val: "null"}}
+  ;
+
+e
+  : literalvalue
+    {$$ = $1}
   | id
     {$$ = {type: "id", id: $1}}
-  | THIS
-    {$$ = {type: "literal", val: "this"}}
   | MINUS e
     {$$ = {type: "negative", e: $2}}
   | PLUS e
@@ -655,7 +669,9 @@ e
     {$$ = {type: "or", left: $1, right: $3}}
   | e AND e
     {$$ = {type: "and", left: $1, right: $3}}
-  | e DOT e
+  | e DOT id
+    {$$ = {type: "memberref", element: $1, ref: $3}}
+  | id DOT id
     {$$ = {type: "memberref", element: $1, ref: $3}}
   | NEW id LPAREN methodcallparams RPAREN
     {$$ = {type: "new", id: $2, parameters: $4}}
@@ -665,6 +681,8 @@ e
     {$$ = {type: "methodcall", method: $3, isStaticCall: true, element: $1, parameters: $5}}
   | id LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", method: $1, parameters: $3}}
+  | e DOT id LPAREN methodcallparams RPAREN
+    {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
   | container
     {$$ = $1}
   | e QUESTIONMARK e COLON e
@@ -673,15 +691,14 @@ e
     {$$ = {type: "paran", content: $2}}
   | e DOT LPAREN methodcallparams RPAREN
     {$$ = {type: "fieldrefbyid", element: $1, idexpression: $4}}
-  | e DOT methodname LPAREN methodcallparams RPAREN
+  | e DOT id LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
-  | id DOT methodname LPAREN methodcallparams RPAREN
+  | id DOT id LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
-  ;
-
-/* What can be a full statement - ie. be alone between two semicolons */
-statement
-  : NEW id LPAREN methodcallparams RPAREN
+  | LBRACKET e RBRACKET
+    {$$ = {type: "container", content: $2}}
+  
+  | NEW id LPAREN methodcallparams RPAREN
     {$$ = {type: "new", id: $2, parameters: $4}}
   | READNAT LPAREN RPAREN
   | PRINTNAT LPAREN e RPAREN
@@ -703,22 +720,10 @@ statement
     {$$ = {type: "plusassign", left: $1, right: $3}}
   | id NEGASSIGN e
     {$$ = {type: "negassign", left: $1, right: $3}}
-  | e DOT id ASSIGN e
-    {$$ = {type: "assign", leftelement: $1, left: $3, right: $5}}
   | id DOT id ASSIGN e
     {$$ = {type: "assign", leftelement: $1, left: $3, right: $5}}
-  | id LPAREN methodcallparams RPAREN
-    {$$ = {type: "methodcall", method: $1, parameters: $3}}
-  | id DOUBLECOLON id LPAREN methodcallparams RPAREN
-    {$$ = {type: "methodcall", method: $3, isStaticCall: true, element: $1, parameters: $5}}
-  | e DOT methodname LPAREN methodcallparams RPAREN
-    {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
-  | id DOT methodname LPAREN methodcallparams RPAREN
-    {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}
-  | e DOT LPAREN methodcallparams RPAREN ASSIGN e
+  | id DOT LPAREN methodcallparams RPAREN ASSIGN e
     {$$ = {type: "fieldrefbyidassign", element: $1, idexpression: $4, assign: $7}}
-  | LBRACKET e RBRACKET
-    {$$ = {type: "container", content: $2}}
   | NATLITERAL BACKSLASH NATLITERAL BACKSLASH NATLITERAL
     {$$ = {type: "literal", val: 'new Date(' + parseInt($5) + ',' + parseInt($3) + ',' + parseInt($1) + ')'}}
   | SQUARE id

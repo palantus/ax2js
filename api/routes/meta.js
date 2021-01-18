@@ -31,7 +31,7 @@ export default (app) => {
 
   route.get('/form/:name/:control/:func.xpp', function (req, res, next) {
     let form = Element.lookupType("form", req.params.name)
-    let element = Element.find(`tag:formcontrol element.id:${form} prop:name=${req.params.control}`)
+    let element = Element.find(`(tag:formcontrol|tag:fds) element.id:${form} prop:name=${req.params.control}`)
     let func = req.params.func == "declaration" ? element?.related.declaration : element?.rels.function?.find(f => f.name == req.params.func)
     res.setHeader('content-type', 'text/plain');
     res.send(func?.related?.xpp?.source||null)

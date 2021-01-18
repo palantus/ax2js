@@ -149,20 +149,19 @@ class Compiler{
       return;
     }
 
-    let parms = this.compileFunctionParms(ast.child.parms)
-    let body = this.compileFunctionBody(ast.child.body, Object.assign({}, this.rootContext, {functionName: f.name}))
+    let context = Object.assign({}, this.rootContext, {functionName: f.name})
+    let parms = this.compileFunctionParms(ast.child.parms, context)
+    let body = this.compileFunctionBody(ast.child.body, context)
 
     this.gen.addFunction(f.name, body, parms, ast.child.isStatic === true)
   }
 
-  compileFunctionParms(ast){
-    if(!ast)
-      console.log("her")
+  compileFunctionParms(ast, context){
     if(ast.type == "empty") return ""
 
     if(ast instanceof Array )
-      return ast.map(p => this.compileFunctionParms(p)).join(", ")
-    return ast.id.id
+      return ast.map(p => this.compileFunctionParms(p, context)).join(", ")
+    return `${ast.name.id}${ast.defval? `= ${this.compileExpression(ast.defval, context)}`:''}`
   }
 
   compileFunctionBody(ast, context){
@@ -201,7 +200,7 @@ class Compiler{
 			case "return":
 				return "return " + (ast.e != undefined ? this.compileExpression(ast.e, context) : "");
 			case "new":
-				return "new " + this.compileExpression(ast.e || ast.id, context);
+				return `new ${this.compileExpression(ast.e || ast.id, context)}()`;
 			case "macroval":
 				return ast.macro + "." + ast.val;
 			case "container":
@@ -215,7 +214,7 @@ class Compiler{
 			case "literal":
 				return ast.val;
 			case "methodinner":
-				return this.compileMethodDeclarationInner(ast);
+				return this.compileMethodDeclarationInner(ast, context);
 			case "plus":
 				return this.compileExpression(ast.left, context) + " + " + this.compileExpression(ast.right, context);
 			case "less":
@@ -236,6 +235,10 @@ class Compiler{
         return this.compileExpression(ast.left, context) + " == " + this.compileExpression(ast.right, context);
       case "whereexpequals":
         return `${this.compileId(ast.buffer, context)}.${this.compileId(ast.field, context)} == ${this.compileExpression(ast.e, context)}`
+      case "scope":
+        return `{${this.compileExpression(ast.body, context)}}`
+      case "switch":
+        return `switch(${this.compileExpression(ast.on, context)}){${this.compileSwitchBody(ast.body, context)}}`
 			default:
 				if(ast.type != undefined)
 				  console.log("Unsupported expression type: " + ast.type)
@@ -273,7 +276,7 @@ class Compiler{
 		if(ast.defval != undefined){
 			ret += " = " + this.compileExpression(ast.defval, context);
 		} else {
-      let baseType = this.idToBaseType(ast.vartype.id)
+      let baseType = this.idToBaseType(ast.vartype?.id||ast.vartype)
       ret += ` = ${this.nullValueForBaseType(baseType, ast.vartype.id)}`
     }
 
@@ -303,6 +306,9 @@ class Compiler{
       switch(ast.type){
         case "id":
           ret = ast.id;
+          break;
+        case "literal":
+          ret = ast.val
           break;
         default:
           if(ast.type != undefined)
@@ -390,7 +396,7 @@ class Compiler{
   }
 
 	compileMethodDeclarationInner(ast, context){
-		return "var " + this.compile_id(ast.name) + " = function(" + this.compile_methoddeclarationparms(ast.parms, context) + "){" + this.compile_expression(ast.body, context) + "}";
+		return "var " + this.compileId(ast.name, context) + " = function(" + this.compileFunctionParms(ast.parms, context) + "){" + this.compileExpression(ast.body, context) + "}";
   }
   
   refUsed(refName, context){
@@ -446,6 +452,29 @@ class Compiler{
         if(baseTypeName) console.log(`Unknown base type for null init: ${baseTypeName}`)
         return 'null';
     }
+  }
+
+  compileSwitchBody(ast, context){
+    if(Array.isArray(ast)) return ast.map(e => {
+      return this.compileSwitchBody(e, context)
+    }).join("\n    ")
+
+    switch(ast.type){
+      case "switchcase":
+        return `case ${this.compileSwitchCaseList(ast.caselist, context)}: \n${this.compileExpression(ast.body, context)}`
+      case "switchdefault":
+        return `default: \n${this.compileExpression(ast.body, context)}`
+      default:
+        return ''
+    }
+  }
+
+  compileSwitchCaseList(ast, context){
+    if(Array.isArray(ast)) return ast.map(e => {
+      return this.compileSwitchCaseList(e, context)
+    }).join(", \n")
+
+    return this.compileExpression(ast, context)
   }
 }
 
