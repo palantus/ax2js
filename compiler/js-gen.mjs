@@ -407,14 +407,21 @@ class Compiler{
   }
 
   idToBaseType(id){
-    if(["str", "int", "real", "int64", "container", "boolean"].includes(id))
-      return id
+    if(["str", "int", "real", "int64", "container", "boolean", "date"].includes(id.toLowerCase()))
+      return id.toLowerCase()
 
     let typeEntity = Entity.find(`prop:name=${id} (tag:table|tag:class|tag:edt|tag:enum)`)
     if(typeEntity){
       switch(typeEntity.type){
         case "table":
-            return "tablebuffer";
+          return "tablebuffer";
+        case "edt":
+          if(!typeEntity.edtType) console.log(`EDT ${typeEntity.name} is missing edtType`)
+          return typeEntity.edtType
+        case "enum":
+          return 'enum'
+        case "class":
+          return 'class'
       }
     }
 
@@ -424,14 +431,20 @@ class Compiler{
 
   nullValueForBaseType(baseTypeName, varName){
     switch(baseTypeName){
+      case "string":
       case "str": return '""';
       case "int": return "0";
       case "real": return '0.0';
       case "int64": return '0';
       case "container": return '[]';
       case "boolean": return 'false';
+      case "date": return '0';
+      case "enum": return '0';
+      case "class": return 'null';
       case "tablebuffer": return `new ${varName}()`;
-      default: return 'null';
+      default: 
+        if(baseTypeName) console.log(`Unknown base type for null init: ${baseTypeName}`)
+        return 'null';
     }
   }
 }

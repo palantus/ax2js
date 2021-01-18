@@ -305,7 +305,9 @@ methodname
 methodvariables
   : methodvariables COMMA methodvariables
     {$$ = [$1, $3]}
-  | t e
+  | t id
+    {$$ = $2}
+  | t id ASSIGN e
     {$$ = $2}
   |
     {$$ = {type: "empty"}}
