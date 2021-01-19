@@ -1,9 +1,11 @@
 import Entity from 'entitystorage'
 import ClassGen from './js-classgen.mjs'
 import js_beautify from 'js-beautify';
+import { readdir } from 'fs/promises';
 let beautify = js_beautify.js
 
 let globalCaseMap;
+let overriddenClassesCaseMap = {}
 
 class Compiler{
 
@@ -123,7 +125,7 @@ class Compiler{
     if(ast.type == "empty") return ""
 
     if(ast instanceof Array )
-      return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join(", ")
+      return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join("; ")
       
     if(ast.type == "macroref"){
       console.log("STUB: unhandled macro in declaration")
@@ -195,6 +197,8 @@ class Compiler{
 				return this.compileId(ast.id, context);
 			case "and":
 				return this.compileExpression(ast.left, context) + " \&\& " + this.compileExpression(ast.right, context);
+			case "or":
+				return `${this.compileExpression(ast.left, context)} || ${this.compileExpression(ast.right, context)}`;
 			case "empty":
 				return "";
 			case "return":
@@ -204,6 +208,8 @@ class Compiler{
 			case "macroval":
 				return ast.macro + "." + ast.val;
 			case "container":
+        if(ast.content instanceof Array)
+          return `[${ast.content.map(e => this.compileExpression(e, context)).join(", ")}]`
 				return "[" + this.compileExpression(ast.content, context) + "]";
 			case "paran":
 				return "(" + this.compileExpression(ast.content, context) + ")";
@@ -219,6 +225,8 @@ class Compiler{
 				return this.compileExpression(ast.left, context) + " + " + this.compileExpression(ast.right, context);
 			case "less":
 				return this.compileExpression(ast.left, context) + " < " + this.compileExpression(ast.right, context);
+			case "lessequals":
+				return this.compileExpression(ast.left, context) + " <= " + this.compileExpression(ast.right, context);
 			case "plusplus":
 				return this.compileExpression(ast.e, context) + "++"
 			case "negation":
@@ -239,6 +247,14 @@ class Compiler{
         return `{${this.compileExpression(ast.body, context)}}`
       case "switch":
         return `switch(${this.compileExpression(ast.on, context)}){${this.compileSwitchBody(ast.body, context)}}`
+      case "while":
+        return "while(" + this.compileExpression(ast.condition, context) + "){\n" + this.compileExpression(ast.body, context) + "}"
+      case "plusassign":
+        return `${this.compileExpression(ast.left, context)} += ${this.compileExpression(ast.right, context)}`
+      case "divide":
+        return `${this.compileExpression(ast.left, context)} / ${this.compileExpression(ast.right, context)}`
+      case "throw":
+        return `throw ${this.compileExpression(ast.e, context)}`
 			default:
 				if(ast.type != undefined)
 				  console.log("Unsupported expression type: " + ast.type)
@@ -313,6 +329,8 @@ class Compiler{
         default:
           if(ast.type != undefined)
             console.log("Unsupported id type: " + ast.type)
+          else if(overriddenClassesCaseMap[ret.toLowerCase()])
+            ret = overriddenClassesCaseMap[ret.toLowerCase()]
           else if(debug){
             console.log("Unknown type for id: " + ast);
           }
@@ -329,7 +347,8 @@ class Compiler{
       case "this": return "this."+ret
       case "control": return `this.owner().namedControls.${ret}`
       case "local": return ret
-      default: return ret
+      default: 
+        return overriddenClassesCaseMap[ret.toLowerCase()] || ret
     }
   }
 
@@ -431,8 +450,11 @@ class Compiler{
       }
     }
 
+    if(overriddenClassesCaseMap[id.toLowerCase()])
+      return "class"
+
     console.log(`Unknown type for id ${id}`)
-    return null;
+    return 'class';
   }
 
   nullValueForBaseType(baseTypeName, varName){
@@ -484,6 +506,11 @@ export async function initJSCompiler(){
     obj[cur.toLowerCase()] = cur
     return obj
   }, {})
+
+  overriddenClassesCaseMap = (await readdir('www/e/class')).map(f => f.slice(0, -4)).reduce((obj, cur) => {
+    obj[cur.toLowerCase()] = cur
+    return obj
+  }, {});
 }
 
 export async function compileElement(e){
