@@ -163,6 +163,9 @@ class Compiler{
 
     if(ast instanceof Array )
       return ast.map(p => this.compileFunctionParms(p, context)).join(", ")
+    
+    // TODO: need to set a default value for eg. ints and strings
+    context.variables.push({type: "local", id: ast.name.id})
     return `${ast.name.id}${ast.defval? `= ${this.compileExpression(ast.defval, context)}`:''}`
   }
 
@@ -255,6 +258,8 @@ class Compiler{
         return `${this.compileExpression(ast.left, context)} / ${this.compileExpression(ast.right, context)}`
       case "throw":
         return `throw ${this.compileExpression(ast.e, context)}`
+      case "is":
+        return `${this.compileId(ast.e1, context)} instanceof ${this.compileId(ast.e2, context)}`
 			default:
 				if(ast.type != undefined)
 				  console.log("Unsupported expression type: " + ast.type)
@@ -369,7 +374,7 @@ class Compiler{
     
     if(ast.element){
       if(ast.element.type == "id")
-        this.refUsed(ast.element.id, context)
+        this.refUsed(overriddenClassesCaseMap[ast.element.id.toLowerCase()] || ast.element.id, context)
       return this.compileExpression(ast.element, context) + "." + methodName + "(" + parms + ")";
     } else {
       let globalName = globalCaseMap[methodName.toLowerCase()]

@@ -51,6 +51,7 @@ utcdate                        [0-9][0-9][0-9][0-9]"-"[0-9][0-9]"-"[0-9][0-9]"T"
 "str"                       return 'STR'
 "try"                       return 'TRY';
 "catch"                     return 'CATCH';
+"is"                        return 'IS';
 
 "select"                    return 'SELECT';
 "firstonly"                 return 'FIRSTONLY'
@@ -732,6 +733,8 @@ e
     {$$ = {type: "plusplus", e: $1}}
   | e MINUS MINUS
     {$$ = {type: "minusminus", e: $1}}
+  | id IS id
+    {$$ = {type: "is", e1: $1, e2: $3}}
   | vdl
     {$$= $1}
   ;

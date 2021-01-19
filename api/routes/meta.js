@@ -60,7 +60,7 @@ export default (app) => {
   route.get('/:type/:name.mjs', function (req, res, next) {
     let element = Element.lookupType(req.params.type, req.params.name)
     res.setHeader('content-type', 'application/javascript');
-    res.send(element?.related?.js?.source||null)
+    res.send(element?.related?.js?.source || (element?`export default class ${element.name}{}`: null))
   });
 
   route.get('/:type/:name', function (req, res, next) {
