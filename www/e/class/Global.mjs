@@ -42,3 +42,15 @@ export function strFmt(container, ...args){
 export function queryValue(val){
   return val
 }
+
+export function dateMax(){
+  return 9999999
+}
+
+export function dateMin(){
+  return 0
+}
+
+export function conNull(){
+  return []
+}

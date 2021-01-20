@@ -95,8 +95,10 @@ class Compiler{
       let e = Entity.find(`prop:name=${i} (tag:class|tag:edt|tag:enum|tag:table)`);
       if(e)
         imports.add(`import ${i} from '/api/meta/${e.type}/${e.name}.mjs'`)
+      else if(overriddenClassesCaseMap[i.toLowerCase()])
+        imports.add(`import ${overriddenClassesCaseMap[i.toLowerCase()]} from '/e/class/${overriddenClassesCaseMap[i.toLowerCase()]}.mjs'`)
       else
-        imports.add(`import ${i} from '/e/class/${i}.mjs'`)
+        console.log(`Unresolved dependency ${i}`)
     })
 
     if(this.globalUsages.size > 0){
@@ -115,30 +117,32 @@ class Compiler{
     }
 
     if(ast){
-      body.push(this.compileDeclarationVars(ast.child.body))
+      body.push(this.compileDeclarationVars(ast.child.body, this.rootContext))
     }
 
     this.gen.addClassVars(body.join(", "))
   }
 
-  compileDeclarationVars(ast){
+  compileDeclarationVars(ast, context){
     if(ast.type == "empty") return ""
 
     if(ast instanceof Array )
-      return ast.map(p => this.compileDeclarationVars(p)).filter(p => p ? true : false).join("; ")
+      return ast.map(p => this.compileDeclarationVars(p, context)).filter(p => p ? true : false).join("; ")
       
     if(ast.type == "macroref"){
       console.log("STUB: unhandled macro in declaration")
       return '';
     }
 
-    this.rootContext.variables.push({type: "this", id: ast.name.id})
+    let baseType = this.idToBaseType(ast.vartype.id)
+    this.rootContext.variables.push({type: "this", id: ast.name.id, baseType: baseType||null})
 
     if(ast.defval){
       return `${ast.name.id} = ${this.compileExpression(ast.defval, this.rootContext)}`
+    } else if(ast.type == "macro"){
+      console.log("Skipped macro in declaration")
     } else {
-      let baseType = this.idToBaseType(ast.vartype.id)
-      return `${ast.name.id} = ${this.nullValueForBaseType(baseType, ast.vartype.id)}`
+      return `${ast.name.id} = ${this.nullValueForBaseType(baseType, ast.vartype.id, context)}`
     }
   }
 
@@ -189,13 +193,18 @@ class Compiler{
 			case "if" :
 				return this.compileIf(ast, context);
 			case "assign":
-				return (ast.leftelement != undefined ? this.compileExpression(ast.leftelement, context) + "." : "") + this.compileExpression(ast.left, context) + " = " + this.compileExpression(ast.right, context);
+        let assignLeft = this.compileExpression(ast.left, context)
+        let assignRight = this.compileExpression(ast.right, context)
+        if(!ast.leftelement && this.varNameToBaseType(assignLeft, context) == "tablebuffer" && assignRight == "null") return `${assignLeft}.clear()`
+				return (ast.leftelement != undefined ? this.compileExpression(ast.leftelement, context) + "." : "") + assignLeft + " = " + assignRight;
 			case "methodcall" :
 				return this.compileMethodCall(ast, context);
 			case "id":
 				//TODO: this is a hack to fix "if(tableBuffer)". Consider figuring out how to fix this properly.
 				if(context.parent && (context.parent?.cur?.type == "if" || (context.parent?.cur?.type == "negation" && context.parent.parent?.cur?.type == "if"))){
-					return `${this.compileId(ast.id, context)}._hasValue()`;
+          let id = this.compileId(ast.id, context)
+          if(this.varNameToBaseType(id, context) == "tablebuffer")
+					  return `${this.compileId(ast.id, context)}._hasValue()`;
 				}
 				return this.compileId(ast.id, context);
 			case "and":
@@ -207,7 +216,10 @@ class Compiler{
 			case "return":
 				return "return " + (ast.e != undefined ? this.compileExpression(ast.e, context) : "");
 			case "new":
-				return `new ${this.compileExpression(ast.e || ast.id, context)}()`;
+        let newId = this.compileExpression(ast.e || ast.id, context)
+        //TODO: needed??
+        this.refUsed(overriddenClassesCaseMap[newId.toLowerCase()]||newId, context)
+				return `new ${newId}()`;
 			case "macroval":
 				return ast.macro + "." + ast.val;
 			case "container":
@@ -260,6 +272,9 @@ class Compiler{
         return `throw ${this.compileExpression(ast.e, context)}`
       case "is":
         return `${this.compileId(ast.e1, context)} instanceof ${this.compileId(ast.e2, context)}`
+      case "fieldrefbyid":
+        this.globalUsages.add("fieldId2Name")
+        return `${this.compileId(ast.element, context)}[fieldId2Name(${this.compileExpression(ast.idexpression, context)})]`
 			default:
 				if(ast.type != undefined)
 				  console.log("Unsupported expression type: " + ast.type)
@@ -275,7 +290,7 @@ class Compiler{
     let enumEntity = Entity.find(`prop:name=${enumName} tag:enum`)
     let enumValue = this.compileId(ast.val, context)
     if(enumEntity)
-      return ''+enumEntity.rels.value?.find(e => e.name == enumValue)?.value||0
+      return `${enumEntity.rels.value?.find(e => e.name == enumValue)?.value||0}`
     else
       return '0'
   }
@@ -290,7 +305,8 @@ class Compiler{
     }
     
     /*
-    if(ast.vartype?.type == "id")
+    // TODO: check or remove! Does nothing so far
+    if(ast.vartype?.type == "id" && this.varNameToBaseType(ast.vartype.id, context) == "class")
       this.refUsed(ast.vartype.id, context)
     */
 
@@ -298,7 +314,7 @@ class Compiler{
 			ret += " = " + this.compileExpression(ast.defval, context);
 		} else {
       let baseType = this.idToBaseType(ast.vartype?.id||ast.vartype)
-      ret += ` = ${this.nullValueForBaseType(baseType, ast.vartype.id)}`
+      ret += ` = ${this.nullValueForBaseType(baseType, ast.vartype.id, context)}`
     }
 
 		return ret;
@@ -364,11 +380,14 @@ class Compiler{
     switch(methodName){ 
       case "fieldNum":
         let f = Entity.find(`tag:tablefield element.prop:name=${ast.parameters[0].id.id} prop:name=${ast.parameters[1].id.id}`)
-        return ""+f._id || `fieldNum("${ast.parameters[0].id.id}", "${ast.parameters[1].id.id}")`
+        return f ? `${f._id}` : `fieldNum("${ast.parameters[0].id.id}", "${ast.parameters[1].id.id}")`
+      case "tableNum":
+        let t = Entity.find(`tag:table prop:name=${ast.parameters.id.id}`)
+        return t ? `${t._id}` : `tableNum("${ast.parameters[0].id.id}")`
     }
 
 		var parms = "";
-		if(ast.parameters != undefined){
+		if(ast.parameters != undefined && ast.parameters.type != "empty"){
 			parms = this.compileMethodCallParms(ast.parameters, context);
     }
     
@@ -406,8 +425,25 @@ class Compiler{
 			return ret;
 		}
 
-		return "if(" + this.compileExpression(ast.condition, context) + "){\n" + this.compileExpression(ast.body, context) + "}"
-	}
+    let condition = this.compileExpression(ast.condition, context)
+    let body = this.compileExpression(ast.body, context)
+    let els = ast.else ? this.compileIfElse(ast.else, context) : ""
+
+		return `if(${condition}){\n${body}\n}${els}`
+  }
+  
+  compileIfElse(ast, context){
+    let body = this.compileExpression(ast.body, context)
+    if(ast.type == "elseif"){
+      let condition = this.compileExpression(ast.condition, context)
+      let els = ast.else ? this.compileIfElse(ast.else, context) : ""
+      return `if(${condition}){\n${body}\n}${els}`
+    } else if(ast.type == "else"){
+      return `\nelse\n{${body}}`
+    }
+
+    throw "Unknown ifelse type"
+  }
 
 	compileSelect(ast, context){
     this.refUsed("Select", context)
@@ -436,6 +472,11 @@ class Compiler{
     this.dependencies.add(refName)
   }
 
+  varNameToBaseType(varName, context){
+    let varNameSearch = varName.replace("this.", '')
+    return context.variables.find(v => v.id == varNameSearch)?.baseType || null
+  }
+
   idToBaseType(id){
     if(["str", "int", "real", "int64", "container", "boolean", "date"].includes(id.toLowerCase()))
       return id.toLowerCase()
@@ -462,7 +503,7 @@ class Compiler{
     return 'class';
   }
 
-  nullValueForBaseType(baseTypeName, varName){
+  nullValueForBaseType(baseTypeName, varName, context){
     switch(baseTypeName){
       case "string":
       case "str": return '""';
@@ -474,7 +515,9 @@ class Compiler{
       case "date": return '0';
       case "enum": return '0';
       case "class": return 'null';
-      case "tablebuffer": return `new ${varName}()`;
+      case "tablebuffer": 
+        this.refUsed(overriddenClassesCaseMap[varName.toLowerCase()] || varName, context)
+        return `new ${varName}()`;
       default: 
         if(baseTypeName) console.log(`Unknown base type for null init: ${baseTypeName}`)
         return 'null';

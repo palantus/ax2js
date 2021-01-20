@@ -1,4 +1,4 @@
-import {insertRecord} from "../../datamanagement/data.mjs"
+import {insertRecord, updateRecord} from "../../datamanagement/data.mjs"
 
 export default class Common{
   _hasValue(){
@@ -22,6 +22,22 @@ export default class Common{
   }
 
   update(){
+    updateRecord(this)
+  }
 
+  isTmp(){
+    
+  }
+
+  setTmp(){
+
+  }
+
+  data(data){
+
+  }
+
+  clear(){
+    
   }
 }

@@ -487,12 +487,10 @@ switchbody
   ;
 
 switchcaselist
-  : switchcaselist COMMA switchcaselist
+  : e COMMA switchcaselist
     {$$ = [$1, $3]}
-  | literalvalue
+  | e
     {$$ = $1}
-  | id DOUBLECOLON enumstr
-    {$$ = {type: "enumval", enum: $1, val: $3}}
   | 
     {$$ = {type: "empty"}}
   ;
@@ -690,7 +688,7 @@ e
     {$$ = {type: "onelineif", condition: $1, trueval: $3, falseval: $5}}
   | LPAREN e RPAREN
     {$$ = {type: "paran", content: $2}}
-  | e DOT LPAREN methodcallparams RPAREN
+  | id DOT LPAREN methodcallparams RPAREN
     {$$ = {type: "fieldrefbyid", element: $1, idexpression: $4}}
   | e DOT id LPAREN methodcallparams RPAREN
     {$$ = {type: "methodcall", element: $1, method: $3, parameters: $5}}

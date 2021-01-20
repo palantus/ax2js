@@ -12,6 +12,14 @@ export async function load() {
   return elements = await loadPromise
 }
 
+export function getElementBasicInfoByType(type, name){
+  return elements.find(e => e.type == type && e.name == name)
+}
+
+export function getElementBasicInfoById(id){
+  return elements.find(e => e.id == id)
+}
+
 export async function getElementByType(type, name, fillMetadata = true){
   if(elements.length > 0){
     let e = elements.find(e => e.type == type && e.name == name)
@@ -24,6 +32,20 @@ export async function getElementByType(type, name, fillMetadata = true){
   }
 
   return cacheElement(await api.get(`meta/${type}/${name}`))
+}
+
+export async function getElementById(id, fillMetadata = true){
+  if(elements.length > 0){
+    let e = elements.find(e => e.id == id)
+    if(!fillMetadata)
+      return e;
+
+    let cachedElement = cache[e.id];
+    if(cachedElement) 
+      return cachedElement;
+  }
+
+  return cacheElement(await api.get(`meta/${id}`))
 }
 
 export function getCachedElementByType(type, name){

@@ -19,7 +19,7 @@ export function runQuery (q) {
     let fieldName = range.fieldName()
     let rangeValue = range.value()
     if(rangeValue && rangeValue != "*")
-      result = result.filter(r => r[qbdsName][fieldName] == rangeValue)
+      result = result.filter(r => r[qbdsName][fieldName] == rangeValue || (rangeValue == "---EMPTYSTRING---" && !r[qbdsName][fieldName]))
   }
 
   for(let ds of qbds.dataSources){

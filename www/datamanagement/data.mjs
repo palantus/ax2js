@@ -3,7 +3,11 @@ let dataReadyFunction;
 let recIdCounter = 1;
 export let dataReady = new Promise(ready => {dataReadyFunction = ready})
 let database = {}
-import {getCachedElementByType, getCachedElementById, getEnumMapping} from "../e/class/Metadata.mjs"
+import {getCachedElementByType, 
+  getCachedElementById, 
+  getEnumMapping,
+  getElementBasicInfoByType, 
+  getElementBasicInfoById} from "../e/class/Metadata.mjs"
 let isUpgradeDone = false;
 
 export async function setReader(_reader){
@@ -40,7 +44,13 @@ export async function tryUpgrade(){
 }
 
 export function getTableData(tableNameOrId){
+  
   let tabMeta = typeof tableNameOrId === "string" ? getCachedElementByType("table", tableNameOrId) : getCachedElementById(tableNameOrId)
+  if(!tabMeta){
+    console.log(`Missing cached metadata for table ${tableNameOrId}. If table is extending, the information is not used correctly!`)
+    tabMeta = typeof tableNameOrId === "string" ? getElementBasicInfoByType("table", tableNameOrId) : getElementBasicInfoById(tableNameOrId)
+  }
+
   if(!tabMeta)
     return []
   else if(tabMeta && tabMeta.extends)
@@ -68,4 +78,18 @@ export function insertRecord(buffer){
   else
     database[tableName] = [rawRecord]
   return rawRecord
+}
+
+export function updateRecord(buffer){
+  let tabMeta = getCachedElementById(buffer.TableId)
+  let tableName = tabMeta.name
+  if(tabMeta && tabMeta.extends)
+    tableName = tabMeta.extends
+
+  if(!buffer.RecId)
+    alert("Attempted to update record without RecId")
+  let rawRecord = database[tableName].find(r => r.RecId == buffer.RecId)
+  tabMeta.children.field.forEach(f => {
+    rawRecord[f.name] = buffer[f.name] || null
+  })
 }

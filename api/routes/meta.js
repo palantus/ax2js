@@ -60,6 +60,21 @@ export default (app) => {
   route.get('/:type/:name.mjs', function (req, res, next) {
     let element = Element.lookupType(req.params.type, req.params.name)
     res.setHeader('content-type', 'application/javascript');
+    let source = element?.related?.js?.source
+    if(!source){
+      switch(element.type){
+        case "class":
+          source = `export default class ${element.name}{}`
+          break;
+        case "form":
+          source = `import FormRun from '/e/class/FormRun.mjs'\nexport default class ${element.name} extends FormRun{}`
+          break;
+        case "table":
+          source = `import Common from '/e/class/Common.mjs'\nexport default class ${element.name} extends Common{TableId = ${element._id}}`
+          break;
+      }
+    }
+      return res.send(source)
     res.send(element?.related?.js?.source || (element?`export default class ${element.name}{}`: null))
   });
 
