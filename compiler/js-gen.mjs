@@ -219,17 +219,17 @@ class Compiler{
         let newId = this.compileExpression(ast.e || ast.id, context)
         //TODO: needed??
         this.refUsed(overriddenClassesCaseMap[newId.toLowerCase()]||newId, context)
-				return `new ${newId}()`;
-			case "macroval":
-				return ast.macro + "." + ast.val;
+				return `new ${newId}(${ast.parameters?this.compileMethodCallParms(ast.parameters, context):''})`;
+			//case "macroval":
+			//	return ast.macro + "." + ast.val;
 			case "container":
         if(ast.content instanceof Array)
           return `[${ast.content.map(e => this.compileExpression(e, context)).join(", ")}]`
 				return "[" + this.compileExpression(ast.content, context) + "]";
 			case "paran":
 				return "(" + this.compileExpression(ast.content, context) + ")";
-			case "macroref":
-				return "eval(macros." + this.compileId(ast.id, context) + ")";
+			//case "macroref":
+			//	return "eval(macros." + this.compileId(ast.id, context) + ")";
 			case "onelineif":
 				return this.compileExpression(ast.condition, context) + " ? " + this.compileExpression(ast.trueval, context) + " : " + this.compileExpression(ast.falseval, context);
 			case "literal":

@@ -10,7 +10,7 @@ export default class QueryBuildDataSource{
     this.links = []
   }
 
-  addDataSource(tabId, name){
+  addDataSource(tabId, name = `table_${tabId}`){
     let qbds = new QueryBuildDataSource(name);
     qbds.table(tabId)
     this.dataSources.push(qbds);
@@ -58,6 +58,18 @@ export default class QueryBuildDataSource{
         return ds
 
       let childDS = ds.findChildDSByName()
+      if(childDS)
+        return childDS
+    }
+    return null
+  }
+
+  findChildDSByTableId(id){
+    for(let ds of this.dataSources){
+      if(ds.table() == id)
+        return ds
+
+      let childDS = ds.findChildDSById()
       if(childDS)
         return childDS
     }

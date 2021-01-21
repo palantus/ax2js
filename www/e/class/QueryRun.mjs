@@ -5,34 +5,36 @@ import {runQuery} from "../../datamanagement/queryRunner.mjs"
 export default class QueryRun{
   constructor(query){
     this.pQuery = query
+    this.curIdx = -1
   }
 
   query(q = this.pQuery){
     return this.pQuery = q;
   }
 
-  async fetchData(){
+  fetchData(){
     if(this.data) return;
     this.data = runQuery(this.pQuery)
   }
 
-  async fetchDataRunDS(qbds){
+  fetchDataRunDS(qbds){
 
   }
 
-  async run(){
+  run(){
 
   }
 
-  async next(){
-    await this.fetchData()
+  next(){
+    this.fetchData()
 
-    this.curIdx = (this.curIdx || -1) + 1
-    return this.curIdx < this.data.length - 1
+    this.curIdx++;
+    return this.curIdx < this.data.length ? true : false
   }
 
   get(tabId){
-    return this.data[this.curIdx][tableId2Name(tabId)]
+    let ds = this.pQuery.dataSourceTable(tabId)
+    return this.data[this.curIdx][ds.name()]
   }
 
   getNo(idx){
