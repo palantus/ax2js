@@ -63,4 +63,20 @@ export default class QueryBuildDataSource{
     }
     return null
   }
+
+  addSortField(){
+    console.log("STUB: addSortField")
+  }
+
+  orderMode(){
+    console.log("STUB: orderMode")
+  }
+
+  relations(){
+    console.log("STUB: relations")
+  }
+
+  addSelectionField(){
+    console.log("STUB: addSelectionField")
+  }
 }

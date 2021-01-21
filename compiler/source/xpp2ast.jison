@@ -556,7 +556,7 @@ id
   | THIS
     {$$ = {type: "literal", val: "this"}}
   | NEXT
-    {$$ = {type: "literal", val: "this"}}
+    {$$ = {type: "literal", val: "next"}}
     ;
 
 el

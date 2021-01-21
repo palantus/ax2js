@@ -363,7 +363,7 @@ class Compiler{
       ret = 'console.log("' + ret + '")';
     }
     
-    let v = context?.variables.find(v => v.id == ret)
+    let v = context?.variables.find(v => v.id.toLowerCase() == ret.toLowerCase())
     switch(v?.type){
       case "this": return "this."+ret
       case "control": return `this.owner().namedControls.${ret}`
@@ -375,13 +375,13 @@ class Compiler{
 
   compileMethodCall(ast, context){
     let methodName = this.compileId(ast.method, context)
-    
+
     //Handle builtin functions
-    switch(methodName){ 
-      case "fieldNum":
+    switch(methodName.toLowerCase()){ 
+      case "fieldnum":
         let f = Entity.find(`tag:tablefield element.prop:name=${ast.parameters[0].id.id} prop:name=${ast.parameters[1].id.id}`)
         return f ? `${f._id}` : `fieldNum("${ast.parameters[0].id.id}", "${ast.parameters[1].id.id}")`
-      case "tableNum":
+      case "tablenum":
         let t = Entity.find(`tag:table prop:name=${ast.parameters.id.id}`)
         return t ? `${t._id}` : `tableNum("${ast.parameters[0].id.id}")`
     }
@@ -412,7 +412,6 @@ class Compiler{
 			return ret;
 		}
 
-		//Missing implementations is checked in expressions method
 		return ast != "" ? this.compileExpression(ast, context) : "";
 	}
 

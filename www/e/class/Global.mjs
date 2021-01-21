@@ -54,3 +54,15 @@ export function dateMin(){
 export function conNull(){
   return []
 }
+
+export function conLen(con){
+  return con?.length||0
+}
+
+export function conPeek(con, idx){
+  return con?.[idx-1]||null
+}
+
+export function queryRange(from, to){
+  return {type: "range", from, to}
+}
