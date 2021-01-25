@@ -394,7 +394,7 @@ class Compiler{
     if(ast.element){
       if(ast.element.type == "id")
         this.refUsed(overriddenClassesCaseMap[ast.element.id.toLowerCase()] || ast.element.id, context)
-      return this.compileExpression(ast.element, context) + "." + methodName + "(" + parms + ")";
+      return `(await ${this.compileExpression(ast.element, context)}.${methodName}(${parms}))`;
     } else {
       let globalName = globalCaseMap[methodName.toLowerCase()]
       if(globalName)
@@ -455,7 +455,7 @@ class Compiler{
   }
 
 	compileMethodDeclarationInner(ast, context){
-		return "var " + this.compileId(ast.name, context) + " = function(" + this.compileFunctionParms(ast.parms, context) + "){" + this.compileExpression(ast.body, context) + "}";
+		return "var " + this.compileId(ast.name, context) + " = async function(" + this.compileFunctionParms(ast.parms, context) + "){" + this.compileExpression(ast.body, context) + "}";
   }
   
   refUsed(refName, context){

@@ -22,7 +22,7 @@ export default class ClassGenerator{
     return (this.doExportClassDefault ? "export default " : this.doExportClass ? "export " : "") +
         `class ${this.name}${this.extendsVal?` extends ${this.extendsVal}`:''}{${this.classVars}\n${
         this.functions.map(f => 
-          `${f.isStatic ? "static " : ""}${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
+          `${f.isStatic ? "static " : ""}async ${f.name}(${f.parms}) {\n    ${f.source}\n  }\n`
         ).join("\n")
       }}`
   }

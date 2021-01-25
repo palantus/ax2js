@@ -15,8 +15,8 @@ export default class Select{
     return this;
   }
 
-  fetch(){
-    let res = getTableData(this.buffer.TableId).filter(this.compareFunction||(() => true))[0]||null
+  async fetch(){
+    let res = (await getTableData(this.buffer.TableId)).filter(this.compareFunction||(() => true))[0]||null
     if(res)
       Object.assign(this.buffer, res)
     else

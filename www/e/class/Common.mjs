@@ -13,16 +13,16 @@ export default class Common{
 
   }
 
-  insert(){
-    insertRecord(this)
+  async insert(){
+    await insertRecord(this)
   }
 
   write(){
 
   }
 
-  update(){
-    updateRecord(this)
+  async update(){
+    await updateRecord(this)
   }
 
   isTmp(){
@@ -37,7 +37,7 @@ export default class Common{
 
   }
 
-  clear(){
+  asyncclear(){
     
   }
 }

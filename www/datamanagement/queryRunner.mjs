@@ -1,14 +1,15 @@
 import {getTableData} from "./data.mjs"
 import {tableId2Name} from "../e/class/Global.mjs"
 import JoinMode from "/e/enum/JoinMode.mjs"
+import {addAutoLinks} from "./joins.mjs"
 
-export function runQuery (q) {
+export async function runQuery (q) {
   let result = []
 
   let qbds = q.dataSourceNo(1)
   let qbdsName = qbds.name()
   let tabName = tableId2Name(qbds.table())
-  let tableData = getTableData(tabName)
+  let tableData = await getTableData(tabName)
   result = tableData.map(r => {
     let newRecord = {}
     newRecord[qbdsName] = r
@@ -23,16 +24,20 @@ export function runQuery (q) {
   }
 
   for(let ds of qbds.dataSources){
-    joinQBDS(result, tabName, ds)
+    await joinQBDS(result, tabName, null, ds)
   }
 
   return result;
 }
 
-function joinQBDS(result, parentQbdsName, child){
+async function joinQBDS(result, parentQbdsName, parent, child){
   let tabName = tableId2Name(child.table())
-  let tableData = getTableData(tabName)
+  let tableData = await getTableData(tabName)
   let qbdsName = child.name()
+
+  if(parent && child.relations()){
+    addAutoLinks(parent, child)
+  }
 
   result.reduceRight(function(acc, record, index, object) {
     let childRecord = findRecordFromLinks(record[parentQbdsName], tableData, child.links)
@@ -53,7 +58,7 @@ function joinQBDS(result, parentQbdsName, child){
   }, []);
 
   for(let ds of child.dataSources){
-    joinQBDS(result, qbdsName, ds)
+    joinQBDS(result, qbdsName, child, ds)
   }
 }
 

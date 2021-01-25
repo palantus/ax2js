@@ -3,32 +3,14 @@ let dataReadyFunction;
 let recIdCounter = 1;
 export let dataReady = new Promise(ready => {dataReadyFunction = ready})
 let database = {}
-import {getCachedElementByType, 
-  getCachedElementById, 
-  getEnumMapping,
-  getElementBasicInfoByType, 
-  getElementBasicInfoById} from "../e/class/Metadata.mjs"
+import {getElementByType, 
+  getElementById, 
+  getEnumMapping} from "../e/class/Metadata.mjs"
 let isUpgradeDone = false;
+let dataPromises = {}
 
 export async function setReader(_reader){
   reader = _reader;
-
-  await Promise.all([...Object.keys(reader.tables).map(tabName => new Promise(async r => {
-    database[tabName] = await reader.getAllRecords(tabName)
-    r()
-  })), getEnumMapping()])
-
-  Object.entries(await getEnumMapping()).forEach(([tableName, fields]) => {
-    let fieldKeys = Object.keys(fields)
-    database[tableName]?.forEach(r => {
-      fieldKeys?.forEach(f => {
-        r[f] = fields[f][r[f]]
-      })
-    })
-  })
-
-  recIdCounter = reader.recIdCounter || 1
-
   dataReadyFunction();
 }
 
@@ -43,26 +25,47 @@ export async function tryUpgrade(){
   } catch(err){}
 }
 
-export function getTableData(tableNameOrId){
-  
-  let tabMeta = typeof tableNameOrId === "string" ? getCachedElementByType("table", tableNameOrId) : getCachedElementById(tableNameOrId)
-  if(!tabMeta){
-    console.log(`Missing cached metadata for table ${tableNameOrId}. If table is extending, the information is not used correctly!`)
-    tabMeta = typeof tableNameOrId === "string" ? getElementBasicInfoByType("table", tableNameOrId) : getElementBasicInfoById(tableNameOrId)
-  }
+export async function getTableData(tableNameOrId){
+  let tabMeta = typeof tableNameOrId === "string" ? await getElementByType("table", tableNameOrId) : await getElementById(tableNameOrId)
 
   if(!tabMeta)
     return []
-  else if(tabMeta && tabMeta.extends)
+
+  let tableName = tabMeta.extends ? tabMeta.extends : tabMeta.name
+
+  
+  if(!database[tableName]){
+    if(dataPromises[tableName]) 
+      await dataPromises;
+    else 
+      await (dataPromises[tableName] = new Promise(async resolve => {
+        
+        database[tableName] = await reader.getAllRecords(tableName)
+
+        Object.entries(await getEnumMapping()).forEach(([enumTabName, fields]) => {
+          if(enumTabName != tableName) return;
+
+          let fieldKeys = Object.keys(fields)
+          database[tableName]?.forEach(r => {
+            fieldKeys?.forEach(f => {
+              r[f] = fields[f][r[f]]
+            })
+          })
+        })
+        resolve()
+      }))
+  }
+
+  if(tabMeta && tabMeta.extends)
     return database[tabMeta.extends] || []
   else
     return database[tabMeta.name] || []
 }
 
-export function insertRecord(buffer){
-  buffer.RecId = recIdCounter++;
+export async function insertRecord(buffer){
+  buffer.RecId = getNewRecId();
 
-  let tabMeta = getCachedElementById(buffer.TableId)
+  let tabMeta = await getElementById(buffer.TableId)
   let tableName = tabMeta.name
   if(tabMeta && tabMeta.extends)
     tableName = tabMeta.extends
@@ -80,8 +83,8 @@ export function insertRecord(buffer){
   return rawRecord
 }
 
-export function updateRecord(buffer){
-  let tabMeta = getCachedElementById(buffer.TableId)
+export async function updateRecord(buffer){
+  let tabMeta = await getElementById(buffer.TableId)
   let tableName = tabMeta.name
   if(tabMeta && tabMeta.extends)
     tableName = tabMeta.extends
@@ -92,4 +95,8 @@ export function updateRecord(buffer){
   tabMeta.children.field.forEach(f => {
     rawRecord[f.name] = buffer[f.name] || null
   })
+}
+
+export function getNewRecId(){
+  return recIdCounter++;
 }

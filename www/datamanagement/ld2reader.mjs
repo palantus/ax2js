@@ -1,9 +1,10 @@
+import {getNewRecId} from "./data.mjs"
+
 export default class LD2Reader{
   constructor(buffer, _jszip){
     this.buffer = buffer;
     this.tables = {};
     this.header = {}
-    this.recIdCounter = 1
 
     if(_jszip && "undefined" === typeof JSZip){
       this.JSZip = _jszip
@@ -75,8 +76,7 @@ export default class LD2Reader{
       }
 
       if(!record.RecId){
-        record.RecId = this.recIdCounter
-        this.recIdCounter++;
+        record.RecId = getNewRecId()
       }
 
       records.push(record);

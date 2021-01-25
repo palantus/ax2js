@@ -12,9 +12,9 @@ export default class QueryRun{
     return this.pQuery = q;
   }
 
-  fetchData(){
+  async fetchData(){
     if(this.data) return;
-    this.data = runQuery(this.pQuery)
+    this.data = await runQuery(this.pQuery)
   }
 
   fetchDataRunDS(qbds){
@@ -25,8 +25,8 @@ export default class QueryRun{
 
   }
 
-  next(){
-    this.fetchData()
+  async next(){
+    await this.fetchData()
 
     this.curIdx++;
     return this.curIdx < this.data.length ? true : false

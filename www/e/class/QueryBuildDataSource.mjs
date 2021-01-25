@@ -1,5 +1,5 @@
 import QueryBuildRange from "./QueryBuildRange.mjs";
-import {fieldId2Name} from "./Global.mjs"
+import {fieldId2Name, tableId2Name} from "./Global.mjs"
 
 export default class QueryBuildDataSource{
   constructor(name){
@@ -10,7 +10,7 @@ export default class QueryBuildDataSource{
     this.links = []
   }
 
-  addDataSource(tabId, name = `table_${tabId}`){
+  addDataSource(tabId, name = tableId2Name(tabId) || `table_${tabId}`){
     let qbds = new QueryBuildDataSource(name);
     qbds.table(tabId)
     this.dataSources.push(qbds);
@@ -84,8 +84,8 @@ export default class QueryBuildDataSource{
     console.log("STUB: orderMode")
   }
 
-  relations(){
-    console.log("STUB: relations")
+  relations(enable = this.pRelations || false){
+    return this.pRelations = enable
   }
 
   addSelectionField(){

@@ -1,11 +1,12 @@
 import QueryBuildDataSource from "./QueryBuildDataSource.mjs"
+import {tableId2Name} from "./Global.mjs"
 
 export default class Query{
   constructor(){
     this.dataSources = []
   }
 
-  addDataSource(tabId, name = `table_${tabId}`){
+  addDataSource(tabId, name = tableId2Name(tabId) || `table_${tabId}`){
     let qbds = new QueryBuildDataSource(name);
     qbds.table(tabId)
     this.dataSources.push(qbds);
