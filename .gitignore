@@ -13,3 +13,4 @@ input/labels/*
 log.txt
 www/datamanagement/dataupgrade.mjs
 testcompile.mjs
+.env
