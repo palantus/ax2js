@@ -19,7 +19,7 @@ export default class FormActionPaneControl extends FormControlCollection{
       for(let i = 1; i <= this.controlCount(); i++){
         let c = this.controlNum(i)
         c.siteElement.setAttribute("slot", `tab${i}`)
-        this.siteElement.addTab(c.caption())
+        this.siteElement.addTab(c.elementId, c.caption())
       }
     }
   }
@@ -92,7 +92,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("container").appendChild(document.createElement("slot"))
   }
 
-  addTab(title){
+  addTab(elementId, title){
     let container = this.shadowRoot.getElementById("container")
 
     let idx = container.querySelectorAll(".tabcontent").length + 1;
@@ -100,6 +100,7 @@ class Element extends HTMLElement {
     let buttons = this.shadowRoot.getElementById("buttons")
 
     let newbutton = document.createElement("button")
+    newbutton.setAttribute("data-element-id", elementId)
     newbutton.classList.add("tablinks")
     newbutton.innerText = title
     newbutton.addEventListener("click", this.tabClicked)

@@ -91,7 +91,7 @@ div.item span {
 div.submenu{
   position: absolute;
   left: 200px;
-  background-color: rgba(0, 0, 0, 0.60);
+  background-color: rgba(50, 50, 50, 0.95);
   display: none;
   top: 0px;
   width: 200px;

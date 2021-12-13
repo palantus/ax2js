@@ -35,6 +35,7 @@ export async function getElementByType(type, name, fillMetadata = true){
 }
 
 export async function getElementById(id, fillMetadata = true){
+  if(!id) return null;
   if(elements.length > 0){
     let e = elements.find(e => e.id == id)
     if(!fillMetadata)

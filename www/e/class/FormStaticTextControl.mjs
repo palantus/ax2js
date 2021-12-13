@@ -10,41 +10,18 @@ export default class FormStaticTextControl extends FormField{
     this.siteElement = document.createElement("ax-formstatictextcontrol");
     this.siteElement.setAttribute("label", this.name());
   }
+
+  render(){
+    super.render()
+    this.siteElement.setAttribute("text", this.properties.text)
+  }
 }
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    label:not(.checkbox):after {
-      content: ":"; 
-    }
-
-    .value{
-        display: inline-block;
-        min-height:15px;
-        min-width: 30px;
-    }
-
-    .field{
-        display: inline-block;
-        margin-bottom: 5px;
-    }
-
-    .value.right{
-        /*text-align: right;
-        position: absolute;
-        right: 0px;*/
-    }
-    label{
-      width: 100px;
-      display: inline-block;
-      vertical-align: top;
-    }
   </style>
-  <div class="field">
-      <label for="val"></label>
-      <span name="val" class="value right"><input type="text"></input></span>
-  </div>
+  <h3 id="text"></h3>
 `;
 
 class Element extends HTMLElement {
@@ -57,14 +34,22 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
-    this.shadowRoot.querySelector('label').innerText = this.getAttribute("label")
-    this.style.display = "block"
-
-    if(this.hasAttribute("right"))
-      this.shadowRoot.querySelectorAll('span').forEach(e => e.classList.add("right"))
+    this.shadowRoot.getElementById('text').innerText = this.getAttribute("text")
   }
 
   disconnectedCallback() {
+  }
+
+  static get observedAttributes() {
+    return ['text'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'text':
+        this.shadowRoot.getElementById('text').innerText = newValue
+        break;
+    }
   }
 }
 

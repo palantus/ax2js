@@ -1,4 +1,5 @@
 import FormControlCollection from "./FormControlCollection.mjs"
+import FormDesign from "./FormDesign.mjs"
 
 export default class FormTabControl extends FormControlCollection{
 
@@ -10,10 +11,31 @@ export default class FormTabControl extends FormControlCollection{
   render(){
     super.render();
     if(this.controlCount() < 1) return;
+    let tabs = []
     for(let i = 1; i <= this.controlCount(); i++){
       let c = this.controlNum(i)
+      tabs.push(c)
+    }
+
+    // Change order so that grid view is always shown first. It's a hack until patterns are properly supported.
+    if(this.pDesign.properties.pattern == "DetailsMasterTabs" && this.parent instanceof FormDesign){
+      tabs = tabs.sort((a, b) => a.properties.style == "DetailsFormGrid" ? -1 : 1)
+    }
+
+    for(let i = 1; i <= tabs.length; i++){
+      let c = tabs[i-1]
       c.siteElement.setAttribute("slot", `tab${i}`)
-      this.siteElement.addTab(c.caption() || c.name())
+      switch(c.properties.style){
+        case "DetailsFormDetails":
+          this.siteElement.addTab(c.elementId, "Details View")
+          break;
+        case "DetailsFormGrid":
+          this.siteElement.addTab(c.elementId, "Grid View")
+          break;
+        default:
+          this.siteElement.addTab(c.elementId, c.caption() || c.name())
+      }
+      
     }
   }
 }
@@ -78,7 +100,7 @@ class Element extends HTMLElement {
   disconnectedCallback() {
   }
 
-  addTab(title){
+  addTab(elementId, title){
     let container = this.shadowRoot.getElementById("container")
 
     let idx = container.querySelectorAll(".tabcontent").length + 1;
@@ -86,6 +108,7 @@ class Element extends HTMLElement {
     let buttons = this.shadowRoot.getElementById("buttons")
 
     let newbutton = document.createElement("button")
+    newbutton.setAttribute("data-element-id", elementId)
     newbutton.classList.add("tablinks")
     newbutton.innerText = title
     newbutton.addEventListener("click", this.tabClicked)

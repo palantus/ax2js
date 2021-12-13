@@ -8,6 +8,7 @@ export default {
   Real: 6,
   Integer: 7,
   ComboBox: 8,
+  Image: 9,
   Date: 10,
   Grid: 12,
   ButtonGroup: 13,

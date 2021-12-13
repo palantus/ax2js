@@ -33,6 +33,8 @@ export default class FormControl{
     for(let p in meta)
       if(typeof meta[p] === "string")
         this.properties[p] = meta[p]
+        
+    this.elementId = meta.id
   }
 
   onActiveRecord(record){
@@ -44,5 +46,8 @@ export default class FormControl{
   render(){
     if(this.properties.visible == "No")
       this.siteElement.style.display = "none"
+
+    if(this.elementId)
+      this.siteElement?.setAttribute("data-element-id", this.elementId)
   }
 }

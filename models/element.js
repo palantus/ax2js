@@ -36,7 +36,7 @@ export default class Element extends Entity{
             obj[rel] = obj.children[rel][0].toObj();
           else
           */
-          obj.children[rel] = obj.children[rel].map(e => e.toObj())
+          obj.children[rel] = obj.children[rel].map(e => Element.from(e).toObj())
         }
       }
 

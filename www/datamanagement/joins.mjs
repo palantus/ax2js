@@ -32,7 +32,7 @@ export function addAutoLinks(parent, child){
   //console.log(`checking ${parent.name()} and ${child.name()}`)
   let childMeta = getCachedElementById(child.table())
   
-  for(let r of childMeta.children.reverserelation||[]){
+  for(let r of childMeta?.children.reverserelation||[]){
     if(r.tableId != parent.table()) continue
 
     for(let c of r.children.constraint||[]){
@@ -42,7 +42,7 @@ export function addAutoLinks(parent, child){
     return; // Only use one relation per table
   }
 
-  for(let r of childMeta.children.relation||[]){
+  for(let r of childMeta?.children.relation||[]){
     let tabName = r.relatedTable
     let tabId = tableNum(tabName)
     if(tabId != parent.table()) continue

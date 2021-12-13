@@ -3,6 +3,7 @@ import FormControlType from "../enum/FormControlType.mjs"
 
 export default async function build(meta, fr){
   let form = new Form(meta.name);
+  form.elementId = meta.id;
   
   for(let dsMeta of meta.children.ds || []){
     let fds = await form.addDataSource(Object.getPrototypeOf(fr)?.constructor?.controlTypes?.[dsMeta.name] || dsMeta.name)
@@ -13,6 +14,7 @@ export default async function build(meta, fr){
 
   let formBuildDesign = await form.addDesign('design');
   formBuildDesign.caption(designMeta.caption || meta.name)
+  formBuildDesign.initFromMeta(designMeta)
 
   for(let c of designMeta.children.control || []){
     await addControlToParent(formBuildDesign, c, fr)
